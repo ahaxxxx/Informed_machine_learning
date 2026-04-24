@@ -1,0 +1,216 @@
+﻿\documentclass[11pt,a4paper]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{hyperref}
+\usepackage{amsmath,amssymb}
+
+\title{Informed Machine Learning Notebook}
+\author{}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\section{Overview about these five papers}
+These five papers show me the overview about informed machine learning:
+\begin{itemize}
+\item taxonomy-level Informed ML,
+\item logic-constrained neural learning,
+\item granular computing for confidence-aware outputs.
+\end{itemize}
+
+\section{A Unified Optimization Template}
+A compact mathematical template that covers most methods in this corpus is:
+\begin{equation}
+\min_{\theta} \; \mathcal{L}_{\text{task}}(\theta)
++ \lambda_{K}\,\mathcal{L}_{\text{knowledge}}(\theta)
++ \lambda_{G}\,\mathcal{L}_{\text{granularity}}(\theta).
+\label{eq:unified}
+\end{equation}
+
+Interpretation:
+\begin{itemize}
+\item $\mathcal{L}_{\text{task}}$: standard supervised objective (e.g., cross-entropy, MSE).
+\item $\mathcal{L}_{\text{knowledge}}$: prior-knowledge term (logic rules, equations, graph constraints).
+\item $\mathcal{L}_{\text{granularity}}$: uncertainty/credibility term that promotes informative non-point outputs.
+\end{itemize}
+Equation \eqref{eq:unified} is the mathematical counterpart of the taxonomy path ``knowledge source $\rightarrow$ representation $\rightarrow$ integration location'' in the TKDE survey.
+
+\section{Logic-Constrained Learning: Three Mathematical Mechanisms}
+
+\subsection{Hu et al. (logic-net): Posterior Regularization + Distillation}
+Let $p_{\theta}(y\mid x)$ be the student network. A rule-regularized teacher $q(y\mid x)$ is constructed by projection:
+\begin{equation}
+q^{\ast} = \arg\min_{q \in \mathcal{Q}} \mathrm{KL}\big(q(Y\mid X)\,\|\,p_{\theta}(Y\mid X)\big) 
++ C \sum_{\ell} \xi_{\ell},
+\label{eq:pr_projection}
+\end{equation}
+subject to rule satisfaction constraints (soft form) using slack variables $\xi_{\ell}$.
+
+A common closed-form structure is:
+\begin{equation}
+q^{\ast}(y\mid x) \propto p_{\theta}(y\mid x)
+\exp\!\left\{-\sum_{\ell} \gamma_{\ell}\,\big(1-r_{\ell}(x,y)\big)\right\},
+\label{eq:teacher}
+\end{equation}
+where $r_{\ell}(x,y) \in [0,1]$ is soft truth of rule $\ell$.
+
+Then student update mixes data labels and teacher supervision:
+\begin{equation}
+\theta \leftarrow \arg\min_{\theta} \frac{1}{N}\sum_{n=1}^{N}
+\Big[(1-\pi_t)\,\ell\big(y_n,p_{\theta}(\cdot\mid x_n)\big)
++ \pi_t\,\ell\big(q^{\ast}(\cdot\mid x_n),p_{\theta}(\cdot\mid x_n)\big)\Big].
+\label{eq:distill}
+\end{equation}
+This is the ``teacher-student + rule projection'' logic in mathematical form.
+
+\subsection{Xu et al. (semantic loss): Constraint-Exact Differentiable Loss}
+For Boolean outputs $X_1,\dots,X_n$ with network probabilities $p=(p_1,\dots,p_n)$ and a logical constraint $\alpha$, semantic loss is:
+\begin{equation}
+\mathcal{L}_{s}(\alpha,p)
+= -\log \sum_{x \models \alpha}
+\prod_{i: x_i=1} p_i \prod_{i: x_i=0}(1-p_i).
+\label{eq:semantic_loss}
+\end{equation}
+
+This directly measures probability mass assigned to satisfying worlds of $\alpha$. Training usually uses:
+\begin{equation}
+\mathcal{L} = \mathcal{L}_{\text{task}} + \beta\,\mathcal{L}_{s}(\alpha,p).
+\label{eq:semantic_total}
+\end{equation}
+Key property: logical meaning is preserved exactly at the constraint level, while optimization remains gradient-based.
+
+\subsection{Fischer et al. (DL2): Declarative Constraints to Loss and Queries}
+DL2 maps constraints $\varphi$ into nonnegative losses $\mathcal{L}(\varphi)$ with:
+\begin{equation}
+\mathcal{L}(\varphi)=0 \iff \varphi \text{ is satisfied},
+\qquad
+\mathcal{L}(\varphi) \ge 0,
+\label{eq:dl2_property}
+\end{equation}
+and differentiability almost everywhere.
+
+Representative atom relaxations (hinge-style) are:
+\begin{equation}
+\mathcal{L}(a \le b)=\max(0,a-b), \qquad
+\mathcal{L}(a=b)=|a-b|.
+\label{eq:atom_relax}
+\end{equation}
+Complex formulas are recursively composed.
+
+Training with constraints can be written as:
+\begin{equation}
+\min_{\theta} \; \mathcal{L}_{\text{task}}(\theta)
++ \lambda\,\mathbb{E}_{x}\big[\mathcal{L}(\varphi(x,\theta))\big].
+\label{eq:dl2_train}
+\end{equation}
+
+Querying is posed as input optimization:
+\begin{equation}
+x^{\ast}=\arg\min_{x}\;\mathcal{L}(\psi(x,\theta)),
+\label{eq:dl2_query}
+\end{equation}
+where $\psi$ encodes the query constraints.
+
+\section{From Point Predictions to Granular Predictions}
+
+\subsection{Takagi--Sugeno Base Model (numeric)}
+For rule $i$:
+\begin{equation}
+R_i:\; \text{if }x_1\text{ is }A_{i1},\dots,x_m\text{ is }A_{im},\text{ then } y=b_i,
+\label{eq:ts_rule}
+\end{equation}
+with firing strength
+\begin{equation}
+w_i(x)=\prod_{j=1}^{m}\mu_{A_{ij}}(x_j).
+\label{eq:firing}
+\end{equation}
+Output:
+\begin{equation}
+\hat y(x)=\frac{\sum_{i=1}^{c} w_i(x)b_i}{\sum_{i=1}^{c}w_i(x)},
+\quad
+\mathcal{L}_{\text{task}}=\sum_{k}(\hat y(x_k)-y_k)^2.
+\label{eq:ts_output}
+\end{equation}
+
+\subsection{Granular Elevation}
+Instead of scalar consequents $b_i$, use granules $B_i$ (interval/fuzzy/probabilistic):
+\begin{equation}
+B_i = [\underline b_i,\overline b_i] \quad \text{(interval case)}.
+\label{eq:interval_consequent}
+\end{equation}
+Then model output becomes a granular object, e.g., interval:
+\begin{equation}
+\hat Y(x)=\left[
+\frac{\sum_i w_i(x)\underline b_i}{\sum_i w_i(x)},
+\frac{\sum_i w_i(x)\overline b_i}{\sum_i w_i(x)}
+\right].
+\label{eq:interval_output}
+\end{equation}
+This converts ``single value'' prediction into ``value + credibility span'' prediction.
+
+\subsection{Principle of Justifiable Granularity}
+A granule should balance:
+\begin{itemize}
+\item \textbf{coverage} $\mathrm{cov}(G)$: how much data are represented,
+\item \textbf{specificity} $\mathrm{sp}(G)$: how informative/narrow the granule is.
+\end{itemize}
+A standard construction objective is:
+\begin{equation}
+G^{\ast}=\arg\max_{G}\;V(G),
+\qquad
+V(G)=\mathrm{cov}(G)\cdot \mathrm{sp}(G).
+\label{eq:jg}
+\end{equation}
+This is the key mathematical principle used to build interval/fuzzy granules in the 2025 TFS paper.
+
+\subsection{Probabilistic Granules via Gaussian Process}
+For GP regression:
+\begin{equation}
+y(x)\mid \mathcal{D} \sim \mathcal{N}(\mu(x),\sigma^2(x)).
+\label{eq:gp_pred}
+\end{equation}
+A $(1-\alpha)$ confidence interval is:
+\begin{equation}
+\hat Y_{\alpha}(x)=\big[\mu(x)-z_{\alpha/2}\sigma(x),\;\mu(x)+z_{\alpha/2}\sigma(x)\big].
+\label{eq:gp_ci}
+\end{equation}
+The paper further maps probabilistic granules to interval/fuzzy granules through justifiable granularity criteria.
+
+\section{A Deeper Synthesis: What Each Family Optimizes}
+\begin{itemize}
+\item \textbf{logic-net}: optimize predictive fit while distilling rule-regularized posterior structure.
+\item \textbf{semantic loss}: optimize probability mass over logically valid worlds.
+\item \textbf{DL2}: optimize satisfiability of declarative constraints in both training and querying.
+\item \textbf{granular TS/GC}: optimize not only fit, but also the informativeness of uncertainty representation.
+\end{itemize}
+
+So, the progression is:
+\begin{equation}
+\text{validity of output} \;\Rightarrow\; \text{validity + confidence geometry of output}.
+\label{eq:progression}
+\end{equation}
+
+\section{A Research Blueprint}
+A mathematically strong formulation for my own work can be:
+\begin{equation}
+\min_{\theta,\,\eta}\;
+\underbrace{\mathcal{L}_{\text{task}}(\theta)}_{\text{fit}}
++ \lambda_1\underbrace{\mathcal{L}_{\text{logic}}(\theta)}_{\text{rule satisfaction}}
++ \lambda_2\underbrace{\mathcal{L}_{\text{gran}}(\theta,\eta)}_{\text{credible granules}}
++ \lambda_3\underbrace{\Omega(\theta,\eta)}_{\text{regularization}},
+\label{eq:blueprint}
+\end{equation}
+where $\eta$ parameterizes interval/fuzzy/probabilistic output structure.
+
+Recommended evaluation should report at least:
+\begin{itemize}
+\item prediction quality (Acc/F1/RMSE),
+\item rule satisfaction rate,
+\item granule quality (coverage, specificity, and calibration metrics).
+\end{itemize}
+
+
+\end{document}

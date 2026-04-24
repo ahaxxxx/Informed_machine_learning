@@ -1,0 +1,197 @@
+﻿\documentclass[11pt,a4paper]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{hyperref}
+
+\newtheorem{proposition}{Proposition}
+\newtheorem{exercise}{Exercise}
+
+\title{Beginner Guide to Informed Machine Learning\\from the Papers in This Folder}
+\author{}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\section{How to Read This Guide}
+This guide assumes you are a beginner. We use one principle:
+\begin{quote}
+\textbf{First intuition, then formula, then what to prove yourself.}
+\end{quote}
+
+\section{Big Picture in One Sentence}
+Classical machine learning says: ``learn from data.''\newline
+Informed machine learning says: ``learn from data \emph{and} known knowledge (rules, equations, physics, expert logic).''
+
+\section{Part A: Taxonomy (What is Being Added to ML?)}
+From the survey paper, every informed ML method can be understood by 3 questions:
+\begin{enumerate}
+\item Where does knowledge come from? (science, experts, world knowledge)
+\item How is knowledge represented? (logic rules, equations, simulations, graphs)
+\item Where is it integrated? (data, model structure, training loss, final output)
+\end{enumerate}
+
+\subsection{Simple mental model}
+Think of normal ML as cooking with only ingredients (data).\newline
+Informed ML adds recipe constraints (knowledge).
+
+\section{Part B: Three Logic Papers (How to Teach a Neural Network Rules)}
+
+\subsection{1) Logic-net (teacher-student idea)}
+\textbf{Intuition:} Build a ``teacher'' that obeys rules more, then make your network imitate that teacher.
+
+\textbf{Core form:}
+\begin{equation}
+\mathcal{L}(\theta)= (1-\pi)\,\mathcal{L}_{\text{label}} + \pi\,\mathcal{L}_{\text{teacher}}.
+\end{equation}
+
+So the student learns from true labels and rule-aware teacher outputs.
+
+\subsection{2) Semantic Loss (probability of satisfying logic)}
+\textbf{Intuition:} If your output should satisfy a logic statement $\alpha$, reward the model when probability mass is on worlds that satisfy $\alpha$.
+
+\textbf{Core form:}
+\begin{equation}
+\mathcal{L}_{s}(\alpha,p)
+= -\log \sum_{x \models \alpha}
+\prod_{i: x_i=1} p_i \prod_{i: x_i=0}(1-p_i).
+\end{equation}
+
+If satisfying worlds have high probability, this loss is small.
+
+\subsection{3) DL2 (logic language to differentiable loss)}
+\textbf{Intuition:} Write constraints declaratively, automatically translate them into a smooth loss, then optimize.
+
+\textbf{Training form:}
+\begin{equation}
+\min_{\theta}\;\mathcal{L}_{\text{task}}(\theta)+\lambda\,\mathcal{L}_{\text{logic}}(\theta).
+\end{equation}
+
+\textbf{Query form:}
+\begin{equation}
+\min_{x}\;\mathcal{L}_{\text{query-constraint}}(x,\theta)
+\end{equation}
+which means: find an input that satisfies desired logic.
+
+\section{Part C: Granular Computing Papers (How to Express Confidence)}
+
+\subsection{Why needed?}
+A single number prediction can look precise but hide uncertainty.
+
+\subsection{Core idea}
+Instead of outputting one value $\hat y$, output a granule:
+\begin{itemize}
+\item interval: $[l,u]$
+\item fuzzy set: graded confidence
+\item probabilistic granule: e.g., Gaussian $\mathcal{N}(\mu,\sigma^2)$
+\end{itemize}
+
+\subsection{Takagi-Sugeno baseline}
+\begin{equation}
+\hat y(x)=\frac{\sum_{i=1}^{c} w_i(x)b_i}{\sum_{i=1}^{c} w_i(x)}.
+\end{equation}
+
+Granular version replaces scalar $b_i$ by interval/fuzzy/probabilistic consequents.
+
+\subsection{Justifiable Granularity principle}
+Choose a granule that balances coverage and specificity:
+\begin{equation}
+G^*=\arg\max_G\;V(G),\qquad V(G)=\mathrm{cov}(G)\cdot\mathrm{sp}(G).
+\end{equation}
+
+\subsection{GP bridge}
+If prediction is Gaussian:
+\begin{equation}
+y(x)\mid\mathcal D\sim \mathcal N(\mu(x),\sigma^2(x)),
+\end{equation}
+then a confidence interval is
+\begin{equation}
+[\mu-z\sigma,\;\mu+z\sigma].
+\end{equation}
+
+\section{Part D: Unified Formula You Should Remember}
+\begin{equation}
+\min_{\theta}\;\mathcal L_{\text{task}} + \lambda_1\mathcal L_{\text{knowledge}} + \lambda_2\mathcal L_{\text{uncertainty}}.
+\end{equation}
+
+This single equation unifies most papers in your folder.
+
+\section{Research Propositions for You to Prove}
+Below are beginner-friendly propositions/exercises. Try proving them step by step.
+
+\begin{proposition}[Monotonicity of semantic loss contribution]
+Fix a constraint $\alpha$ and probabilities of all worlds except one satisfying world $x^*$. If the model increases probability mass assigned to satisfying worlds (without violating normalization), then semantic loss does not increase.
+\end{proposition}
+\textit{Hint:} semantic loss is $-\log(\text{satisfying mass})$.
+
+\begin{exercise}[Proof task]
+Formalize the proposition above by defining $S=\sum_{x\models\alpha}P_p(x)$ and show that if $S'\ge S$, then $-\log S'\le -\log S$.
+\end{exercise}
+
+\begin{proposition}[Teacher-student interpolation limits]
+For loss
+\(\mathcal L=(1-\pi)\mathcal L_{\text{label}}+\pi\mathcal L_{\text{teacher}}\),
+when $\pi=0$ it reduces to pure supervised learning; when $\pi=1$ it reduces to pure teacher imitation.
+\end{proposition}
+
+\begin{exercise}[Proof task]
+Write the two substitutions explicitly and interpret what signal disappears in each case.
+\end{exercise}
+
+\begin{proposition}[Coverage-specificity tradeoff]
+Suppose specificity is strictly decreasing with interval width $w$ and coverage is nondecreasing with $w$. Then maximizing
+\(V(w)=\mathrm{cov}(w)\mathrm{sp}(w)\)
+produces an interior optimum under mild smoothness/concavity assumptions.
+\end{proposition}
+
+\begin{exercise}[Proof task]
+Assume differentiability and solve $\frac{d}{dw}\log V(w)=0$, i.e.
+\[
+\frac{\mathrm{cov}'(w)}{\mathrm{cov}(w)} = -\frac{\mathrm{sp}'(w)}{\mathrm{sp}(w)}.
+\]
+Interpret this as balancing marginal gain and marginal loss.
+\end{exercise}
+
+\begin{proposition}[Interval output contains point output]
+If each rule consequent interval collapses to a point, i.e. $[b_i,b_i]$, then interval aggregation returns
+\([\hat y,\hat y]\)
+where $\hat y$ is the classical TS output.
+\end{proposition}
+
+\begin{exercise}[Proof task]
+Substitute $\underline b_i=\overline b_i=b_i$ into interval aggregation and simplify both bounds.
+\end{exercise}
+
+\begin{proposition}[Calibration motivation]
+For Gaussian predictive distribution, fixed confidence level $1-\alpha$ gives interval width proportional to $\sigma(x)$.
+Hence higher uncertainty points naturally get wider intervals.
+\end{proposition}
+
+\begin{exercise}[Proof task]
+From $[\mu-z_{\alpha/2}\sigma,\mu+z_{\alpha/2}\sigma]$, compute width and show linear dependence on $\sigma$.
+\end{exercise}
+
+\section{Suggested Study Path (7 Days)}
+\begin{enumerate}
+\item Day 1--2: Read taxonomy paper; map each other paper to source/representation/integration.
+\item Day 3: Re-derive semantic loss on a tiny 2-variable logic constraint.
+\item Day 4: Re-derive teacher-student objective and test extreme $\pi$ values.
+\item Day 5: Implement one toy DL2-style constraint loss.
+\item Day 6: Build interval output from a simple TS model.
+\item Day 7: Prove two propositions above and write a short report.
+\end{enumerate}
+
+\section{Primary References}
+\begin{itemize}
+\item L. von Rueden et al., IEEE TKDE, 2021/2023 version.
+\item Z. Hu et al., \emph{Harnessing Deep Neural Networks with Logic Rules}.
+\item J. Xu et al., \emph{A Semantic Loss Function for Deep Learning with Symbolic Knowledge}.
+\item M. Fischer et al., \emph{DL2: Training and Querying Neural Networks with Logic}.
+\item Y. Cui et al., \emph{From Fuzzy Rule-Based Models to Granular Models}, IEEE TFS 2025.
+\item W. Pedrycz, \emph{Granular Computing for Machine Learning}, IEEE TCYB 2025.
+\end{itemize}
+
+\end{document}
