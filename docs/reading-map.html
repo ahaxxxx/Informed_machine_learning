@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>阅读路线 | Informed Machine Learning</title>
+    <link rel="stylesheet" href="./assets/site.css">
+    <script defer src="./assets/site.js"></script>
+  </head>
+  <body data-page="reading-map">
+    <div class="page-shell">
+      <header class="site-header">
+        <a class="brand" href="./index.html">
+          <span class="brand-mark">IML</span>
+          <span class="brand-text">Informed Machine Learning</span>
+        </a>
+        <button class="nav-toggle" type="button" aria-expanded="false" aria-label="切换导航">
+          <span></span>
+          <span></span>
+        </button>
+        <nav class="site-nav">
+          <a href="./index.html">首页</a>
+          <a href="./reading-map.html">阅读路线</a>
+          <a href="./toys.html">Toy 项目</a>
+          <a href="./deploy.html">部署说明</a>
+        </nav>
+      </header>
+
+      <main class="content-page">
+        <section class="page-intro">
+          <p class="eyebrow">Reading Map</p>
+          <h1>先按逻辑看，再按项目看。</h1>
+          <p>
+            这一页不是把所有论文再复述一遍，而是把“先看什么、为什么这样排、看完应该进哪个 toy”
+            压成一个手机上也能快速扫完的版本。
+          </p>
+        </section>
+
+        <section class="flow-grid">
+          <article class="flow-card">
+            <span class="flow-step">01</span>
+            <h2>Survey</h2>
+            <p>先建立 informed ML 的地图，知道后面几篇分别在解决哪一类问题。</p>
+          </article>
+          <article class="flow-card">
+            <span class="flow-step">02</span>
+            <h2>Logic-net</h2>
+            <p>看清规则如何经过 teacher-student 机制进入训练。</p>
+          </article>
+          <article class="flow-card">
+            <span class="flow-step">03</span>
+            <h2>Semantic Loss</h2>
+            <p>从规则蒸馏过渡到“输出分布满足约束的概率质量”。</p>
+          </article>
+          <article class="flow-card">
+            <span class="flow-step">04</span>
+            <h2>DL2</h2>
+            <p>把单个技巧上升到统一约束接口和系统视角。</p>
+          </article>
+          <article class="flow-card">
+            <span class="flow-step">05</span>
+            <h2>Granular / Landmarks</h2>
+            <p>从精确逻辑扩展到模糊知识、区间知识和全局知识 regularizer。</p>
+          </article>
+        </section>
+
+        <section class="note-block">
+          <h2>已经落地的推荐代码顺序</h2>
+          <ol class="ordered-list">
+            <li><a href="./projects/logic-net-toy.html">logic_net_toy</a></li>
+            <li><a href="./projects/semantic-loss-toy.html">semantic_loss_toy</a></li>
+            <li><a href="./projects/knowledge-landmarks-toy.html">knowledge_landmarks_toy</a></li>
+          </ol>
+          <p>
+            这样排是为了先看清最基础的规则注入，再看更纯粹的 semantic loss，最后再看更像研究原型的知识 landmarks。
+          </p>
+        </section>
+
+        <section class="resource-block">
+          <h2>原始总文档</h2>
+          <p>完整版本仍然在仓库里，包含论文截图、详细解读、toy 路线和读代码导航。</p>
+          <a class="button button-primary" href="https://github.com/ahaxxxx/Informed_machine_learning/blob/main/Knowledge/informed_ml_%E8%AE%BA%E6%96%87%E8%A7%A3%E8%AF%BB%E4%B8%8E%E5%A4%8D%E7%8E%B0%E8%B7%AF%E7%BA%BF.md">在 GitHub 查看总文档</a>
+        </section>
+      </main>
+
+      <footer class="site-footer">
+        <p>Use this page as the quick map. Use the repository documents for the full notes.</p>
+      </footer>
+    </div>
+  </body>
+</html>

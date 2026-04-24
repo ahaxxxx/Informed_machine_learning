@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>logic_net_toy | Informed Machine Learning</title>
+    <link rel="stylesheet" href="../assets/site.css">
+    <script defer src="../assets/site.js"></script>
+  </head>
+  <body data-page="toys">
+    <div class="page-shell">
+      <header class="site-header">
+        <a class="brand" href="../index.html">
+          <span class="brand-mark">IML</span>
+          <span class="brand-text">Informed Machine Learning</span>
+        </a>
+        <button class="nav-toggle" type="button" aria-expanded="false" aria-label="切换导航">
+          <span></span>
+          <span></span>
+        </button>
+        <nav class="site-nav">
+          <a href="../index.html">首页</a>
+          <a href="../reading-map.html">阅读路线</a>
+          <a href="../toys.html">Toy 项目</a>
+          <a href="../deploy.html">部署说明</a>
+        </nav>
+      </header>
+
+      <main class="content-page">
+        <section class="page-intro">
+          <p class="eyebrow">Project 01</p>
+          <h1>logic_net_toy</h1>
+          <p>最适合第一个看，因为它把 `rule -> teacher -> student` 这条链讲得最清楚。</p>
+        </section>
+
+        <section class="detail-grid">
+          <article class="detail-card">
+            <h2>核心问题</h2>
+            <p>规则如何不直接替代模型，而是变成一个 teacher 分布，再蒸馏回 student。</p>
+          </article>
+          <article class="detail-card">
+            <h2>适合先看的文件</h2>
+            <p>`README -> run.py -> experiment.py -> rules.py -> trainer.py`</p>
+          </article>
+          <article class="detail-card">
+            <h2>你应该抓住的点</h2>
+            <p>规则不是硬覆盖标签，而是和 student 输出一起构造 teacher，再通过 distillation 进入训练。</p>
+          </article>
+        </section>
+
+        <section class="link-panel">
+          <h2>源码入口</h2>
+          <div class="link-list">
+            <a href="https://github.com/ahaxxxx/Informed_machine_learning/blob/main/repro/01_logic_net_toy/README.md">README</a>
+            <a href="https://github.com/ahaxxxx/Informed_machine_learning/blob/main/repro/01_logic_net_toy/run.py">run.py</a>
+            <a href="https://github.com/ahaxxxx/Informed_machine_learning/blob/main/repro/01_logic_net_toy/rules.py">rules.py</a>
+            <a href="https://github.com/ahaxxxx/Informed_machine_learning/blob/main/repro/01_logic_net_toy/trainer.py">trainer.py</a>
+            <a href="https://github.com/ahaxxxx/Informed_machine_learning/blob/main/repro/01_logic_net_toy/logic_net_toy_%E4%BB%A3%E7%A0%81%E9%80%90%E8%A1%8C%E8%A7%A3%E6%9E%90.md">代码逐行解析</a>
+          </div>
+        </section>
+      </main>
+
+      <footer class="site-footer">
+        <p><a href="../toys.html">返回 Toy 导航</a></p>
+      </footer>
+    </div>
+  </body>
+</html>

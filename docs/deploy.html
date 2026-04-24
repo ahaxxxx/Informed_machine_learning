@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>部署说明 | Informed Machine Learning</title>
+    <link rel="stylesheet" href="./assets/site.css">
+    <script defer src="./assets/site.js"></script>
+  </head>
+  <body data-page="deploy">
+    <div class="page-shell">
+      <header class="site-header">
+        <a class="brand" href="./index.html">
+          <span class="brand-mark">IML</span>
+          <span class="brand-text">Informed Machine Learning</span>
+        </a>
+        <button class="nav-toggle" type="button" aria-expanded="false" aria-label="切换导航">
+          <span></span>
+          <span></span>
+        </button>
+        <nav class="site-nav">
+          <a href="./index.html">首页</a>
+          <a href="./reading-map.html">阅读路线</a>
+          <a href="./toys.html">Toy 项目</a>
+          <a href="./deploy.html">部署说明</a>
+        </nav>
+      </header>
+
+      <main class="content-page">
+        <section class="page-intro">
+          <p class="eyebrow">Deploy</p>
+          <h1>把这套骨架发布到 GitHub Pages</h1>
+          <p>
+            这一版是纯静态 `docs/` 站点，不依赖额外构建工具。只要仓库能开 Pages，就可以直接发布。
+          </p>
+        </section>
+
+        <section class="steps-block">
+          <h2>基础发布步骤</h2>
+          <ol class="ordered-list">
+            <li>把当前仓库推到 GitHub。</li>
+            <li>进入仓库 `Settings -> Pages`。</li>
+            <li>在 `Build and deployment` 里选择 `Deploy from a branch`。</li>
+            <li>Branch 选 `main`，Folder 选 `/docs`。</li>
+            <li>保存后等待 GitHub Pages 首次发布。</li>
+          </ol>
+        </section>
+
+        <section class="steps-block">
+          <h2>自定义域名</h2>
+          <ol class="ordered-list">
+            <li>在 GitHub Pages 设置里填入 `research.bozhanli.com`。</li>
+            <li>在你的 DNS 提供商处添加一条 `CNAME`：`research -> ahaxxxx.github.io`。</li>
+            <li>等待 DNS 生效后，打开 `Enforce HTTPS`。</li>
+          </ol>
+          <p>
+            GitHub 官方文档支持自定义域名和子域名；`research.bozhanli.com`
+            这种子域名就是典型用法。
+          </p>
+        </section>
+
+        <section class="warning-block">
+          <h2>要提前知道的限制</h2>
+          <p>
+            GitHub 官方文档说明：GitHub Free 下，Pages 可直接用于公开仓库；私有仓库要 GitHub Pro / Team /
+            Enterprise 才能发布。也就是说，如果你当前仓库保持私有且没有 Pro，就需要再准备一个公开站点仓库。
+          </p>
+        </section>
+
+        <section class="link-panel">
+          <h2>官方文档</h2>
+          <div class="link-list">
+            <a href="https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site">Publishing source</a>
+            <a href="https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site">Custom domain</a>
+          </div>
+        </section>
+      </main>
+
+      <footer class="site-footer">
+        <p>Publish from `main /docs` for the simplest setup.</p>
+      </footer>
+    </div>
+  </body>
+</html>
