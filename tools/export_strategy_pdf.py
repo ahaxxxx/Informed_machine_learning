@@ -1,17 +1,15 @@
 from __future__ import annotations
 
+import argparse
 import re
 import subprocess
+from datetime import date
 from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
-SOURCE = ROOT / "十年发展战略说明书（家庭安心版+学术规划版）.md"
 OUT_DIR = ROOT / "output" / "pdf"
 TMP_DIR = ROOT / "tmp" / "pdfs"
-TEX_PATH = TMP_DIR / "strategy_book.tex"
-PDF_NAME = "family_strategy_book_2026.pdf"
-PDF_PATH = OUT_DIR / PDF_NAME
 
 
 SPECIALS = {
@@ -246,8 +244,8 @@ def render_markdown_body(lines: list[str]) -> list[str]:
     return out
 
 
-def split_front_matter(lines: list[str]) -> tuple[str, list[str], list[str]]:
-    title = SOURCE.stem
+def split_front_matter(lines: list[str], default_title: str) -> tuple[str, list[str], list[str]]:
+    title = default_title
     meta: list[str] = []
     start = 0
 
@@ -283,6 +281,9 @@ def make_tex(title: str, meta: list[str], body: list[str]) -> str:
     escaped_title_sub = latex_escape(title_sub)
     meta_lines = [latex_escape(line) for line in meta]
     meta_tex = r"\\[0.35em]".join(meta_lines)
+
+    today = date.today()
+    today_text = f"{today.year} 年 {today.month} 月 {today.day} 日"
 
     preamble = rf"""
 \documentclass[UTF8,fontset=none,zihao=-4,a4paper]{{ctexart}}
@@ -362,9 +363,9 @@ def make_tex(title: str, meta: list[str], body: list[str]) -> str:
 {meta_tex}
 \end{{tcolorbox}}
 \vfill
-{{\large 为家庭沟通与学术规划准备的阅读版\par}}
+{{\large 本地 Markdown 导出版\par}}
 \vspace{{0.4cm}}
-{{\small 生成日期：2026 年 4 月 14 日\par}}
+{{\small 生成日期：{today_text}\par}}
 \rmfamily
 \end{{titlepage}}
 \tableofcontents
@@ -374,14 +375,50 @@ def make_tex(title: str, meta: list[str], body: list[str]) -> str:
     return preamble + "\n".join(body) + ending
 
 
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        description="Export a local Markdown document to PDF via XeLaTeX."
+    )
+    parser.add_argument(
+        "--source",
+        required=True,
+        help="Path to the source Markdown file, relative to repo root or absolute.",
+    )
+    parser.add_argument(
+        "--output-name",
+        default=None,
+        help="Optional PDF file name. Defaults to <source_stem>.pdf.",
+    )
+    return parser.parse_args()
+
+
+def resolve_source(path_str: str) -> Path:
+    path = Path(path_str)
+    if not path.is_absolute():
+        path = (ROOT / path).resolve()
+    if not path.exists():
+        raise FileNotFoundError(f"Source markdown not found: {path}")
+    return path
+
+
 def main() -> None:
+    args = parse_args()
+    source = resolve_source(args.source)
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     TMP_DIR.mkdir(parents=True, exist_ok=True)
 
-    lines = SOURCE.read_text(encoding="utf-8").splitlines()
-    title, meta, body_lines = split_front_matter(lines)
+    output_name = args.output_name or f"{source.stem}.pdf"
+    if not output_name.lower().endswith(".pdf"):
+        output_name += ".pdf"
+
+    pdf_path = OUT_DIR / output_name
+    tex_path = TMP_DIR / f"{Path(output_name).stem}.tex"
+    built_pdf = TMP_DIR / f"{tex_path.stem}.pdf"
+
+    lines = source.read_text(encoding="utf-8").splitlines()
+    title, meta, body_lines = split_front_matter(lines, source.stem)
     tex = make_tex(title, meta, render_markdown_body(body_lines))
-    TEX_PATH.write_text(tex, encoding="utf-8")
+    tex_path.write_text(tex, encoding="utf-8")
 
     for _ in range(2):
         subprocess.run(
@@ -390,16 +427,15 @@ def main() -> None:
                 "-interaction=nonstopmode",
                 "-halt-on-error",
                 "-output-directory=.",
-                TEX_PATH.name,
+                tex_path.name,
             ],
             cwd=TMP_DIR,
             check=True,
         )
 
-    built_pdf = TMP_DIR / "strategy_book.pdf"
     if built_pdf.exists():
-        PDF_PATH.write_bytes(built_pdf.read_bytes())
-    print(PDF_PATH)
+        pdf_path.write_bytes(built_pdf.read_bytes())
+    print(pdf_path)
 
 
 if __name__ == "__main__":

@@ -12,6 +12,9 @@ __pycache__/
 tmp/
 output/
 参考资料/
+papers/internal/
+docs/git_workflow_guide.md
+十年发展战略说明书（家庭安心版+学术规划版）.md
 
 repro/*/results/**
 !repro/*/results/
