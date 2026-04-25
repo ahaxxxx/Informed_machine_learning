@@ -24,6 +24,7 @@ class NoteConfig:
     eyebrow: str
     summary: str
     source_label: str
+    legacy_paths: tuple[str, ...] = ()
 
 
 NOTES = [
@@ -34,6 +35,7 @@ NOTES = [
         eyebrow="Logic Rules / Chinese Notes",
         summary="围绕 Logic-Net-type methods 的 posterior、loss、feasible set 三条约束进入路径，补齐优化严格性、局限机制和研究延展。",
         source_label="Knowledge/logic_net_notes_zh.md",
+        legacy_paths=("Knowledge/logic_net_notes_zh.html",),
     ),
     NoteConfig(
         source=ROOT / "Knowledge" / "survey_notes_zh.md",
@@ -42,6 +44,7 @@ NOTES = [
         eyebrow="Survey / Chinese Notes",
         summary="把 informed machine learning taxonomy 拆成 knowledge source、representation、integration 三层接口，并沿主线展开逻辑规则、知识图谱与约束学习。",
         source_label="Knowledge/survey_notes_zh.md",
+        legacy_paths=("Knowledge/survey_notes_zh.html",),
     ),
 ]
 
@@ -254,6 +257,25 @@ def render_note_page(note: NoteConfig, article_html: str, toc_html: str) -> str:
 """
 
 
+def render_redirect_page(target_href: str, title: str) -> str:
+    return f"""<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="refresh" content="0; url={escape(target_href)}">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{escape(title)} | Redirect</title>
+    <script>
+      window.location.replace({target_href!r});
+    </script>
+  </head>
+  <body>
+    <p>正在跳转到新页面：<a href="{escape(target_href)}">{escape(target_href)}</a></p>
+  </body>
+</html>
+"""
+
+
 def generate_note_pages() -> None:
     NOTES_DIR.mkdir(parents=True, exist_ok=True)
     slug_map = {
@@ -268,7 +290,15 @@ def generate_note_pages() -> None:
         article_html = drop_leading_h1(article_html)
         toc_html = build_toc(article_html)
         page_html = render_note_page(note, article_html, toc_html)
-        (NOTES_DIR / f"{note.slug}.html").write_text(page_html, encoding="utf-8")
+        output_path = NOTES_DIR / f"{note.slug}.html"
+        output_path.write_text(page_html, encoding="utf-8")
+
+        for legacy_rel in note.legacy_paths:
+            legacy_path = DOCS_DIR / legacy_rel
+            legacy_path.parent.mkdir(parents=True, exist_ok=True)
+            target_href = "../notes/" + f"{note.slug}.html"
+            redirect_html = render_redirect_page(target_href, note.title)
+            legacy_path.write_text(redirect_html, encoding="utf-8")
 
 
 if __name__ == "__main__":
