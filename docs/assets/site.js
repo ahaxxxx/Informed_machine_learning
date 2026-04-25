@@ -8,6 +8,7 @@ for (const link of navLinks) {
   if (
     (currentPage === "home" && href.endsWith("index.html")) ||
     (currentPage === "reading-map" && href.endsWith("reading-map.html")) ||
+    (currentPage === "notes" && href.endsWith("notes.html")) ||
     (currentPage === "toys" && href.endsWith("toys.html")) ||
     (currentPage === "deploy" && href.endsWith("deploy.html"))
   ) {

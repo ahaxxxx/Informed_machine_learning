@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>研究笔记 | Informed Machine Learning</title>
+    <meta
+      name="description"
+      content="把 Knowledge 目录里的研究笔记发布成站内可读页面，支持公式、表格和长文阅读。"
+    >
+    <link rel="stylesheet" href="./assets/site.css">
+    <script defer src="./assets/site.js"></script>
+  </head>
+  <body data-page="notes">
+    <div class="page-shell">
+      <header class="site-header">
+        <a class="brand" href="./index.html">
+          <span class="brand-mark">IML</span>
+          <span class="brand-text">Informed Machine Learning</span>
+        </a>
+        <button class="nav-toggle" type="button" aria-expanded="false" aria-label="切换导航">
+          <span></span>
+          <span></span>
+        </button>
+        <nav class="site-nav">
+          <a href="./index.html">首页</a>
+          <a href="./reading-map.html">阅读路线</a>
+          <a href="./notes.html">研究笔记</a>
+          <a href="./toys.html">Toy 项目</a>
+          <a href="./deploy.html">部署说明</a>
+        </nav>
+      </header>
+
+      <main class="content-page">
+        <section class="page-intro">
+          <p class="eyebrow">Research Notes</p>
+          <h1>站内笔记入口</h1>
+          <p>
+            这些页面不是 GitHub 原文链接，而是由 `Knowledge/*.md` 自动生成的站内 HTML。
+            公式、表格、目录和长文排版都会在这里直接显示。
+          </p>
+        </section>
+
+        <section class="detail-grid">
+          <article class="detail-card">
+            <p class="card-tag">Logic Rules</p>
+            <h2>Logic-Net 深度结构解析</h2>
+            <p>
+              以 Hu et al. 2016 为主轴，把 Logic-Net-type methods 统一到 posterior / loss /
+              feasible set 三类约束接口，并展开优化机制和失效链条。
+            </p>
+            <div class="link-list">
+              <a href="./notes/logic-net-zh.html">站内阅读</a>
+              <a href="https://github.com/ahaxxxx/Informed_machine_learning/blob/main/Knowledge/logic_net_notes_zh.md">源 Markdown</a>
+            </div>
+          </article>
+
+          <article class="detail-card">
+            <p class="card-tag">Survey</p>
+            <h2>Informed ML Survey 中文笔记</h2>
+            <p>
+              以 taxonomy 为主线，拆解 knowledge source、representation、integration 三层接口，
+              并展开 logic rules 与 knowledge graphs 两条关键路径。
+            </p>
+            <div class="link-list">
+              <a href="./notes/survey-zh.html">站内阅读</a>
+              <a href="https://github.com/ahaxxxx/Informed_machine_learning/blob/main/Knowledge/survey_notes_zh.md">源 Markdown</a>
+            </div>
+          </article>
+
+          <article class="detail-card">
+            <p class="card-tag">Workflow</p>
+            <h2>如何更新站内笔记</h2>
+            <p>
+              继续在 `Knowledge/` 写作，然后运行一次 `python tools/generate_notes_site.py`，
+              再把生成结果推到 GitHub Pages 即可。
+            </p>
+            <div class="link-list">
+              <a href="https://github.com/ahaxxxx/Informed_machine_learning/blob/main/tools/generate_notes_site.py">生成脚本</a>
+            </div>
+          </article>
+        </section>
+      </main>
+
+      <footer class="site-footer">
+        <p>Pages 发布目录仍然是 <code>main /docs</code>，笔记源文件保留在 <code>Knowledge/</code>。</p>
+      </footer>
+    </div>
+  </body>
+</html>
