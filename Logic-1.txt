@@ -1,0 +1,1220 @@
+DL2: Training and Querying Neural Networks with Logic
+
+Marc Fischer 1 Mislav Balunović 1 Dana Drachsler-Cohen 1 Timon Gehr 1 Ce Zhang 1 Martin Vechev 1
+
+Abstract
+We present DL2, a system for training and querying neural networks with logical constraints. Using DL2, one can declaratively specify domain
+knowledge constraints to be enforced during training, as well as pose queries on the model to find
+inputs that satisfy a set of constraints. DL2 works
+by translating logical constraints into a loss function with desirable mathematical properties. The
+loss is then minimized with standard gradientbased methods. We evaluate DL2 by training
+networks with interesting constraints in unsupervised, semi-supervised and supervised settings.
+Our experimental evaluation demonstrates that
+DL2 is more expressive than prior approaches
+combining logic and neural networks, and its loss
+functions are better suited for optimization. Further, we show that for a number of queries, DL2
+can find the desired inputs in seconds (even for
+large models such as ResNet-50 on ImageNet).
+
+1. Introduction
+With the success of neural networks across a wide range
+of application domains, an important emerging challenge
+is creating better, more flexible mechanisms for experts
+to interact with the network. For example, one may wish
+the network to capture certain background knowledge not
+easily available as labeled training data or to inquire how the
+network’s decision changes under particular domain-specific
+inputs. Fundamentally, to cleanly capture such interactions,
+one needs some form of logical reasoning and a way to
+combine this reasoning with the neural network’s training
+and decision making procedures. Indeed, recent work (Hu
+et al., 2016; Xu et al., 2018) has started investigating novel
+combinations of neural and logical reasoning. However,
+while promising, as we show later, these approaches lack
+generality and cannot capture important use cases.
+1
+Department of Computer Science, ETH Zurich, Switzerland.
+Correspondence to: Marc Fischer <marc.fischer@inf.ethz.ch>.
+
+Proceedings of the 36 th International Conference on Machine
+Learning, Long Beach, California, PMLR 97, 2019. Copyright
+2019 by the author(s).
+
+We introduce a new method and system, called DL22
+(acronym for Deep Learning with Differentiable Logic),
+which can be used to: (i) query networks for inputs meeting
+logical constraints, and (ii) train networks to meet logical
+specifications, all in a declarative way. Our constraint language can express rich combinations of comparisons over
+inputs, neurons and outputs of neural networks using negations, conjunctions, and disjunctions. Thanks to its expressiveness, DL2 enables users to easily incorporate domain
+knowledge during training and to interact with the network
+using queries in order to inquire about its decision making.
+Technically, DL2 translates logical constraints into nonnegative loss functions with two key properties: (i) the loss
+is zero exactly if the constraints are satisfied, and (ii) the
+loss is differentiable almost everywhere. Combined, these
+properties enable us to train and query with constraints by
+minimizing a loss with off-the-shelf optimizers.
+Training with DL2 To make optimization tractable, we
+extract constraints on inputs that capture certain kinds of
+convex sets and use them as optimization constraints instead
+of including them in the optimization goal. We then optimize with projected gradient descent (PGD), which has
+already been shown successful in training with robustness
+constraints (Madry et al., 2018). The expressiveness of DL2
+along with tractable optimization with PGD enables us to
+train with new, interesting constraints. For example, we can
+declaratively express constraints over quantities which are
+not explicitly computed by the network, such as
+pθ (x)people <  ∨ pθ (x)people > 1 − .
+This constraint on the output activations of a CIFAR-100
+classifier pθ says that for a network input x, the probability
+of people, denoted pθ (x)people , is either very small or very
+large. As CIFAR-100 does not have a class people, we
+define it as a function of other output activations:
+pθ (x)people = pθ (x)baby + pθ (x)boy + pθ (x)woman + · · ·
+We show that DL2 can make misclassifications less severe
+(e.g., a boy is misclassified as a man instead of as a bicycle) and it can even increase the accuracy of CIFAR-100
+networks in the semi-supervised setting.
+2
+
+https://github.com/eth-sri/dl2
+
+DL2: Training and Querying Neural Networks with Logic
+
+Beyond classification tasks, DL2 can capture constraints
+arising in regression tasks.
+For example, GalaxyGAN (Schawinski et al., 2017), a generator of galaxy images, requires the network to respect constraints imposed by
+the underlying physical systems, e.g., flux: the sum of input
+activations should equal the sum of output activations. Instead of hardcoding such a constraint into the network in an
+ad hoc manner, this can be expressed with DL2 declaratively
+as sum(x) = sum(GalaxyGAN(x)).
+Global Training An important feature of DL2 is its ability to train with constraints that place restrictions on inputs
+outside the training set. Most prior work on training with
+constraints (e.g., Xu et al., 2018) focuses on the given training set to locally train the network to meet the constraints.
+With DL2, we can query for inputs outside the training set
+which violate the constraints, and use them to globally train
+the network. Prior work that trained on examples outside the
+training set was tailored either to specific constraints (Madry
+et al., 2018) or network types (Minervini et al., 2017). Our
+approach splits the task of global training between: (i) an optimizer, which trains the network to meet the constraints for
+the given inputs, and (ii) an adversary, which provides the
+optimizer with new inputs that aim to violate the constraints.
+To illustrate, consider the following Lipschitz condition:
+∀z ∈ B (x), z 0 ∈ B (x0 ). kf (z) − f (z 0 )k2 < Lkz − z 0 k2
+Here, for two inputs from the training set (x and x0 ), any
+pair of points in their respective -neighborhoods (z and
+z 0 ) must satisfy the condition. This constraint is inspired
+by recent works (e.g., Gouk et al., 2018; Balan et al., 2017)
+which have shown that neural networks are more stable if
+they satisfy the Lipschitz condition.
+
+DL2 loss and optimizes it with an off-the-shelf optimizer (LBFGS-B) to find solutions. Our language captures various
+prior works at the declarative level, including finding neurons responsible for a given prediction (Olah et al., 2018),
+inputs that differentiate two networks (Pei et al., 2017), and
+adversarial examples (e.g., Szegedy et al., 2014).
+Main Contributions The main contributions are:
+• An approach for training and querying neural networks
+with logical constraints, which translates constraints
+into a loss function with desirable properties.
+• A training procedure which extracts constraints on inputs that capture convex sets and includes them as PGD
+constraints, making optimization tractable.
+• A declarative language for querying neural network
+inputs, outputs, and internal neurons. Queries are compiled into a loss and optimized with L-BFGS-B.
+• An extensive evaluation demonstrating that DL2 is
+effective for querying and training neural networks.
+Among other experimental results, DL2 is shown to
+successfully train networks with constraints on inputs
+outside the training set.
+
+2. Related Work
+Constraints and Continuous Reasoning Several works
+integrate logical constraints and continuous reasoning. The
+closest ones to our setting are Probabilistic Soft Logic
+(PSL) (Kimmig et al., 2012; Hu et al., 2016), Xu et al.
+(2018), XSAT (Fu & Su, 2016), and Bach et al. (2017). We
+discuss these works in comparison to DL2 in Section 3.1.
+
+f i n d n[100]
+where n i n [-1, 1],
+c l a s s (M_NN1(M_ACGAN_G(n, 1))) = 7
+r e t u r n M_ACGAN_G(n, 1)
+
+Adversarial Examples and Training Adversarial example generation (Pei et al., 2017; Goodfellow et al., 2015) can
+be seen as a fixed query on the network, while adversarial
+training (Madry et al., 2018) aims to enforce a specific constraint. Both can be expressed in DL2. Most works aiming
+to train networks with logic impose soft constraints, often
+using additional loss terms (Pathak et al., 2015; Xu et al.,
+2018); Márquez-Neila et al. (2017) show that hard constraints have no empirical advantage over soft constraints.
+Similar to our training algorithm (Section 4), Minervini &
+Riedel (2018) find adversarial examples violating logical
+rules and incorporate them into a network’s training. Unlike our approach, theirs is specific to Natural Language
+Inference and uses discrete search to find counterexamples.
+
+This query looks for an input n ∈ R100 to the generator satisfying two constraints: its entries are between −1 and 1 (a
+domain constraint) and it results in the generator producing
+an image which it believes to be classified as 1 (enforced
+by M_ACGAN_G(n, 1)), but is classified by the network
+(M_NN1) as 7. DL2 automatically translates this query to a
+
+Knowledge Bases and Neural-Symbolic Approaches
+Combinations of neural networks and symbolic methods
+(Besold et al., 2017) as well as embedding logical relations
+into vector spaces for completion and querying have been
+studied extensively. Rocktäschel et al. (2015) translates
+logical rules into a loss in order to derive an embedding
+
+Querying with DL2 We also designed an SQL-like language which enables users to interact with the model by
+posing declarative queries. For example, consider the recent
+work of Song et al. (2018) which shows how to generate
+adversarial examples with AC-GANs (Odena et al., 2017).
+The generator is used to create images from a certain class
+(e.g., 1) which fool a classifier (to classify as, e.g., 7). With
+DL2, this can be phrased as the following query:
+
+DL2: Training and Querying Neural Networks with Logic
+
+for logical relations. Other works extend this approach to
+knowledge graphs (Guo et al., 2016) and scale to larger
+numbers of implication rules (Demeester et al., 2016). Guu
+et al. (2015) performs knowledge base queries by translating logical path queries into numerical computation over
+a learned model. Rocktäschel & Riedel (2017) introduces
+Neural Theorem Provers, which are neural networks that
+learn to prove basic theorems over (incomplete) knowledge
+bases. Yang et al. (2017) introduces Neural Logic Programming, a model able to learn logical rules for reasoning in a
+differentiable manner. Evans & Grefenstette (2018) show a
+similar approach, while thoroughly investigating underlying
+loss translations and showing robustness to noisy data.
+
+logically equivalent constraints before translation into loss:
+L(t = t0 )
+L(t < t0 )
+
+:= L(t ≤ t0 ∧ t0 ≤ t),
+:= L(t ≤ t0 ∧ t 6= t0 ).
+
+We next consider the case where ϕ is a boolean combination
+of constraints ϕ0 ∧ ϕ00 or ϕ0 ∨ ϕ00 :
+L(ϕ0 ∧ ϕ00 ) := L(ϕ0 ) + L(ϕ00 ),
+L(ϕ0 ∨ ϕ00 ) := L(ϕ0 ) · L(ϕ00 ).
+
+3. From Logical Constraints to Loss
+
+Note that L(ϕ0 ∧ ϕ00 ) = 0 if and only if L(ϕ0 ) = 0 and
+L(ϕ00 ) = 0, which by construction is true if ϕ0 and ϕ00
+are satisfied, and similarly L(ϕ0 ∨ ϕ00 ) = 0 if and only if
+L(ϕ0 ) = 0 or L(ϕ00 ) = 0.
+
+We now present our constraint language and show how to
+translate logical constraints into a (non-negative) loss.
+
+If ϕ is a negation ¬ψ, it is rewritten into a logically equivalent constraint before translation into loss:
+
+Logical Language Our language of logical constraints
+consists of boolean combinations of comparisons between
+terms. A term t is defined over variables x and neural network parameters θ. In our translation, terms are translated
+to themselves. Therefore, a term can be any real-valued
+function that might appear as a subexpression of a loss function, such as a constant or an output activation pθ (x)i of a
+neural network. We require terms to be differentiable almost
+everywhere, in both x and θ.
+
+L(¬(t = t0 ))
+L(¬(t ≤ t0 ))
+L(¬(t 6= t0 ))
+L(¬(t < t0 ))
+L(¬(ψ 0 ∧ ψ 00 ))
+L(¬(ψ 0 ∨ ψ 00 ))
+L(¬(¬ϕ0 ))
+
+:=
+:=
+:=
+:=
+:=
+:=
+:=
+
+L(t 6= t0 ),
+L(t0 < t),
+L(t = t0 ),
+L(t0 ≤ t),
+L(¬ψ 0 ∨ ¬ψ 00 ),
+L(¬ψ 0 ∧ ¬ψ 00 ),
+L(ϕ0 ).
+
+By construction, we obtain the following theorem:
+
+Two terms can be combined to form comparison constraints.
+For two terms t and t0 , we can obtain constraints t = t0 ,
+t ≤ t0 , t 6= t0 and t < t0 .
+
+Theorem 1 L(ϕ) = 0 if and only if ϕ is satisfied.
+
+A constraint ϕ is either a comparison constraint, a conjunction ϕ0 ∧ ϕ00 or a disjunction ϕ0 ∨ ϕ00 of two constraints ϕ0
+and ϕ00 , or a negation ¬ϕ of a constraint ϕ.
+
+We next discuss the works most closely related to ours,
+and contrast them with DL2. Probabilistic Soft Logic
+(PSL) (Kimmig et al., 2012) translates logical constraints
+into continuous almost-everywhere differentiable loss functions over [0, 1]. However, using this loss to find satisfying
+assignments with gradient methods can be futile, as the
+gradient may be zero. To illustrate, consider the toy example ϕ(x) := (x = ( 11 )). PSL translates this formula
+into the loss LPSL (ϕ)(x) = max{x0 + x1 − 1, 0} (it assumes x0 , x1 ∈ [0, 1]). Assuming optimization starts from
+x = ( 0.2
+0.2 ) (or any pair of numbers with x0 + x1 − 1 ≤ 0),
+the gradient is ∇x LPSL (ϕ)(x) = ( 00 ), which means the
+optimization cannot continue from this point, even though
+x is not a satisfying assignment to ϕ. In contrast, with our
+translation, we obtain L(ϕ)(x) = |x0 − 1| + |x1 − 1|, for
+
+which the gradient for the same x is ∇x L(ϕ)(x) = −1
+−1 .
+
+We write ϕ(x, θ) to evaluate a constraint at values x and θ.
+Translation into Loss To each constraint ϕ, we associate
+a corresponding non-negative loss function L(ϕ). We construct L(ϕ) such that it is differentiable in x and θ almost
+everywhere and such that we have L(ϕ)(x, θ) = 0 if and
+only if ϕ(x, θ) is satisfied.
+We define L(ϕ) recursively, based on the different possible shapes of ϕ. We first consider the case where ϕ is a
+comparison constraint t ≤ t0 or t 6= t0 :
+L(t ≤ t0 )
+L(t 6= t0 )
+
+:= max(t − t0 , 0),
+:= ξ · [t = t0 ].
+
+Here, ξ > 0 is a parameter to our translation and [t = t0 ] is
+an indicator function. Note that our definition of L(t 6= t0 ) is
+canonical, but there are other possible choices for L(t ≤ t0 ).
+Comparison constraints t = t0 and t < t0 are rewritten into
+
+3.1. Comparison of DL2 with Prior Works
+
+Evans & Grefenstette (2018) also analyse different standard
+choices (t-norms) encodings for boolean combinations and
+find multiplication to be best suited for gradient descent.
+Hu et al. (2016) build on PSL and present a teacher-student
+framework which distills rules into the training phase. The
+
+DL2: Training and Querying Neural Networks with Logic
+
+idea is to formulate rule satisfaction as a convex problem
+with a closed-form solution. However, this formulation is
+restricted to rules over inputs and output classes, and cannot
+express rules constraining the numerical values of output
+activations. In contrast, DL2 can express such constraints,
+e.g., p1 > p2 , which requires that the output activation for
+class 1 is greater than for class 2. Also, the convexity and
+existence of a closed-form solution stem from the linearity
+of the rules in the network’s output, meaning that non-linear
+constraints (e.g., Lipschitz condition, expressible with DL2)
+are fundamentally beyond the reach of this method. The
+work of Xu et al. (2018) similarly is restricted to constraints
+over output probabilities and is intractable for large constraints in many variables. Unlike DL2, both of these works
+do not support constraints for regression tasks.
+XSAT (Fu & Su, 2016) reduces the satisfiability of floatingpoint formulas to numerical optimization. To this end,
+XSAT also translates logical constraints into numerical loss.
+However, its atomic constraints are translated into a discrete, nowhere-differentiable loss based on floating-point
+representation, unamenable to gradient-based optimization.
+Bach et al. (2017) introduce max(`(x), 0) as a soft version
+of the hard linear constraint `(x) ≤ 0. DL2 uses the same
+approach for this type of constraint. However, DL2 is more
+general: it allows arbitrary boolean combinations of possibly non-linear constraints over variables with domain R,
+while Bach et al. (2017) only consider conjunctions of linear
+constraints over variables with domain [0, 1].
+
+4. Constrained Neural Networks
+In this section, we present our method for training neural
+networks with constraints.
+Training with Constraints For a distribution D, a set A
+and a constraint ϕ, we consider the maximization problem
+arg max Pr [∀z ∈ A. ϕ(x, z, θ)] .
+θ
+
+x∼D
+
+In other words, we want to find neural network weights
+θ such that the probability that the constraint ϕ(x, z, θ) is
+satisfied for all z is as large as possible. (We write ϕ(x, z, θ)
+for ϕ(y, θ), where y is the concatenation of x and z.) In
+practice, x usually describes one or more independent data
+set samples, and the set A is Rn for some n.
+Formulation as Nested Optimization We can equivalently minimize the probability that there is a counterexample violating the constraint ϕ:
+arg min Pr [∃z ∈ A. ¬ϕ(x, z, θ)] .
+θ
+
+x∼D
+
+If it exists, a counterexample can be found by maximizing
+the indicator function [¬ϕ(x, z, θ)]:
+
+
+arg min E max [¬ϕ(x, z, θ)] .
+z∈A
+
+x∼D
+
+θ
+
+Assume that for each given x and θ, we can find an optimal
+solution z ∗ (x, θ) to the inner maximization problem:
+z ∗ (x, θ) = arg max [¬ϕ(x, z, θ)].
+
+(1)
+
+z∈A
+
+Using z ∗ (x, θ), we can rephrase the original problem as
+arg max Pr [ϕ(x, z ∗ (x, θ), θ)].
+θ
+
+x∼D
+
+(2)
+
+The advantage of this formulation is that it splits the problem
+into two subproblems. The optimization can now be seen as
+a game between an optimizer that proposes neural network
+weights (2) and an adversary that finds counterexamples (1).
+Approximate Solutions based on Loss We approximately solve (1) and (2) by translating logical constraints
+into loss functions, as shown in Section 3. Using Theorem 1,
+we can show that the inner maximization problem (1) can
+be solved by minimizing the translated loss L(¬ϕ):
+z ∗ (x, θ) = arg min L(¬ϕ)(x, z, θ).
+
+(3)
+
+z∈A
+
+For a given z ∗ (x, θ), we approximate the outer optimization
+problem (2) as
+arg min E [L(ϕ)(x, z ∗ (x, θ), θ)] .
+θ
+
+(4)
+
+x∼T
+
+Here, x is an uniform sample from the training set T , which
+approximates D. We optimize the loss using Adam (Kingma
+& Ba, 2015).
+Constrained Optimization The loss in (3) can sometimes be difficult to optimize. To illustrate, assume that
+the random samples are input-label pairs (x, y) and consider the constraint
+ϕ((x, y), z, θ) = kx − zk∞ ≤  =⇒ logitθ (z)y > δ,
+where we write logitθ (z)y for the pre-softmax activation of
+the neural network parameterized by weights θ for class y
+when given input z. Our translation of this constraint to a
+loss produces L(¬ϕ)((x, y), z, θ) equal to
+max(0, ||x − z||∞ − ) + max(0, logitθ (z)y − δ).
+This function is difficult to minimize because the magnitude of the two terms is different. This causes first-order
+methods to optimize only a single term in an overly greedy
+
+DL2: Training and Querying Neural Networks with Logic
+f i n d i[32, 32, 3]
+where i i n [0, 255],
+c l a s s (NN(i)) = 9,
+ki - deerk∞ < 25,
+ki - deerk∞ > 5
+(a) Adversarial example.
+
+f i n d i[32, 32, 3]
+where i i n [0, 255],
+c l a s s (NN(i)) = 4,
+ki - deerk∞ < 25,
+NN(i).l1 [0, 1, 1, 31] = 0
+(b) Neuron deactivated.
+
+f i n d i[28, 28]
+where i i n [0, 1],
+c l a s s (NN1(i)) = 8,
+c l a s s (NN2(i)) = 9,
+i[0:9,:] = nine[0:9,:]
+(c) Diffing networks.
+
+Figure 1. DL2 queries enable to declaratively search for inputs satisfying constraints over networks.
+
+manner, as reported by Carlini & Wagner (2017). However,
+some constraints have a closed-form analytical solution, e.g.,
+max(0, ||x − z||∞ − ) can be minimized by projecting z
+into the L∞ ball with radius  around x. We identify logical constraints which restrict the variables z to convex sets
+that have an efficient algorithm for projection, e.g., line segments, L2 , L∞ or L1 balls (Duchi et al., 2008). We exclude
+such constraints from ¬ϕ and add them as constraints of the
+optimization. We thus rewrite (3) as
+∗
+
+z (x, θ) = arg min L(ψ)(x, z, θ).
+
+(5)
+
+z∈B
+
+Here, B is the respective convex set and ψ is ¬ϕ without
+the respective constraints. To solve (5) in our setting, we
+employ Projected Gradient Descent (PGD) which has been
+shown to have strong performance in the case of adversarial
+training with L∞ balls (Madry et al., 2018).
+Algorithm 1 Training with constraints.
+Input: Training set T , network parameters θ,
+constraint ϕ(x, z, θ)
+Extract convex set B and constraint ψ from constraint ϕ.
+for epoch = 1 to nepochs do
+Sample mini-batch of vectors x ∼ T .
+Using PGD, compute
+z ∗ ≈ arg minz∈B L(ψ)(x, z, θ) for each x.
+Perform GD update with ∇θ L(ϕ)(x, z ∗ , θ).
+end for
+
+Training procedure Algorithm 1 shows our training procedure. We first form a mini-batch of random samples from
+the training set T . And then an approximate solution for (3)
+using the formulation in (5). This solution is given to the
+optimizer, which improves the network weights to optimize
+(4). Note that if z is 0-dimensional, the adversary becomes
+trivial and the loss can be computed directly.
+
+5. Querying Networks
+Building on DL2, we design a declarative language for
+querying neural networks. Interestingly, many questions
+investigated by prior work can now be phrased as DL2
+queries: neurons responsible for a prediction (Olah et al.,
+
+2018), inputs that differentiate networks (Pei et al., 2017),
+and adversarial examples (e.g., Szegedy et al., 2014). We
+support the following class of queries:
+f i n d z1 [m1 ], . . . , zk [mk ]
+where ϕ(z 1 , . . . , z k )
+[ i n i t z1 = c1 , . . . , zk = ck ]
+[ r e t u r n t(z̄)]
+
+Here, the find clause defines a number of variables with a
+shape given in parentheses. The where clause defines the
+constraint. The init clause defines initial values for (part or
+all of) the variables, and the return clause defines a target
+term to compute at the end of search; if missing, z1 , . . . , zk
+are returned. Neural networks and constants can be defined
+outside of the queries. They are then automatically loaded
+at query time. The constraints are equally expressive as the
+fragment described in Section 3, but our language supports
+additional features for improved convenience. For example,
+the user can specify and manipulate tensors. In queries, we
+write comma (,) for conjunction (∧); in for box constraints
+and class for returning the network’s output label on a given
+input, i.e., the class with the maximum probability.
+The constraint class (NN(x)) = y is equivalent to
+Vk
+i=1,i6=y p(x)i < p(x)y , where p(x)i denotes the probability which NN returns for class i out of k classes.
+Examples Figure 1 shows a few interesting queries. The
+first two are defined over networks trained for CIFAR-10,
+while the last is for MNIST. The first query attempts to find
+an adversarial example i of shape (32, 32, 3), classified as a
+truck (class 9) where the distance of i to a given deer image
+(deer) is between 5 and 25, with respect to the infinity
+norm. The second query attempts to find an i which is classified as a deer, while a specific neuron in a convolutional
+layer (accessed by indices) is deactivated. The last query
+attempts to find an i classified differently by two networks
+where part of i is fixed to pixels of the image nine.
+Solving Queries As with training, we compile the constraints into a loss. The loss is minimized either until it
+reaches zero or until timeout. Unlike training, we perform
+optimization with L-BFGS-B, which is slower but more
+sophisticated than standard gradient descent. We can afford
+
+DL2: Training and Querying Neural Networks with Logic
+
+this because the optimized loss function does not depend on
+an entire batch of training samples.
+Query Optimization Here, we discuss how loss compilation can be optimized for L-BFGS-B. While our translation
+is defined for arbitrarily large constraints, in general, it is
+hard to optimize for a loss with many terms. Thus, we make
+the loss smaller by extracting box constraints out of the
+expression. The loss is then compiled from the remaining
+constraints. Extracted box constraints are passed to the LBFGS-B solver which is then used to find the minimum of
+the loss. This enables us to exclude a dominant part of ϕ
+from the loss, making our loss amenable to optimization.
+
+Table 1. Semi-supervised training.
+Method
+
+Accuracy (%)
+
+Constraint Accuracy (%)
+
+Baseline
+DL2
+
+45.20
+47.40
+
+74.80
+90.85
+
+Table 2. Unsupervised learning.
+Approach
+
+MSE
+
+Supervised (regression)
+Unsupervised (baseline)
+Unsupervised (with DL2)
+
+0.0895
+0.6680
+0.1030
+
+To illustrate this benefit, consider the query in Figure 1a.
+Its box constraint, i in [0,255], is syntactic sugar for a
+conjunction with 2 · 32 · 32 · 3 = 6, 144 atomic constraints
+(two for each variable, i.e., for every index j, we have ij ≥ 0
+and ij ≤ 255). In contrast, the second constraint consists of
+9 atomic constraints (one for each possible class different
+from 9), and the third and fourth constraints are already
+atomic. By excluding the box constraints from the loss,
+the obtained loss consists of only 11 terms, making it more
+amenable to gradient-based optimization. If a solution is
+not found after a certain time, we restart L-BFGS-B and
+reinitialize the variables using MCMC sampling.
+
+Semi-supervised Learning For semi-supervised learning, we focus on the CIFAR-100 dataset, and split the training set into labeled, unlabeled and validation set in the ratio
+20/60/20. In the spirit of the experiments of Xu et al. (2018),
+we consider the constraint which requires that the probabilities of groups of classes have either very high probability or
+very low probability. A group consists of classes of a similar
+type (e.g., the classes baby, boy, girl, man, and woman are
+part of the people group), and the group’s probability is the
+sum of its classes’ probabilities. Formally, our constraint
+consists of 20 groups and its structure is
+
+To prevent numerical issues, constraints using the class keyword are implemented using logits rather than probabilities.
+
+(ppeople < ∨ppeople > 1−)∧...∧(ptrees < ∨ptrees > 1−),
+
+Further,
+V we translate L∞ -constraints such as kak∞ < b
+into i |ai | < b. This type of constraint often appears
+in adversarial example queries. The original formulation
+only provides gradient information for the largest element
+of a, while the new one provides information to potentially
+all. This allows for much faster optimization of these types
+of queries. The ultimate loss is very similar to the one in
+(Carlini & Wagner, 2017), which employs a similar trick.
+
+6. Experimental Evaluation
+We now present a thorough experimental evaluation showing
+the effectiveness of DL2 for querying and training neural networks with logical constraints. Our system is implemented
+in PyTorch (Paszke et al., 2017) and evaluated on an Nvidia
+GTX 1080 Ti and Intel Core i7-7700K with 4.20 GHz.
+
+for a small . Each group includes classes that belong to a
+similar family, for example ppeople = pbaby + pboy + pgirl +
+pman + pwoman . The intuition is that we want to constrain the
+neural network to put (almost) all probability mass into one
+group (e.g. people). Note that this constraint is beyond the
+reach of prior works (for reasons discussed in Section 3.1).
+We train a network with the normal cross-entropy loss on
+the labeled data and the DL2 encoding of the constraint on
+the unlabeled data (weighted by a parameter λ). For further
+implementation details, see Appendix A.
+
+6.1. Training with DL2
+
+Table 1 shows the prediction and constraint accuracies on
+the test set of our approach and a baseline that trains only
+with cross-entropy. We found that training with our loss
+yields a significantly higher constraint accuracy. Further, the
+information from the DL2 constraint on the unlabeled data
+allows the model to obtain 2.2% higher prediction accuracy.
+
+We evaluated DL2 on various tasks (supervised, semisupervised and unsupervised learning) across four datasets:
+MNIST, FASHION (Xiao et al., 2017), CIFAR-10, and
+CIFAR-100 (Krizhevsky & Hinton, 2009). In all experiments, we added a cross-entropy term to our loss, to optimize for high prediction accuracy. For each experiment, we
+describe the additional logical constraints.
+
+Unsupervised Learning We next consider a regression
+task in an unsupervised setting. The task is training an MLP
+(multilayer perceptron) to predict the minimum distance
+from a source node to every node in an unweighted graph
+G = (V, E). Assuming the source node is 0, the minimum
+distance is a function with certain properties, which can be
+
+DL2: Training and Querying Neural Networks with Logic
+Accuracy
+1.0
+
+Table 3. Supervised learning, P/C is prediction/constraint accuracy.
+MNIST
+
+FASHION
+
+C-Acc, DL2
+P-Acc, Baseline
+P-Acc, DL2
+
+0.8
+
+CIFAR-10
+0.6
+
+RobustnessT
+G
+
+Robustness
+LipschitzT
+LipschitzG
+
+C-similarityT
+C-similarityG
+SegmentG
+
+P
+C
+P
+C
+P
+C
+P
+C
+P
+C
+P
+C
+P
+C
+
+Baseline
+
+DL2
+
+Baseline
+
+DL2
+
+Baseline
+
+DL2
+
+99.57
+97.90
+99.56
+00.00
+99.54
+09.65
+99.62
+00.00
+98.27
+17.58
+
+98.26
+99.41
+99.60
+99.96
+97.90
+99.90
+99.56
+100.00
+97.60
+42.19
+
+92.33
+94.50
+92.56
+00.00
+92.66
+05.62
+92.79
+00.00
+88.58
+21.24
+
+88.13
+98.36
+92.93
+99.91
+89.08
+99.78
+81.10
+98.64
+87.77
+53.16
+
+92.11
+91.39
+92.18
+00.00
+91.39
+05.00
+92.11
+00.00
+91.69
+93.67
+91.89
+50.47
+-
+
+89.46
+95.46
+92.18
+99.95
+90.57
+99.41
+92.05
+99.55
+91.91
+99.68
+88.99
+99.42
+-
+
+Lipschitz T, FASHION
+
+0.4
+0.2
+C-Acc, Baseline
+0.0
+
+0
+
+50
+
+100
+
+150
+
+200
+
+1.0
+P-Acc, Baseline
+P-Acc, DL2
+
+0.8
+
+Segment G, FASHION
+
+0.6
+
+C-Acc, DL2
+0.4
+C-Acc, Baseline
+
+0.2
+0.0
+
+0
+
+50
+
+100
+Epoch
+
+150
+
+200
+
+Figure 2. P/C Accuracy during training.
+
+encoded into the following logical constraint:
+
+d(0) = 0 ∧
+
+^
+v∈V
+
+
+d(v) ≥ 0 ∧ 
+
+
+_
+
+(v,v 0 )∈E
+v 0 6=0
+
+
+∧
+
+
+
+
+d(v 0 ) = d(v) + 1
+
+
+
+^
+
+d(v 0 ) ≤ d(v) + 1 .
+
+(v,v 0 )∈E
+
+We train the model in an unsupervised fashion with the DL2
+loss. We generate random connected graphs with 15 vertices
+and split them into training (300), validation (150) and test
+(150) sets. As an unsupervised baseline, we consider a
+model which always predicts d(v) = 1. We also train
+a supervised model with the mean squared error (MSE)
+loss. Table 2 shows the MSE of each approach. Results
+indicate that our approach obtains an error very close to the
+supervised model, despite not using any labels.
+Supervised Learning We consider two types of constraints for supervised learning: global constraints, which
+have (possibly more than one) universally quantified variable z, and training set constraints, where all variables refer
+to samples from the training set (no quantified variable z).
+Note that no prior work applies to global constraints, in general. Furthermore, because of limitations of their encoding,
+as explained in Section 3.1, prior work is not able to handle the complex training set constraints considered in our
+experiments (e.g., comparisons between output activations).
+We write random samples as x and y, to denote inputs from
+the training set with their corresponding label.
+For local robustness (Szegedy et al., 2014), the training set
+constraint says that if two random inputs from the dataset
+
+are close (their distance is less than a given 1 , with respect
+to the L2 norm), then the KL-divergence of their respective
+output activations is smaller than 2 :
+kx − x0 k2 < 1 =⇒ KL(pθ (x)||pθ (x0 )) < 2
+(RobustnessT )
+Our global robustness constraint requires that for any input
+x with a classification y, inputs in its  neighborhood which
+are valid images (pixels are between 0 and 1), have a high
+probability for y. For numerical stability, instead of directly
+checking the probability, we check that the corresponding
+log-probability is larger than a given threshold δ:
+∀z ∈ B (x) ∩ [0, 1]d . log pθ (z)y > δ
+
+(RobustnessG )
+
+Here, B (x) is an L∞ -ball around x with radius .
+Similarly, we have two definitions for the Lipschitz condition. The training set constraint requires that for random
+input pairs from the training set, the distance between their
+output logits is less than the Lipschitz constant L times the
+distance between the inputs:
+klogitθ (x) − logitθ (x0 )k2 < Lkx − x0 k2
+
+(LipschitzT )
+
+The global version poses the same constraint for valid images in the neighborhood of x and x0 :
+∀z ∈ B (x) ∩ [0, 1]d , z 0 ∈ B (x0 ) ∩ [0, 1]d .
+klogitθ (z) − logitθ (z 0 )k2 < Lkz − z 0 k2
+(LipschitzG )
+We also consider C-similarity, a training set constraint providing additional domain knowledge to CIFAR-10 networks.
+The constraint requires that inputs classified as a car have a
+
+DL2: Training and Querying Neural Networks with Logic
+Time [s]
+100
+
+10
+
+f i n d i[100]
+where i i n [-1,1],
+c l a s s (N1 (G(i)))=c1 ,
+N1 (G(i)).p[c1 ]> 0.3,
+c l a s s (N2 (G(i)))=c2 ,
+N2 (G(i)).p[c2 ]> 0.3
+
+1
+
+0.1
+
+1
+
+2
+
+3
+
+4
+
+5
+
+6
+MNIST
+
+7
+
+8
+
+9
+
+FASHION
+
+10
+CIFAR10
+
+11
+
+12
+GTSRB
+
+13
+
+14
+
+15
+
+16
+
+17
+
+18
+
+IMAGENET
+
+Figure 3. (left) The average execution time per query in seconds. Unsuccessful queries reached a timeout of 120s. (right) The template for
+query 15. N1 , N2 denote a classifier neural network, c1 , c2 are classes (c1 6= c2 ), and G is a generator neural network.
+
+higher activation for the label truck than for the label dog:
+
+6.2. Querying with DL2
+
+y = car =⇒ logitθ (x)truck > logitθ (x)dog + δ
+(C-similarityT )
+The global constraint is similar but applied for valid images
+in the -neighborhood of x:
+
+Next, we evaluate DL2 on the task of querying with constraints. We considered five image datasets, each with different well-established neural network architectures. For each,
+we considered at least two classifiers; and for some a generator and a discriminator (trained using GAN, Goodfellow
+et al., 2014) — Table 6, Appendix B, provides details about
+these networks. Our benchmark consists of 18 template
+queries (provided in Appendix B), which are instantiated
+with different networks, classes, and images. Figure 3 (right)
+shows a template query, which attempts to search for an input to a generator G such that its output is classified into two
+different classes c1 and c2 by classifiers N1 and N2 . For each
+dataset, we instantiate each query template into 10 queries.
+The queries run until a correct solution is found or until a 2
+minute timeout is reached. Figure 3 (left) shows the average
+run-times of each query template and a dataset. The results
+show that our system usually finds solutions, and usually
+completes within 40 seconds. It is unknown whether queries
+that were not solved in fact do have a solution. We conclude
+that successful executions terminate relatively quickly and
+that DL2 scales well to multiple large networks (e.g., for
+ImageNet). Appendix B and Appendix C provide further
+details and experiments.
+
+∀z ∈ B (x) ∩ [0, 1]d . y = car =⇒
+logitθ (z)truck > logitθ (z)dog + δ
+
+(C-similarityG )
+
+Finally, we consider a Segment constraint which requires
+that if an input z is on the line between two inputs x and
+x0 with interpolation parameter λ ∈ [0, 1], then its output
+probabilities are on the line between the output probabilities
+with the same interpolation parameter λ:
+∀z. z = λ · x + (1 − λ) · x0 =⇒
+H(pθ (z), λ · pθ (x) + (1 − λ) · pθ (x0 )) < δ (SegmentG )
+Here, H denotes cross-entropy. We note that the constraints
+for C-similarity and SegmentG are shortened versions of
+the evaluated ones. The full constraints are provided in
+Appendix A.
+Table 3 shows the prediction accuracy (P) and the constraint
+accuracy (C) when training with (i) cross-entropy only (CE)
+and (ii) CE and the constraint. Results indicate that DL2 can
+significantly improve constraint accuracy (from 0% to 99%
+for LipschitzG ), while prediction accuracy slightly decreases.
+This decrease is expected in light of a recent work by Tsipras
+et al. (2018), which shows that adversarial robustness comes
+with decreased prediction accuracy. We suspect that we
+observe a similar phenomenon here. Figure 2 shows how the
+prediction and constraint accuracies change during training,
+for two constraints, on the FASHION dataset.
+In terms of run-time overhead, training set constraints (T)
+only incur a small overhead per epoch (roughly 2x), while
+global constraints (G) incur a higher overhead (roughly 10x)
+as the projection steps can be expensive. Detailed run-times
+are provided in Table 4, Appendix A.
+
+7. Conclusion
+We presented DL2, a method and system for training and
+querying neural networks with logical constraints. DL2
+supports expressive logical constraints and provides translation rules into a differentiable-almost-everywhere loss,
+which is zero exactly for those inputs that satisfy the constraints. To make training tractable, we handle input constraints which capture convex sets through PGD. We also
+introduce a declarative language for querying networks utilzing the translation from logic to loss. Experimental results
+indicate that DL2 can be used effectively for both training
+and querying neural networks with additional constraints.
+
+DL2: Training and Querying Neural Networks with Logic
+
+References
+Bach, S. H., Broecheler, M., Huang, B., and Getoor, L.
+Hinge-loss markov random fields and probabilistic soft
+logic. Journal of Machine Learning Research, 18:109:1–
+109:67, 2017. URL http://jmlr.org/papers/
+v18/15-631.html.
+Balan, R., Singh, M., and Zou, D. Lipschitz properties for deep convolutional networks.
+CoRR,
+abs/1701.05217, 2017. URL http://arxiv.org/
+abs/1701.05217.
+Besold, T. R., d’Avila Garcez, A. S., Bader, S., Bowman, H., Domingos, P. M., Hitzler, P., Kühnberger, K.,
+Lamb, L. C., Lowd, D., Lima, P. M. V., de Penning,
+L., Pinkas, G., Poon, H., and Zaverucha, G. Neuralsymbolic learning and reasoning: A survey and interpretation. CoRR, abs/1711.03902, 2017. URL http:
+//arxiv.org/abs/1711.03902.
+Carlini, N. and Wagner, D. A. Towards evaluating the
+robustness of neural networks. In 2017 IEEE Symposium
+on Security and Privacy, SP 2017, San Jose, CA, USA,
+May 22-26, 2017, pp. 39–57. IEEE Computer Society,
+2017. doi: 10.1109/SP.2017.49. URL https://doi.
+org/10.1109/SP.2017.49.
+
+2016, Proceedings, Part II, volume 9780 of Lecture
+Notes in Computer Science, pp. 187–209. Springer, 2016.
+doi: 10.1007/978-3-319-41540-6\ 11. URL https://
+doi.org/10.1007/978-3-319-41540-6_11.
+Goodfellow, I. J., Pouget-Abadie, J., Mirza, M., Xu, B.,
+Warde-Farley, D., Ozair, S., Courville, A. C., and Bengio, Y. Generative adversarial nets. In Ghahramani, Z.,
+Welling, M., Cortes, C., Lawrence, N. D., and Weinberger, K. Q. (eds.), Advances in Neural Information
+Processing Systems 27: Annual Conference on Neural Information Processing Systems 2014, December 813 2014, Montreal, Quebec, Canada, pp. 2672–2680,
+2014. URL http://papers.nips.cc/paper/
+5423-generative-adversarial-nets.
+Goodfellow, I. J., Shlens, J., and Szegedy, C. Explaining and
+harnessing adversarial examples. In Bengio, Y. and LeCun, Y. (eds.), 3rd International Conference on Learning
+Representations, ICLR 2015, San Diego, CA, USA, May
+7-9, 2015, Conference Track Proceedings, 2015. URL
+http://arxiv.org/abs/1412.6572.
+Gouk, H., Frank, E., Pfahringer, B., and Cree, M. J. Regularisation of neural networks by enforcing lipschitz continuity. CoRR, abs/1804.04368, 2018. URL http:
+//arxiv.org/abs/1804.04368.
+
+Demeester, T., Rocktäschel, T., and Riedel, S. Lifted rule
+injection for relation embeddings. In Su, J., Carreras,
+X., and Duh, K. (eds.), Proceedings of the 2016 Conference on Empirical Methods in Natural Language Processing, EMNLP 2016, Austin, Texas, USA, November
+1-4, 2016, pp. 1389–1399. The Association for Computational Linguistics, 2016. URL http://aclweb.
+org/anthology/D/D16/D16-1146.pdf.
+
+Guo, S., Wang, Q., Wang, L., Wang, B., and Guo, L. Jointly
+embedding knowledge graphs and logical rules. In Su, J.,
+Carreras, X., and Duh, K. (eds.), Proceedings of the 2016
+Conference on Empirical Methods in Natural Language
+Processing, EMNLP 2016, Austin, Texas, USA, November 1-4, 2016, pp. 192–202. The Association for Computational Linguistics, 2016. URL http://aclweb.
+org/anthology/D/D16/D16-1019.pdf.
+
+Duchi, J. C., Shalev-Shwartz, S., Singer, Y., and Chandra, T. Efficient projections onto the l1 -ball for learning in high dimensions. In Cohen, W. W., McCallum, A., and Roweis, S. T. (eds.), Machine Learning,
+Proceedings of the Twenty-Fifth International Conference (ICML 2008), Helsinki, Finland, June 5-9, 2008,
+volume 307 of ACM International Conference Proceeding Series, pp. 272–279. ACM, 2008. doi: 10.
+1145/1390156.1390191. URL https://doi.org/
+10.1145/1390156.1390191.
+
+Guu, K., Miller, J., and Liang, P. Traversing knowledge
+graphs in vector space. In Màrquez, L., Callison-Burch,
+C., Su, J., Pighin, D., and Marton, Y. (eds.), Proceedings of the 2015 Conference on Empirical Methods
+in Natural Language Processing, EMNLP 2015, Lisbon, Portugal, September 17-21, 2015, pp. 318–327.
+The Association for Computational Linguistics, 2015.
+URL http://aclweb.org/anthology/D/D15/
+D15-1038.pdf.
+
+Evans, R. and Grefenstette, E. Learning explanatory rules
+from noisy data. J. Artif. Intell. Res., 61:1–64, 2018.
+doi: 10.1613/jair.5714. URL https://doi.org/10.
+1613/jair.5714.
+Fu, Z. and Su, Z. Xsat: A fast floating-point satisfiability solver. In Chaudhuri, S. and Farzan, A. (eds.),
+Computer Aided Verification - 28th International Conference, CAV 2016, Toronto, ON, Canada, July 17-23,
+
+He, K., Zhang, X., Ren, S., and Sun, J. Deep residual learning for image recognition. In 2016 IEEE
+Conference on Computer Vision and Pattern Recognition, CVPR 2016, Las Vegas, NV, USA, June 27-30,
+2016, pp. 770–778. IEEE Computer Society, 2016. doi:
+10.1109/CVPR.2016.90. URL https://doi.org/
+10.1109/CVPR.2016.90.
+Hu, Z., Ma, X., Liu, Z., Hovy, E. H., and Xing, E. P. Harnessing deep neural networks with logic rules. In Proceedings
+
+DL2: Training and Querying Neural Networks with Logic
+
+of the 54th Annual Meeting of the Association for Computational Linguistics, ACL 2016, August 7-12, 2016, Berlin,
+Germany, Volume 1: Long Papers. The Association for
+Computer Linguistics, 2016. URL http://aclweb.
+org/anthology/P/P16/P16-1228.pdf.
+Kimmig, A., Bach, S., Broecheler, M., Huang, B., and
+Getoor, L. A short introduction to probabilistic soft logic.
+In Proceedings of the NIPS Workshop on Probabilistic
+Programming: Foundations and Applications, pp. 1–4,
+2012. URL http://stephenbach.net/files/
+kimmig-probprog12.pdf.
+Kingma, D. P. and Ba, J. Adam: A method for stochastic optimization. 2015. URL http://arxiv.org/abs/
+1412.6980.
+Krizhevsky, A. and Hinton, G. Learning multiple layers of
+features from tiny images. Technical report, 2009.
+Madry, A., Makelov, A., Schmidt, L., Tsipras, D., and
+Vladu, A. Towards deep learning models resistant to
+adversarial attacks. In 6th International Conference on
+Learning Representations, ICLR 2018, Vancouver, BC,
+Canada, April 30 - May 3, 2018, Conference Track
+Proceedings. OpenReview.net, 2018. URL https:
+//openreview.net/forum?id=rJzIBfZAb.
+Márquez-Neila, P., Salzmann, M., and Fua, P. Imposing hard
+constraints on deep networks: Promises and limitations.
+CoRR, abs/1706.02025, 2017. URL http://arxiv.
+org/abs/1706.02025.
+Minervini, P. and Riedel, S. Adversarially regularising neural NLI models to integrate logical background knowledge. In Korhonen, A. and Titov, I.
+(eds.), Proceedings of the 22nd Conference on Computational Natural Language Learning, CoNLL 2018,
+Brussels, Belgium, October 31 - November 1, 2018,
+pp. 65–74. Association for Computational Linguistics, 2018. URL https://aclanthology.info/
+papers/K18-1007/k18-1007.
+Minervini, P., Demeester, T., Rocktäschel, T., and Riedel,
+S. Adversarial sets for regularising neural link predictors. 2017. URL http://auai.org/uai2017/
+proceedings/papers/306.pdf.
+Odena, A., Olah, C., and Shlens, J. Conditional image
+synthesis with auxiliary classifier gans. 70:2642–2651,
+2017. URL http://proceedings.mlr.press/
+v70/odena17a.html.
+Olah, C., Satyanarayan, A., Johnson, I., Carter, S., Schubert,
+L., Ye, K., and Mordvintsev, A. The building blocks of
+interpretability. Distill, 2018. doi: 10.23915/distill.00010.
+https://distill.pub/2018/building-blocks.
+
+Paszke, A., Gross, S., Chintala, S., Chanan, G., Yang, E.,
+DeVito, Z., Lin, Z., Desmaison, A., Antiga, L., and Lerer,
+A. Automatic differentiation in pytorch. Technical report,
+2017.
+Pathak, D., Krähenbühl, P., and Darrell, T. Constrained
+convolutional neural networks for weakly supervised
+segmentation. In 2015 IEEE International Conference
+on Computer Vision, ICCV 2015, Santiago, Chile, December 7-13, 2015, pp. 1796–1804. IEEE Computer
+Society, 2015. doi: 10.1109/ICCV.2015.209. URL
+https://doi.org/10.1109/ICCV.2015.209.
+Pei, K., Cao, Y., Yang, J., and Jana, S. Deepxplore: Automated whitebox testing of deep learning systems. In
+Proceedings of the 26th Symposium on Operating Systems
+Principles, Shanghai, China, October 28-31, 2017, pp. 1–
+18, 2017. doi: 10.1145/3132747.3132785. URL http:
+//doi.acm.org/10.1145/3132747.3132785.
+Rocktäschel, T. and Riedel, S. End-to-end differentiable
+proving. In Guyon, I., von Luxburg, U., Bengio, S.,
+Wallach, H. M., Fergus, R., Vishwanathan, S. V. N.,
+and Garnett, R. (eds.), Advances in Neural Information Processing Systems 30: Annual Conference on Neural Information Processing Systems 2017, 4-9 December 2017, Long Beach, CA, USA, pp. 3791–3803, 2017.
+URL http://papers.nips.cc/paper/6969end-to-end-differentiable-proving.
+Rocktäschel, T., Singh, S., and Riedel, S. Injecting logical
+background knowledge into embeddings for relation extraction. In Mihalcea, R., Chai, J. Y., and Sarkar, A. (eds.),
+NAACL HLT 2015, The 2015 Conference of the North
+American Chapter of the Association for Computational
+Linguistics: Human Language Technologies, Denver, Colorado, USA, May 31 - June 5, 2015, pp. 1119–1129.
+The Association for Computational Linguistics, 2015.
+URL http://aclweb.org/anthology/N/N15/
+N15-1118.pdf.
+Schawinski, K., Zhang, C., Zhang, H., Fowler, L., and Krishnan Santhanam, G. Galaxygan: Generative adversarial
+networks for recovery of galaxy features. Astrophysics
+Source Code Library, 2017.
+Simonyan, K. and Zisserman, A. Very deep convolutional networks for large-scale image recognition. CoRR,
+abs/1409.1556, 2014. URL http://arxiv.org/
+abs/1409.1556.
+Song, Y., Shu, R., Kushman, N., and Ermon, S. Generative
+adversarial examples. CoRR, abs/1805.07894, 2018. URL
+http://arxiv.org/abs/1805.07894.
+Szegedy, C., Zaremba, W., Sutskever, I., Bruna, J., Erhan,
+D., Goodfellow, I. J., and Fergus, R. Intriguing prop-
+
+DL2: Training and Querying Neural Networks with Logic
+
+erties of neural networks. In 2nd International Conference on Learning Representations, ICLR 2014, Banff, AB,
+Canada, April 14-16, 2014, Conference Track Proceedings, 2014. URL http://arxiv.org/abs/1312.
+6199.
+Tsipras, D., Santurkar, S., Engstrom, L., Turner, A., and
+Madry, A. There is no free lunch in adversarial robustness (but there are unexpected benefits). CoRR,
+abs/1805.12152, 2018. URL http://arxiv.org/
+abs/1805.12152.
+Xiao, H., Rasul, K., and Vollgraf, R. Fashion-mnist: a
+novel image dataset for benchmarking machine learning
+algorithms. CoRR, abs/1708.07747, 2017. URL http:
+//arxiv.org/abs/1708.07747.
+Xu, J., Zhang, Z., Friedman, T., Liang, Y., and den Broeck,
+G. V. A semantic loss function for deep learning with
+symbolic knowledge. In Dy, J. G. and Krause, A. (eds.),
+Proceedings of the 35th International Conference on Machine Learning, ICML 2018, Stockholmsmässan, Stockholm, Sweden, July 10-15, 2018, volume 80 of Proceedings of Machine Learning Research, pp. 5498–5507.
+PMLR, 2018. URL http://proceedings.mlr.
+press/v80/xu18h.html.
+Yang, F., Yang, Z., and Cohen, W. W. Differentiable
+learning of logical rules for knowledge base reasoning.
+In Guyon, I., von Luxburg, U., Bengio, S., Wallach,
+H. M., Fergus, R., Vishwanathan, S. V. N., and
+Garnett, R. (eds.), Advances in Neural Information
+Processing Systems 30: Annual Conference on Neural
+Information Processing Systems 2017, 4-9 December
+2017, Long Beach, CA, USA, pp. 2316–2325, 2017.
+URL http://papers.nips.cc/paper/6826differentiable-learning-of-logicalrules-for-knowledge-base-reasoning.
+
+

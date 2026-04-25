@@ -1,0 +1,7005 @@
+Applied Soft Computing Journal 179 (2025) 113276
+
+Contents lists available at ScienceDirect
+
+Applied Soft Computing
+journal homepage: www.elsevier.com/locate/asoc
+
+Uncertainty measurement for hybrid data using 𝐾𝑁𝑁-neighbourhood rough
+set model: Application to attribute reduction based on overlap degree
+Bozhan Li a , Qin Huang b
+
+,∗, Zhaowen Li c , Yonghua Lin b
+
+a
+
+School of Mathematics and Information Science, Guangxi University, Nanning, Guangxi 530004, PR China
+Key Laboratory of Applied Mathematics in Fujian Province University, Fujian Key Laboratory of Financial Information Processing, Putian
+University, Putian, Fujian 351100, PR China
+c
+School of Computer Science, Guangdong University of Science and Technology, Dongguan, Guangdong 523083, PR China
+b
+
+ARTICLE
+
+INFO
+
+Keywords:
+Hybrid information system
+KNN -neighbourhood rough set model
+N -rough set
+Uncertainty measurement
+Attribute reduction
+Overlap degree
+
+ABSTRACT
+Neighbourhood rough set (𝑁-rough set) model is extensively applied to work with numerical data. However,
+most 𝑁-rough set models cannot effectively classify categories when they are used to depict classification
+ability. 𝑘-nearest neighbour rule (𝐾𝑁𝑁 rule) is an important classification technique. This paper introduces
+𝐾𝑁𝑁-neighbourhood rough set model by combining 𝑁-rough set model with 𝐾𝑁𝑁 rule, investigates
+uncertainty measurement (UM) for hybrid data using this model, and considers its application to attribute
+reduction based on overlap degree. First, a specific distance function is constructed to describe the difference
+between two information values with respect to each attribute in a hybrid information system (HIS), the
+distance matrix is defined to establish the neighbourhood relation on the object set, and the neighbourhood
+classes where a variable parameter is selected to adjust the size of the neighbourhood classes are built. 𝑁-rough
+set model is introduced using the neighbourhood classes. The 𝑘-nearest neighbour in an HIS is then proposed
+on the basis of 𝐾𝑁𝑁 rule, and 𝐾𝑁𝑁-neighbourhood rough set model is presented by combining 𝑁-rough set
+model with the 𝑘-nearest neighbour. On the basis of 𝐾𝑁𝑁-neighbourhood rough set model, the information
+granules in an HIS are constructed, and four UMs in an HIS are presented. Next, an experiment is carried out to
+select the UM with the optimal performance. Furthermore, an attribute reduction algorithm is designed using
+the selected UM. Finally, the designed algorithm is evaluated using a series of experiments implemented on
+real-world datasets. The experimental results demonstrate the statistical advantages of the designed algorithm
+over the other six reduction algorithms.
+
+1. Introduction
+1.1. Research background
+Uncertainty, which encompasses fuzziness, vagueness, randomness,
+incompleteness, and inconsistency, is prevalent in the real world. Thus,
+uncertainty measurement (UM) is becoming increasingly important.
+UM plays a crucial role in gauging the uncertainty of an information
+system (IS), and numerous researchers have undertaken thorough studies on this subject. For example, Pawlak [1] suggested approximate
+accuracy and roughness by using upper and lower approximation sets.
+Miao [2] employed information entropy to quantify the uncertainty of
+an IS. In a related context, Liang et al. [3] conducted a study on UM
+in an incomplete IS. Wang et al. [4] delved into innovative UM by
+means of Dempster–Shafer evidence theory. Zeng et al. [5] discussed
+UM based on a Gaussian kernel in the context of a hybrid information
+system (HIS).
+
+𝑘-nearest neighbour rule (𝐾𝑁𝑁 rule) is recognised as one of the
+most influential classification algorithms in the field of machine learning [6]; its working principle is explained below. First, an appropriate
+number of neighbours, denoted as 𝑘, which represents the quantity of
+nearest neighbours considered during prediction, is selected. Then, for
+each given object, a predefined distance function is utilised to calculate
+the distance between that object and all other objects in the training
+dataset [7]. Next, 𝐾𝑁𝑁 rule identifies the 𝑘-nearest neighbour based
+on the computed distances. Finally, for classification tasks, a majority
+voting approach is applied, wherein the predicted result is determined
+by the most frequently occurring class among the 𝑘-nearest neighbours.
+For regression tasks, the prediction is obtained by taking the average
+of the values from the 𝑘-nearest neighbour.
+Pawlak proposed rough set theory (RST) [1], which aims to develop
+a granular view for interpreting and solving problems with uncertain
+
+∗ Corresponding author.
+
+E-mail addresses: libozhanpak@126.com (B. Li), qinhuang780@126.com (Q. Huang), lizhaowen8846@126.com (Z. Li), lyh040@163.com (Y. Lin).
+https://doi.org/10.1016/j.asoc.2025.113276
+Received 17 March 2024; Received in revised form 9 April 2025; Accepted 29 April 2025
+Available online 29 May 2025
+1568-4946/© 2025 Elsevier B.V. All rights are reserved, including those for text and data mining, AI training, and similar technologies.
+
+Applied Soft Computing 179 (2025) 113276
+
+B. Li et al.
+
+knowledge [8]. Rough set analysis requires no additional information,
+external parameters, models, functions, grades, or subjective interpretations to ascertain set membership. Instead, it relies solely on the
+information presented within the given data. Currently, RST has found
+applications in various fields, such as outlier detection [9], UM [10],
+and attribute reduction [11]. While the classical rough set model is
+well suited for symbolic or categorical data processing because of
+its dependence on an equivalence relation, a challenge arises when
+dealing with numerical data. In such cases, the method resorts to
+discretisation, resulting in the regrettable consequences of information
+loss and diminished efficiency.
+To overcome the shortcomings of RST, 𝑁-rough set is proposed,
+which can work with numerical data. It focuses on the interactions
+among objects within their respective neighbourhoods, thereby conducting a more detailed analysis of the dataset’s structure. Initially,
+𝑁-rough set is based on attributes such as the similarity (or distance
+function) in attribute values and topological relationships to define the
+similarity measure between objects. Using this similarity measure, the
+model establishes neighbourhood relations. Neighbourhood relations
+play a critical role in 𝑁-rough set. However, the neighbourhood relation may not accurately capture the difference between objects. The
+reason is that objects with a neighbourhood relation to the target object
+still have differences, even if they are equidistant from the target point.
+Recently, many studies have been conducted to improve 𝑁-rough set
+in a variety of ways. These methods include the extended 𝑁-rough set
+[12], the variable radius 𝑁-rough set [13], the shared 𝑁-rough set
+[14], the pseudo-label 𝑁-rough set [15], and the adaptive 𝑁-rough set
+[16]. Additionally, 𝐾𝑁𝑁 rule has been incorporated into 𝑁-rough set
+using various approaches, such as the 𝑘-nearest 𝑁-rough set [17] and
+the weighted 𝑘-nearest 𝑁-rough set [18].
+Attribute reduction, also known as feature selection, is a vital
+data preprocessing technique. These methods can be classified into
+three categories: filter, wrapper, and embedded methods [19]. Filter
+methods score and rank features based on criteria such as distance,
+information, dependence, and consistency measures. Wrapper methods optimise feature subsets using classifiers, making them generally
+inefficient. Embedded methods integrate feature selection within the
+learning algorithm’s training process. However, using rough set models
+for attribute reduction is a unique approach that typically does not fall
+into the categories of filter methods, wrapper methods, or embedded
+methods. Rough set models simplify datasets by identifying important
+attributes and reducing unnecessary redundancy. This method emphasises handling uncertainty and vagueness through UMs and decision
+tables. Attribute reduction methods based on rough set models use the
+dataset itself and do not rely on specific classifiers. These methods have
+many advantages over the three feature selection methods mentioned
+above, such as being very versatile, being easy to expand, and allowing
+autonomous selection of the number of retained attributes. There are
+numerous attribute reduction methods based on various rough set models, where each is designed to address the limitations of 𝑁-rough set
+and handle different datasets. For example, Wang et al. [20] designed
+an attribute reduction algorithm using local condition entropy based on
+𝑁-rough set, which is capable of handling hybrid data. Additionally,
+Wang et al. [17] proposed the 𝑘-nearest 𝑁-rough set and developed
+an attribute reduction algorithm that handles numerical data using the
+positive region as the UM. For ease of presentation, Table 1 summarises
+other works on attribute reduction in recent years, along with the
+data processing scope and applicable UM of the attribute reduction
+algorithms in the corresponding articles.
+
+granules, and a corresponding attribute reduction algorithm is developed using granular computing. However, with a fixed neighbourhood
+radius, the classification ability of 𝑁-rough set is influenced by different
+information spaces [17]. Similarly, Hu et al. [30] observed that when
+the neighbourhood radius is too large, the granularity of neighbourhood information becomes excessively large, resulting in a reduction in
+the approximation ability of attribute subsets to decision classes. Conversely, if the neighbourhood radius is too small, then the granularity of
+neighbourhood information becomes too small, potentially enhancing
+the approximation ability of attribute subsets to decision classes but
+also increasing the risk of overfitting.
+Based on the above analysis, we can conclude that (1) the same
+neighbourhood radius cannot make 𝑁-rough set model suitable for
+datasets with different information distributions and that (2) having a
+neighbourhood radius that is too large or too small can cause various
+negative impacts. To overcome these two issues, we consider introducing 𝐾𝑁𝑁 rule into 𝑁-rough set model, integrating it to form a new
+rough set model named the 𝐾𝑁𝑁-neighbourhood rough set model.
+Before we further analyse why the 𝐾𝑁𝑁-neighbourhood rough set
+model can overcome these two issues, we introduce surrounded objects
+and isolated objects. In a certain decision table, objects with different
+labels are distributed in the information space 𝑀. For convenience in
+later descriptions, we define [𝑢]𝑑 = [𝑣]𝑑 if 𝑢 and 𝑣 have the same label.
+Additionally, we define 𝑑(𝑢, 𝑣) as the distance between 𝑢 and 𝑣 in the
+information space 𝑀, 𝛿(𝑢, 𝜆) = {𝑣 ∈ 𝑀 ∶ 𝑑(𝑢, 𝑣) ≤ 𝜆}, and |𝛿(𝑢, 𝜆)| is the
+cardinality of 𝛿(𝑢, 𝜆). With these declarations, let us now formally define
+two important object types: surrounded objects and isolated objects.
+An object 𝑢 ∈ 𝑀 is called a surrounded object if there exists a radius
+𝜆 such that ∀ 𝑣 ∈ 𝛿(𝑢, 𝜆), [𝑢]𝑑 = [𝑣]𝑑 . Moreover, |𝛿(𝑢, 𝜆)| should be
+greater than or equal to a positive number so that 𝛿(𝑢, 𝜆) has not only
+one object 𝑢. An object 𝑢 ∈ 𝑀 is called an isolated object if there
+exists a radius 𝜆1 such that 𝑣 ∈ 𝛿(𝑢, 𝜆1 ) − {𝑢} implies [𝑢]𝑑 ≠ [𝑣]𝑑 and
+|𝛿(𝑢, 𝜆2 )| = 1 for 𝜆2 < 𝜆1 . These two types of objects can induce three
+distinct types of patterns in the decision table. A label in the decision
+table is defined as surrounded category if all objects with this type of
+label are surrounded objects. A label in the decision table is an isolated
+category if all the objects with this type of label are isolated objects. A
+label in the decision table is defined as a mixed category if it is neither
+surrounded category nor an isolated category.
+The motivation for KNN-neighbourhood rough set model is illustrated using three decision tables, each containing only ‘‘+’’ and ‘‘−’’
+labels. In Fig. 1(a), all ‘‘+’’ objects (e.g., 𝑢1 ) are surrounded, making
+‘‘+’’ a surrounded category. In Fig. 1(b), all ‘‘−’’ objects (e.g., 𝑢2 ) are
+isolated, so ‘‘−’’ is an isolated category. In Fig. 1(c), the ‘‘+’’ category is
+mixed because it includes both an isolated object (𝑢3 ) and a surrounded
+object (𝑢4 ).
+The relevant concepts have been clarified in advance. Now, we
+formally analyse why 𝐾𝑁𝑁-neighbourhood rough set model can solve
+the above two issues. First, introducing 𝐾𝑁𝑁 rule into 𝑁-rough set can
+better handle the scenario of surrounded categories in the information
+space than can the sole application of 𝑁-rough set. For example,
+consider the scenario of a surrounded category, as shown in Fig. 1(a),
+where the red circle illustrates the neighbourhood of 𝑢1 , and the black
+circle represents the 𝑘-nearest neighbours of 𝑢1 , where pick 𝑘 = 4. Fig.
+1(a) intuitively shows that 𝑁-rough set may classify 𝑢1 as a boundary
+region. However, utilising 𝑘-nearest neighbour of 𝑢1 can lead to better
+classification, correctly assigning it to ‘‘+’’. Second, 𝑁-rough set model
+can better handle the scenario of isolated categories in the information
+space than can the sole application of 𝐾𝑁𝑁 rule. For example, in
+an isolated category scenario, as shown in Fig. 1(b), the red circle
+illustrates the neighbourhood of 𝑢2 , whereas the black circle denotes
+the 𝑘-nearest neighbour of 𝑢2 , where pick 𝑘 = 4. In this situation,
+if we use 𝐾𝑁𝑁 rule, then 𝑢2 will be incorrectly classified as ‘‘+’’,
+whereas if we use 𝑁-rough set model, then 𝑢2 is correctly classified
+as ‘‘−’’. Notably, according to the subsequent introduction of 𝐾𝑁𝑁neighbourhood rough set, we can infer that when 𝑘 is too large, it
+degenerates into 𝑁-rough set and can better identify isolated objects.
+
+1.2. Motivation
+𝑁-rough set model uses a distance function to measure the distance
+between two objects under each categorical and numerical attribute.
+It then establishes a neighbourhood for each object using a neighbourhood radius. The established neighbourhoods are treated as knowledge
+2
+
+Applied Soft Computing 179 (2025) 113276
+
+B. Li et al.
+Table 1
+Comparison of this paper with other works on attribute reduction.
+Year
+
+Literature
+
+Data type
+
+Model or Method
+
+UM or criterion in attribute reduction
+
+2019
+2019
+2020
+2022
+2023
+2023
+2023
+2023
+2024
+2024
+2024
+2024
+2024
+2024
+2024
+2024
+
+[20]
+[17]
+[21]
+[22]
+[23]
+[12]
+[24]
+[25]
+[26]
+[27]
+[16]
+[28]
+[18]
+[14]
+[19]
+[29]
+
+Hybrid data
+Numerical data
+Categorical data
+Dynamic ordered data
+Categorical data
+Numerical data
+Numerical data
+Partially labelled data
+Numerical data
+Numerical data
+Numerical data
+Numerical data
+Numerical data
+Numerical data
+Numerical data
+Hybrid data
+
+𝑁-rough set
+𝑘-nearest 𝑁-rough set
+Fuzzy rough computation model
+Fuzzy dominance 𝑁-rough set
+Pawlak rough set
+The extended 𝑁-rough set
+Class-specific feature selection
+𝑁-rough set
+Distance metric learning-based multi-granularity 𝑁-rough set
+The granule-specific feature selection
+The adaptive 𝑁-rough set
+𝑁-rough set model based on neighbourhood equivalence relation
+Weighted 𝑘-nearest 𝑁-rough set
+The shared 𝑁-rough set
+Granular-ball 𝑁-rough set
+Fuzzy evidence theory
+
+Local conditional entropy
+Positive region
+Significance degree
+Significance degree
+Conditional information entropy
+Dependence degree
+Dependence degree
+Significance degree
+Dependence degree
+Significance degree
+Dependence degree
+Dependence degree
+Significance degree
+Dependence degree
+Positive region samples
+Fuzzy evidence function
+
+Hybrid data
+
+𝐾𝑁𝑁-neighbourhood rough set
+
+Dependence degree
+
+Our
+
+In other words, we can draw the following conclusions. First, when
+the information space is composed of surrounded categories, 𝐾𝑁𝑁neighbourhood rough set model is more capable of correctly identifying
+surrounded objects than 𝑁-rough set model is. Second, when the
+information space is composed of isolated categories, by setting the
+parameter 𝑘 large enough, 𝐾𝑁𝑁-neighbourhood rough set model will
+degrade into 𝑁-rough set model, thereby better identifying isolated
+objects. Third, when the information space is composed of mixed
+categories, 𝐾𝑁𝑁-neighbourhood rough set model can select an appropriate combination of parameters (𝑘, 𝜆) to identify as many surrounded
+objects and isolated objects as possible.
+Furthermore, Our approach can capture and handle global outlier
+scenarios from noise by relying on strict definitions. Specifically, the
+definitions of surrounded and isolated objects require that a surrounded
+object must have a neighbourhood (with a prescribed radius and minimum cardinality) in which all objects share the same label, while an
+isolated object must have a neighbourhood (with a minimum cardinality) where, excluding itself, there exists at least one object that has a
+different label. If an object is merely a global outlier, then it will remain
+alone (within an suitable chosen neighbourhood radius). In this case,
+it cannot meet the definition of a surrounded object (it does not have a
+minimum cardinality) or isolated object (it does not have other objects,
+except for itself). Consequently, the label of such an outlier would not
+be recognised as a surrounded object or an isolated oject.
+
+and consistent results in attribute reduction, thereby enhancing the
+overall effectiveness of the method.
+(3) We design an attribute reduction algorithm based on the selected
+UM and overlap degree and then compare the designed algorithm with
+six existing algorithms in terms of classification accuracy and F1 score
+to demonstrate its statistically significant advantage.
+
+1.3. Contributions
+
+2.1. Fundamentals of classification
+
+This paper integrates the strengths of both 𝑁-rough set and 𝐾𝑁𝑁rule and then combines the two methodologies by introducing 𝐾𝑁𝑁neighbourhood rough set model. We investigate UM in an HIS using
+this model and apply it to attribute reduction based on overlap degree.
+Drawing from the aforementioned research motivation, this paper
+makes the following contributions:
+(1) This paper introduces 𝐾𝑁𝑁-rule into 𝑁-rough set model, resulting in the development of 𝐾𝑁𝑁-neighbourhood rough set model.
+This model is particularly effective in identifying isolated objects and
+surrounded objects within a dataset. By incorporating 𝐾𝑁𝑁-rule, the
+model can better handle local neighbourhood relationships, which
+traditional rough set models may overlook. This advancement improves
+the model’s ability to capture subtle patterns in the data, making it
+more robust for real-world applications where isolated or surrounded
+objects are critical for accurate analysis.
+(2) Utilising 𝐾𝑁𝑁-neighbourhood rough set model, four UMs are
+formulated: the dependence degree, conditional information entropy,
+conditional information amount and conditional discrimination index.
+Among these, the UM with the best performance is selected by dispersion analysis. By choosing the most stable UM, we ensure more reliable
+
+Classification is a type of pattern analysis. When using a model to
+find patterns in data, feeding it raw data may not result in satisfactory
+performance; the reason is that the model has the challenging task of
+extracting useful information from the data. Therefore, the raw data
+should be preprocessed to retain the most valuable information. In this
+way, the model can achieve better performance and reduce the time
+required for training.
+Classification is the process of categorising data into predefined
+classes or groups based on their features; it is widely used in various
+fields, such as image recognition, spam detection, and medical diagnosis. The process involves training a model on a labelled dataset,
+where the classes are already known, and then using this trained model
+to predict the class of new, unseen data. Effective classification relies
+on the quality of the features extracted from the raw data, which is
+why preprocessing steps such as attribute reduction, normalisation, and
+feature extraction are crucial. These steps help highlight the relevant
+information and reduce noise, making it easier for the model to identify
+the underlying patterns and relationships within the data.
+By ensuring that the data fed into the classification model are
+clean and well structured, the overall accuracy and efficiency of the
+
+1.4. Structure and organisation
+The subsequent sections of this paper are structured as follows.
+Section 2 presents a comprehensive review of the background. Section 3
+derives a 𝐾𝑁𝑁-neighbourhood rough set model. Section 4 introduces
+four UMs designed to quantify the uncertainty inherent in an HIS.
+Section 5 conducts an experimental analysis to evaluate the feasibility
+of these UMs and identifies the one that demonstrates optimal performance. The chosen UM is then utilised to formulate an attribute
+reduction algorithm. The performance of the designed algorithm is
+then compared with that of six alternative algorithms through a series of experiments, which demonstrate its effectiveness and superior
+performance. Section 6 provides a comprehensive summary of the key
+findings.
+Fig. 2 illustrates the procedural flow of this paper.
+2. Background
+
+3
+
+Applied Soft Computing 179 (2025) 113276
+
+B. Li et al.
+
+Fig. 1. Examples of category patterns: surrounded, isolated, and mixed.
+
+Fig. 2. Schematic diagram illustrating the process of this paper.
+
+classification process can be significantly improved. This leads to more
+reliable and faster predictions, making the model more practical and
+useful in real-world applications.
+
+Assume that 𝑈 is a finite set of objects and that 𝐴 represents a finite
+set of attributes. (𝑈 , 𝐴) denotes an information system (IS) where if
+𝑎 ∶ 𝑈 → 𝑉𝑎 is a function of 𝑎 ∈ 𝐴, then 𝑉𝑎 = {𝑎(𝑢) ∶ 𝑢 ∈ 𝑈 }.
+(𝑈 , 𝐴, 𝑑) is characterised as an incomplete decision information
+system (IDIS) when (𝑈 , 𝐴 ∪ {𝑑}) constitutes an IS and 𝑑 represents a
+decision attribute. In this context, 𝑎 ∈ 𝐴 such that ∗∈ 𝑉𝑎 , whereas
+∗∉ 𝑉𝑑 , where ‘‘ ∗ ’’ signifies a missing value.
+∀ 𝑎 ∈ 𝐴, denote
+
+2.2. Fundamentals of an HIS
+In this subsection, an HIS and 𝑁-rough set model are reviewed.
+Let 𝑈 , 2𝑈 , |𝑋|, and N represent a finite set, the power set of 𝑈 , the
+cardinality of 𝑋 ∈ 2𝑈 , and the set of natural numbers, respectively. Put
+𝑈 = {𝑢1 , 𝑢2 , … , 𝑢𝑛 };
+𝛿 = 𝑈 × 𝑈 , ▵= {(𝑢, 𝑢) ∶ 𝑢 ∈ 𝑈 }.
+
+𝑉𝑎∗ = {𝑎(𝑢) ∶ 𝑢 ∈ 𝑈 , 𝑎(𝑢) ≠∗}.
+
+(2.3)
+
+(2.1)
+Definition 2.1 ([5]). Consider (𝑈 , 𝐴, 𝑑) as an IDIS. (𝑈 , 𝐴, 𝑑) is referred
+to as an HIS if 𝐴 = 𝐴𝑛 ∪ 𝐴𝑐 , where 𝐴𝑛 and 𝐴𝑐 represent numerical and
+categorical attributes, respectively.
+
+(2.2)
+4
+
+Applied Soft Computing 179 (2025) 113276
+
+B. Li et al.
+
+⎧0,
+⎪
+⎪1 − 1∗ 2 ,
+|𝑉𝑎 |
+⎪
+⎪1 − 1 ,
+⎪
+|𝑉𝑎∗ |
+⎪
+1
+⎪1 − |𝑉 ∗ | ,
+𝑎
+⎪
+⎪0,
+⎪
+𝑠
+⎪ ∑
+⎪ 1 | 𝑁𝑖 (𝑎,𝑢) − 𝑁𝑖 (𝑎,𝑣) |,
+𝑁(𝑎,𝑣)
+⎪ 2 𝑖=1 𝑁(𝑎,𝑢)
+⎪
+=⎨
+⎪ 𝑠
+⎪ 1 ∑ 𝑁𝑖 (𝑎,𝑢) 𝑁𝑖 (𝑎,𝑣)
+⎪ 2 | 𝑁(𝑎,𝑢) − 𝑁(𝑎,𝑣) |,
+⎪ 𝑖=1
+⎪
+⎪
+⎪
+|𝑎(𝑢)−𝑎(𝑣)|
+⎪
+,
+⎪ 𝑚𝑎𝑥{𝑎(𝑥)∶𝑥∈𝑈 }−𝑚𝑖𝑛{𝑎(𝑥)∶𝑥∈𝑈 }
+⎪
+⎪
+⎪
+|𝑎(𝑢)−𝑎(𝑣)|
+⎪ 𝑚𝑎𝑥{𝑎(𝑥)∶𝑥∈𝑈 }−𝑚𝑖𝑛{𝑎(𝑥)∶𝑥∈𝑈 } ,
+⎪
+⎩
+
+Table 2
+An HIS.
+
+𝑢1
+𝑢2
+𝑢3
+𝑢4
+𝑢5
+𝑢6
+
+Headache (𝑎1 )
+
+Runny nose (𝑎2 )
+
+Temperature (𝑎3 )
+
+Symptom (𝑑)
+
+Sick
+Middle
+No
+*
+No
+No
+
+Yes
+No
+No
+No
+Yes
+*
+
+37.8
+39.5
+37.2
+*
+36.4
+37.1
+
+Common cold
+Influenza
+Health
+Health
+Influenza
+Health
+
+Example 2.2. Table 2 presents an HIS (𝑈 , 𝐴, 𝑑), where 𝑈 = {𝑢1 , 𝑢2 , … ,
+𝑢7 }, 𝐴 = 𝐴𝑐 ∪ 𝐴𝑛 , 𝐴𝑐 = {𝑎1 , 𝑎2 }, 𝐴𝑛 = {𝑎3 } and 𝑑 represent the decision
+attributes.
+Example 2.3 (Building Upon the Illustration in Example 2.2).
+𝑉𝑎∗ = {𝑆𝑖𝑐𝑘, 𝑀𝑖𝑑𝑑𝑙𝑒, 𝑁𝑜}, 𝑉𝑎∗ = {𝑁𝑜, 𝑌 𝑒𝑠},
+1
+2
+𝑉𝑎∗ = {37.8, 39.5, 37.2, 36.4, 37.1},
+3
+
+𝑉𝑑 = {𝐶𝑜𝑚𝑚𝑜𝑛 𝑐𝑜𝑙𝑑, 𝐼𝑛𝑓 𝑙𝑢𝑒𝑛𝑧𝑎, 𝐻𝑒𝑎𝑙𝑡ℎ}.
+For an HIS (𝑈 , 𝐴, 𝑑) with |𝑉𝑑 | = 𝑠. Given that 𝑎 ∈ 𝐴𝑐 and 𝑢 with
+𝑎(𝑢) ≠∗. Denote
+
+Put
+𝑁(𝑎, 𝑢) = |{𝑣 ∈ 𝑈 ∶ 𝑎(𝑣) = 𝑎(𝑢)}|,
+𝑁𝑖 (𝑎, 𝑢) = |{𝑣 ∈ 𝑈 ∶ 𝑎(𝑣) = 𝑎(𝑢), 𝑑(𝑣) = 𝑑𝑖 }|.
+Clearly,
+𝑠
+∑
+
+𝑎 ∈ 𝐴, 𝑎(𝑢) ≠∗, 𝑎(𝑣) =∗, 𝑑(𝑢) ≠ 𝑑(𝑣);
+𝑎 ∈ 𝐴, 𝑎(𝑢) =∗, 𝑎(𝑣) ≠∗, 𝑑(𝑢) ≠ 𝑑(𝑣);
+𝑎 ∈ 𝐴, 𝑎(𝑢) ≠∗, 𝑎(𝑣) ≠∗, 𝑎(𝑢) = 𝑎(𝑣);
+𝑎 ∈ 𝐴𝑐 , 𝑎(𝑢) ≠∗, 𝑎(𝑣) ≠∗, 𝑎(𝑢) ≠ 𝑎(𝑣),
+𝑑(𝑢) = 𝑑(𝑣);
+𝑎 ∈ 𝐴𝑐 , 𝑎(𝑢) ≠∗, 𝑎(𝑣) ≠∗, 𝑎(𝑢) ≠ 𝑎(𝑣),
+𝑑(𝑢) ≠ 𝑑(𝑣);
+𝑎 ∈ 𝐴𝑛 , 𝑎(𝑢) ≠∗, 𝑎(𝑣) ≠∗, 𝑎(𝑢) ≠ 𝑎(𝑣),
+𝑑(𝑢) = 𝑑(𝑣);
+𝑎 ∈ 𝐴𝑛 , 𝑎(𝑢) ≠∗, 𝑎(𝑣) ≠∗, 𝑎(𝑢) ≠ 𝑎(𝑣),
+𝑑(𝑢) ≠ 𝑑(𝑣).
+
+When computing the distance between two non-missing values in
+a categorical attribute, the calculation combines the information provided by the two non-missing values in that attribute and a decision attribute. When computing the distance between two non-missing values
+in a numerical attribute, the calculation involves the absolute difference
+between the two non-missing values in that attribute and the range of
+values in that attribute. Despite having greater computational complexity than other distance functions, this distance function can provide a
+more accurate description of the distance between two objects, offering
+significant theoretical advantages and broader applicability.
+
+𝑉𝑑 = {𝑑1 , 𝑑2 , … , 𝑑𝑠 }.
+
+𝑁(𝑎, 𝑢) =
+
+𝑎 ∈ 𝐴, 𝑎(𝑢) =∗ 𝑜𝑟 𝑎(𝑣) =∗, 𝑑(𝑢) = 𝑑(𝑣);
+𝑎 ∈ 𝐴, 𝑎(𝑢) =∗, 𝑎(𝑣) =∗, 𝑑(𝑢) ≠ 𝑑(𝑣);
+
+Example 2.6 (Building Upon the Illustration in Example 2.4).
+(1) Since 𝑎1 ∈ 𝐴, 𝑎1 (𝑢3 ) =∗ 𝑜𝑟 𝑎1 (𝑢4 ) =∗, 𝑑(𝑢3 ) = 𝑑(𝑢4 ), according to
+Definition 2.5, we have 𝜌(𝑎1 (𝑢3 ), 𝑎1 (𝑢4 )) = 0;
+(2) Note that 𝑎1 ∈ 𝐴, 𝑎1 (𝑢2 ) ≠∗, 𝑎1 (𝑢4 ) =∗, 𝑑(𝑢2 ) ≠ 𝑑(𝑢4 ). According
+to Definition 2.5, 𝜌(𝑎1 (𝑢2 ), 𝑎1 (𝑢4 )) = 1 − |𝑉1∗ | = 23 ≈ 0.667;
+
+𝑁𝑖 (𝑎, 𝑢).
+
+𝑖=1
+
+Example 2.4 (Building Upon the Illustration in Example 2.3).
+
+𝑎1
+
+𝑉𝑑 = {𝑑1 = 𝐶𝑜𝑚𝑚𝑜𝑛 𝑐𝑜𝑙𝑑, 𝑑2 = 𝐼𝑛𝑓 𝑙𝑢𝑒𝑛𝑧𝑎, 𝑑3 = 𝐻𝑒𝑎𝑙𝑡ℎ};
+
+(3) Since 𝑎1 ∈ 𝐴, 𝑎1 (𝑢5 ) ≠∗, 𝑎1 (𝑢6 ) ≠∗, 𝑎1 (𝑢5 ) = 𝑎1 (𝑢6 ), according to
+Definition 2.5, we have 𝜌(𝑎1 (𝑢5 ), 𝑎1 (𝑢6 )) = 0;
+(4) Note that 𝑎1 ∈ 𝐴𝑐 , 𝑎1 (𝑢2 ) ≠∗, 𝑎1 (𝑢3 ) ≠∗, 𝑎1 (𝑢2 ) ≠ 𝑎1 (𝑢3 ), 𝑑(𝑢2 ) ≠
+
+𝑁(𝑎1 , 𝑢3 ) = |{𝑢 ∈ 𝑈 ∶ 𝑎1 (𝑢) = 𝑎1 (𝑢3 ) = 𝑁𝑜}|
+= |{𝑢3 , 𝑢5 , 𝑢6 }| = 3;
+
+𝑑(𝑢3 ). According to Definition 2.5, 𝜌(𝑎1 (𝑢2 ), 𝑎1 (𝑢3 )) = (| 01 − 03 | + | 11 − 13 | +
+| 01 − 23 |)∕2 = 23 ≈ 0.667;
+(5) Since 𝑎3 ∈ 𝐴𝑛 , 𝑎3 (𝑢1 ) ≠∗, 𝑎3 (𝑢2 ) ≠∗, 𝑎3 (𝑢1 ) ≠ 𝑎3 (𝑢2 ), 𝑑(𝑢1 ) ≠
+
+{
+𝑁2 (𝑎1 , 𝑢3 ) = | 𝑢 ∈ 𝑈 ∶ 𝑎1 (𝑢) = 𝑎1 (𝑢3 ) = 𝑁𝑜,
+}
+𝑑(𝑢) = 𝑑2 = 𝐼𝑛𝑓 𝑙𝑢𝑒𝑛𝑧𝑎 | = |{𝑢5 }| = 1;
+
+𝑑(𝑢2 ), according to Definition 2.5, we have 𝜌(𝑎3 (𝑢1 ), 𝑎3 (𝑢2 )) = |37.8−39.5|
+39.5−36.4
+≈ 0.548.
+
+2.3. Fundamentals of the neighbourhood rough set model
+
+Definition 2.7 ([32]). In the context of an HIS (𝑈 , 𝐴, 𝑑) with |𝑈 | = 𝑛,
+the distance matrix 𝑀𝑎 for any 𝑎 ∈ 𝐴 is introduced:
+
+In this subsection, Definition 2.5 introduces a distance between
+two information values in complete or incomplete ISs with categorical,
+numerical, or hybrid data. The neighbourhood relation is then induced
+by comparing the distance and a parameter 𝜆. After this, a tolerance
+class can be computed by the neighbourhood relation. Finally, 𝑁-rough
+set model is induced by the tolerance class.
+
+𝑀𝑎 = (𝜌(𝑎(𝑢𝑖 ), 𝑎(𝑢𝑗 )))𝑛×𝑛 .
+
+(2.4)
+
+Here, 𝑀𝑎 signifies the distance matrix corresponding to attribute 𝑎.
+Example 2.8 (Building Upon the Illustration in Example 2.2). Combining
+Definitions 2.5 and 2.7, we obtain
+⎛ 0
+⎜ 1
+⎜
+1
+𝑀𝑎 1 = ⎜
+⎜0.667
+⎜ 1
+⎜
+⎝ 1
+
+Definition 2.5 ([31]). In an HIS (𝑈 , 𝐴, 𝑑) where |𝑉𝑑 | is denoted as 𝑠,
+consider 𝑎 ∈ 𝐴 and 𝑢, 𝑣 ∈ 𝑈 . The distance between 𝑎(𝑢) and 𝑎(𝑣) is
+defined as follows:
+𝜌(𝑎(𝑢), 𝑎(𝑣))
+5
+
+1
+0
+0.667
+0.667
+0.667
+0.667
+
+1
+0.667
+0
+0
+0
+0
+
+0.667
+0.667
+0
+0
+0.667
+0
+
+1
+0.667
+0
+0.667
+0
+0
+
+1 ⎞
+0.667⎟
+⎟
+0 ⎟
+,
+0 ⎟
+0 ⎟⎟
+0 ⎠
+
+Applied Soft Computing 179 (2025) 113276
+
+B. Li et al.
+Table 3
+The tolerance classes of each object.
+𝑁𝑎𝜆 (𝑢)
+
+𝑁𝑎𝜆 (𝑢)
+
+𝑁𝑎𝜆 (𝑢)
+
+[𝑢]𝑑
+
+{𝑢1 }
+{𝑢2 }
+{𝑢3 , 𝑢4 , 𝑢5 , 𝑢6 }
+{𝑢3 , 𝑢4 , 𝑢6 }
+{𝑢3 , 𝑢5 , 𝑢6 }
+{𝑢3 , 𝑢4 , 𝑢5 , 𝑢6 }
+
+{𝑢1 , 𝑢5 }
+{𝑢2 , 𝑢3 , 𝑢4 }
+{𝑢2 , 𝑢3 , 𝑢4 , 𝑢6 }
+{𝑢2 , 𝑢3 , 𝑢4 , 𝑢6 }
+{𝑢1 , 𝑢5 }
+{𝑢3 , 𝑢4 , 𝑢6 }
+
+{𝑢1 , 𝑢3 , 𝑢6 }
+{𝑢2 }
+{𝑢1 , 𝑢3 , 𝑢4 , 𝑢5 , 𝑢6 }
+{𝑢3 , 𝑢4 , 𝑢6 }
+{𝑢3 , 𝑢5 , 𝑢6 }
+{𝑢1 , 𝑢3 , 𝑢4 , 𝑢5 , 𝑢6 }
+
+{𝑢1 }
+{𝑢2 , 𝑢5 }
+{𝑢3 , 𝑢4 , 𝑢6 }
+{𝑢3 , 𝑢4 , 𝑢6 }
+{𝑢2 , 𝑢5 }
+{𝑢3 , 𝑢4 , 𝑢6 }
+
+1
+
+𝑢1
+𝑢2
+𝑢3
+𝑢4
+𝑢5
+𝑢6
+
+3.1. Overview
+
+2
+
+3
+
+⎛ 0
+⎜0.667
+⎜
+0.667
+𝑀𝑎 2 = ⎜
+⎜0.667
+⎜ 0
+⎜
+⎝ 0.5
+
+0.667
+0
+0
+0
+0.667
+0.5
+
+0.667
+0
+0
+0
+0.667
+0
+
+0.667
+0
+0
+0
+0.667
+0
+
+⎛ 0
+⎜0.548
+⎜
+0.194
+𝑀𝑎 3 = ⎜
+⎜ 0.8
+⎜0.452
+⎜
+⎝0.226
+
+0.548
+0
+0.742
+0.8
+1
+0.774
+
+0.194
+0.742
+0
+0
+0.258
+0.032
+
+0.8
+0.8
+0
+0
+0.8
+0
+
+0
+0.667
+0.667
+0.667
+0
+0.5
+0.452
+1
+0.258
+0.8
+0
+0.226
+
+As stated in the motivation of the introduction, 𝑁-rough set approach struggles to identify surrounded objects effectively. In this
+section, we first introduce 𝐾𝑁𝑁 rule. 𝐾𝑁𝑁-neighbourhood rough set
+model is subsequently proposed by incorporating 𝐾𝑁𝑁 rule, which
+is controlled by the parameter 𝑘, and the neighbourhood tolerance
+relation, which is controlled by the parameter 𝜆, to better handle
+surrounded objects and isolated objects in an HIS.
+By adjusting the parameters 𝑘 and 𝜆, we can better classify surrounded objects and isolated objects. For example, when a dataset is
+composed of surrounded categories, selecting an appropriate 𝑘 allows
+us to classify surrounded objects more accurately than 𝑁-rough set
+does, as shown in Fig. 1(a) of the motivation section. When a dataset is
+composed of isolated categories, choosing a sufficiently large 𝑘 causes
+𝐾𝑁𝑁-neighbourhood rough set model to degenerate into 𝑁-rough set,
+thereby inheriting its ability to correctly classify isolated objects, as
+illustrated in Fig. 1(b) of the motivation section. Furthermore, when
+a dataset consists of mixed categories, selecting appropriate 𝑘 and 𝜆
+values for the dataset enables us to correctly identify the objects as
+accurately as possible.
+In other words, 𝐾𝑁𝑁-neighbourhood rough set model is based on
+the neighbourhood rough set, which incorporates 𝐾𝑁𝑁-rule to better
+handle surrounded objects and isolated objects in an HIS, as stated
+in the motivation in the introduction. By selecting different values of
+𝑘 and 𝜆, we can accurately identify the two types of objects in the
+HIS-surrounded objects and isolated objects.
+Next, we introduce 𝐾𝑁𝑁-neighbourhood rough set model starting
+from the specific mathematical theory.
+
+0.5⎞
+0.5⎟
+⎟
+0⎟
+,
+0⎟
+⎟
+0.5⎟
+0⎠
+0.226⎞
+0.774⎟
+⎟
+0.032⎟
+.
+0 ⎟
+⎟
+0.226⎟
+0 ⎠
+
+Definition 2.9 ([14]). Consider an HIS (𝑈 , 𝐴, 𝑑) with |𝑉𝑑 | = 𝑠, given
+𝐵 ⊆ 𝐴 and 𝜆 ∈ [0, 1]. Define
+⋂
+𝑁𝑎𝜆 = {(𝑢, 𝑣) ∈ 𝑈 × 𝑈 ∶ 𝜌(𝑎(𝑢), 𝑎(𝑣)) ≤ 𝜆}, 𝑁𝐵𝜆 =
+𝑁𝑎𝜆 ,
+𝑎∈𝐵
+
+𝑁𝐵𝜆 (𝑢) = {𝑣 ∈ 𝑈 ∶ (𝑢, 𝑣) ∈ 𝑁𝐵𝜆 };
+
+3.2. Mathematical development of 𝐾𝑁𝑁-neighbourhood rough set model
+
+𝑅𝑑 = {(𝑢, 𝑣) ∈ 𝑈 × 𝑈 ∶ 𝑑(𝑢) = 𝑑(𝑣)},
+
+Definition 3.1 ([30]). Consider an HIS (𝑈 , 𝐴, 𝑑), with 𝑎 ∈ 𝐴 and 𝑢 ∈ 𝑈 .
+Let 𝑘 ∈ N be a given parameter. Denote 𝑢0 = 𝑢. ∀ 𝑖 ∈ {1, 2, … , 𝑘}, put
+
+[𝑢]𝑑 = {𝑣 ∈ 𝑈 ∶ (𝑢, 𝑣) ∈ 𝑅𝑑 },
+𝑈 ∕𝑑 = {[𝑢]𝑑 ∶ 𝑢 ∈ 𝑈 } = {𝐷1 , 𝐷2 , … , 𝐷𝑠 }.
+
+𝑢𝑖 = 𝑎𝑟𝑔 𝑚𝑖𝑛{𝜌(𝑎(𝑢), 𝑎(𝑣)) ∶ 𝑣 ∈ 𝑈 − {𝑢0 , 𝑢𝑖 , … , 𝑢𝑖−1 }}
+𝑣
+
+Then, 𝑁𝐵𝜆 , 𝑁𝐵𝜆 (𝑢) and [𝑢]𝑑 are the neighbourhood relation on 𝑈 with
+respect to 𝐵, the neighbourhood of 𝑢 with respect to 𝐵 and the decision
+class of 𝑢, respectively.
+𝑁𝐵𝜆 is reflexive and symmetric. 𝑁𝐵𝜆 (𝑢) can be seen as a neighbourhood information granule, referred to as the 𝜆-neighbourhood
+information granule.
+
+or
+𝜌(𝑎(𝑢), 𝑎(𝑢𝑖 )) = 𝑚𝑖𝑛{𝜌(𝑎(𝑢), 𝑎(𝑣)) ∶ 𝑣 ∈ 𝑈 − {𝑢0 , 𝑢1 , … , 𝑢𝑖−1 }}.
+Define
+𝑎𝑘 (𝑢) = {𝑢0 , 𝑢𝑖 , … , 𝑢𝑘−1 }.
+
+Example 2.10 (Building Upon the Illustration in Example 2.8). Choose
+𝜆 = 0.4. The tolerance classes for each object with respect to each
+attribute are displayed in Table 3.
+
+Obviously, ∀ 𝑖 ∈ {1, 2, … , 𝑘},
+𝜌(𝑎(𝑢), 𝑎(𝑢𝑖−1 )) ≤ 𝜌(𝑎(𝑢), 𝑎(𝑢𝑖 )).
+
+For an HIS (𝑈 , 𝐴, 𝑑), given 𝐵 ⊆ 𝐴, 𝑋 ∈ 2𝑈 , and 𝜆 ∈ [0, 1], denote
+
+Definition 3.2. Consider an HIS (𝑈 , 𝐴, 𝑑), where 𝐵 ⊆ 𝐴, and 𝑢 ∈
+𝑈 . Given parameters 𝑘 ∈ N and 𝜆 ∈ [0, 1], define or formulate the
+following:
+⋂
+𝐵 𝑘 (𝑢) =
+𝑎𝑘 (𝑢),
+
+𝑁𝐵𝜆 (𝑋) = {𝑢 ∈ 𝑈 ∶ 𝑁𝐵𝜆 (𝑢) ⊆ 𝑋},
+𝑁𝐵𝜆 (𝑋) = {𝑢 ∈ 𝑈 ∶ 𝑁𝐵𝜆 (𝑢) ∩ 𝑋 ≠ ∅}.
+
+𝑎∈𝐵
+
+Then, 𝑁𝐵𝜆 (𝑋) and 𝑁𝐵𝜆 (𝑋) are called neighbourhood-lower and
+neighbourhood-upper approximations of 𝑋 with respect to 𝐵 and 𝜆,
+respectively. Moreover, 𝑋 is known as a neighbourhood rough set
+(𝑁-rough set) with respect to 𝐵 and 𝜆, if 𝑁𝐵𝜆 (𝑋) ≠ 𝑁𝐵𝜆 (𝑋).
+
+𝑘,𝜆
+𝐵𝑁
+(𝑢) = 𝐵 𝑘 (𝑢) ∩ 𝑁𝐵𝜆 (𝑢).
+
+𝐵 𝑘 (𝑢) is referred to as the 𝑘-nearest neighbour of 𝑢 with respect to 𝐵,
+𝑘,𝜆
+and 𝐵𝑁
+(𝑢) is the 𝐾𝑁𝑁-neighbourhood of 𝑢 with respect to 𝐵 and 𝜆.
+Proposition 3.3. Consider an HIS (𝑈 , 𝐴, 𝑑), given that 𝑢 ∈ 𝑈 .
+𝑘,𝜆
+𝑘,𝜆
+(1) If 𝐵 ⊆ 𝐶 ⊆ 𝐴, then ∀ 𝑘 ∈ N, ∀ 𝜆 ∈ [0, 1], 𝐶𝑁
+(𝑢) ⊆ 𝐵𝑁
+(𝑢).
+𝑘1 ,𝜆
+𝑘2 ,𝜆
+(2) If 𝑘1 ≤ 𝑘2 , then ∀ 𝐵 ⊆ 𝐴, ∀ 𝜆 ∈ [0, 1], 𝐵𝑁 (𝑢) ⊆ 𝐵𝑁 (𝑢).
+𝑘,𝜆
+𝑘,𝜆
+(3) If 𝜆1 ≤ 𝜆2 , then ∀ 𝐵 ⊆ 𝐴, ∀ 𝑘 ∈ N, 𝐵𝑁 1 (𝑢) ⊆ 𝐵𝑁 2 (𝑢).
+
+3. 𝑲𝑵𝑵-neighbourhood rough set model in an HIS
+In this part, 𝐾𝑁𝑁-neighbourhood rough set model in an HIS is
+built. After this, we propose four UMs for hybrid data using 𝐾𝑁𝑁neighbourhood rough set model in the next section.
+
+Proof. Please see ‘‘Appendix’’.
+6
+
+□
+
+Applied Soft Computing 179 (2025) 113276
+
+B. Li et al.
+
+Put
+
+4.1. Overview
+
+𝑘,𝜆
+𝑘,𝜆
+𝐵𝑁
+= {(𝑢, 𝑣) ∈ 𝑈 × 𝑈 ∶ 𝑣 ∈ 𝐵𝑁
+(𝑢)}.
+
+In the context of 𝐾𝑁𝑁-neighbourhood rough set model, four types
+of UMs can be induced: dependence degree, conditional information
+entropy, conditional information amount, and the conditional discrimination index. In this section, we rigorously prove the properties and
+relationships of these four UMs, thereby demonstrating their effectiveness.
+Initially, each UM’s definition and calculation method are detailed,
+followed by mathematical derivations to establish their properties.
+Specifically, the focus is on the following aspects:
+(1) Dependence Degree: This measures the extent to which a subset
+of attributes depends on the decision. The monotonicity with respect
+to attribute subsets is proven, indicating that adding new features does
+not decrease the dependence degree;
+(2) Conditional Information Entropy: This quantifies an HIS’s uncertainty under given conditions. The monotonicity is demonstrated,
+showing that adding new features reduces or maintains the uncertainty
+level;
+(3) Conditional Information Amount: This reflects the information contribution of conditional attributes to decision attributes. This
+measure decreases with an increasing attribute subset, ensuring more
+efficient feature selection;
+(4) Conditional Discrimination Index: This assesses the ability of
+attribute subsets to discriminate between classes. The relationships
+among the aforementioned three UMs are explored, with an emphasis
+on their validity.
+The monotonicity property of these induced UMs simplifies the process of adding or removing features in algorithms, enhancing computational efficiency and decision-making effectiveness. The proofs of these
+properties provide a solid theoretical foundation for the subsequent
+design and application of the attribute reduction algorithm.
+
+𝑘,𝜆
+While 𝐵𝑁
+exhibits reflexivity, it lacks symmetry and transitivity.
+
+Definition 3.4. Consider an HIS (𝑈 , 𝐴, 𝑑); let 𝐵 ⊆ 𝐴, 𝑋 ∈ 2𝑈 , given
+parameters for 𝑘 ∈ N and 𝜆 ∈ [0, 1], define
+𝑘,𝜆
+𝑘,𝜆
+𝐵𝑁
+(𝑋) = {𝑢 ∈ 𝑈 ∶ 𝐵𝑁
+(𝑢) ⊆ 𝑋},
+𝑘,𝜆
+𝑘,𝜆
+𝐵𝑁
+(𝑋) = {𝑢 ∈ 𝑈 ∶ 𝐵𝑁
+(𝑢) ∩ 𝑋 ≠ ∅}.
+𝑘,𝜆
+𝑘,𝜆
+Then, 𝐵𝑁
+(𝑋) and 𝐵𝑁
+(𝑋) are called 𝐾𝑁𝑁-neighbourhood lower and
+upper approximations of 𝑋 with respect to 𝐵 and 𝜆, respectively.
+Moreover, 𝑋 is known as an 𝐾𝑁𝑁-neighbourhood rough set with
+𝑘,𝜆
+𝑘,𝜆
+respect to 𝐵 and 𝜆, if 𝐵𝑁
+(𝑋) ≠ 𝐵𝑁
+(𝑋).
+
+Theorem 3.5. Consider an HIS (𝑈 , 𝐴, 𝑑).
+(1) ∀ 𝐵 ⊆ 𝐴, ∀ 𝑋 ∈ 2𝑈 , ∀ 𝑘 ∈ N, ∀ 𝜆 ∈ [0, 1],
+𝑘,𝜆
+𝑘,𝜆
+𝐵𝑁
+(𝑋) ⊆ 𝑋 ⊆ 𝐵𝑁
+(𝑋);
+
+(2) 𝑋 ⊆ 𝑌 ⊆ 𝑈 ⇒ ∀ 𝐵 ⊆ 𝐴, ∀ 𝑘 ∈ N, ∀ 𝜆 ∈ [0, 1],
+𝑘,𝜆
+𝑘,𝜆
+𝑘,𝜆
+𝑘,𝜆
+𝐵𝑁
+(𝑋) ⊆ 𝐵𝑁
+(𝑌 ), 𝐵𝑁
+(𝑋) ⊆ 𝐵𝑁
+(𝑌 );
+
+(3) If 𝐵 ⊆ 𝐶 ⊆ 𝐴, then ∀ 𝑋 ∈ 2𝑈 , ∀ 𝑘 ∈ N, ∀ 𝜆 ∈ [0, 1],
+𝑘,𝜆
+𝑘,𝜆
+𝑘,𝜆
+𝑘,𝜆
+𝐵𝑁
+(𝑋) ⊆ 𝐶𝑁
+(𝑋), 𝐶𝑁
+(𝑋) ⊆ 𝐵𝑁
+(𝑋);
+
+(4) If 𝑘1 ≤ 𝑘2 , then ∀ 𝐵 ⊆ 𝐴, ∀ 𝜆 ∈ [0, 1], ∀ 𝑋 ∈ 2𝑈
+𝑘 ,𝜆
+
+𝑘 ,𝜆
+
+𝑘 ,𝜆
+
+𝑘 ,𝜆
+
+𝐵𝑁2 (𝑋) ⊆ 𝐵𝑁1 (𝑋), 𝐵𝑁1 (𝑋) ⊆ 𝐵𝑁2 (𝑋).
+(5) If 𝜆1 ≤ 𝜆2 , then ∀ 𝐵 ⊆ 𝐴, ∀ 𝑘 ∈ N, ∀ 𝑋 ∈ 2𝑈
+𝑘,𝜆
+
+𝑘,𝜆
+
+𝑘,𝜆
+
+4.2. Four UMs in an HIS using 𝐾𝑁𝑁-neighbourhood rough set model
+
+𝑘,𝜆
+
+𝐵𝑁 2 (𝑋) ⊆ 𝐵𝑁 1 (𝑋), 𝐵𝑁 1 (𝑋) ⊆ 𝐵𝑁 2 (𝑋).
+Proof. Please see ‘‘Appendix’’.
+
+4.2.1. The subsystem’s dependence degree in an HIS
+The dependency degree has values within the interval [0, 1]. A
+value closer to 1 indicates a higher level of certainty regarding the
+decision attribute 𝑑 given a specific condition attribute set 𝐴, reflecting
+a reduced degree of uncertainty.
+
+□
+
+𝑘,𝜆
+Based on Kryszkiewicz’s ideal [33], for 𝐵 ⊆ 𝐴, 𝜕𝐵,𝑁
+∶ 𝑈 → 2𝑉𝑑 is
+defined as
+𝑘,𝜆
+𝑘,𝜆
+𝜕𝐵,𝑁
+(𝑢) = 𝑑(𝐵𝑁
+(𝑢)).
+
+(3.1)
+
+Definition 4.1. Consider an HIS (𝑈 , 𝐴, 𝑑), given 𝐵 ⊆ 𝐴, 𝑘 ∈ N 𝑎𝑛𝑑 𝜆 ∈
+[0, 1]. The positive region of 𝐵 with respect to the decision attribute 𝑑
+is defined as
+
+𝑘,𝜆
+Then, 𝜕𝐵,𝑁
+is termed a generalised decision in (𝑈 , 𝐵, 𝑑).
+𝑘,𝜆
+Definition 3.6. In an HIS (𝑈 , 𝐴, 𝑑), if ∀ 𝑢 ∈ 𝑈 , |𝜕𝐴,𝑁
+(𝑢)| = 1, it is
+termed (𝑘, 𝜆)-consistent.
+
+𝑘,𝜆
+𝑃 𝑂𝑆𝐵,𝑁
+(𝑑) =
+
+𝑠
+⋃
+
+𝑘,𝜆
+𝐵𝑁
+(𝐷𝑖 ).
+
+𝑖=1
+
+Proposition 3.7. Consider an HIS (𝑈 , 𝐴, 𝑑), given 𝐵 ⊆ 𝐴, 𝑘 ∈ N 𝑎𝑛𝑑 𝜆 ∈
+[0, 1]. Then,
+𝑘,𝜆
+∀ 𝑢 ∈ 𝑈 , |𝜕𝐵,𝑁
+(𝑢)| = 1
+
+⇔
+
+Definition 4.2. Consider an HIS (𝑈 , 𝐴, 𝑑), given 𝐵 ⊆ 𝐴, 𝑘 ∈ N 𝑎𝑛𝑑 𝜆 ∈
+[0, 1]. The dependence degree of 𝐵 on 𝑑 is described as
+
+𝑘,𝜆
+𝐵𝑁
+⊆ 𝑅𝑑 .
+
+𝑘,𝜆
+𝛤𝐵,𝑁
+(𝑑) =
+
+Proof. Please see ‘‘Appendix’’.
+
+□
+
+Proposition 4.3. Consider an HIS (𝑈 , 𝐴, 𝑑), the following properties can
+be delineated:
+∑
+𝑘,𝜆
+𝑘,𝜆
+(1) ∀ 𝐵 ⊆ 𝐴, ∀ 𝑘 ∈ N, ∀ 𝜆 ∈ [0, 1], 𝛤𝐵,𝑁
+(𝑑) = 1𝑛 𝑠𝑖=1 |𝐵𝑁
+(𝐷𝑖 )|;
+
+Proposition 3.8. Consider an HIS (𝑈 , 𝐴, 𝑑), given 𝑘 ∈ N 𝑎𝑛𝑑 𝜆 ∈ [0, 1].
+Then, (𝑈 , 𝐴, 𝑑) is (𝑘, 𝜆)-consistent ⇔ 𝐴𝑘,𝜆
+⊆ 𝑅𝑑 .
+𝑁
+
+𝑘,𝜆
+(2) ∀ 𝐵 ⊆ 𝐴, ∀ 𝑘 ∈ N, ∀ 𝜆 ∈ [0, 1], 0 ≤ 𝛤𝐵,𝑁
+(𝑑) ≤ 1;
+𝑘,𝜆
+𝑘,𝜆
+(3) If 𝐵 ⊆ 𝐶 ⊆ 𝐴, then ∀ 𝑘 ∈ N, ∀ 𝜆 ∈ [0, 1], 𝛤𝐵,𝑁
+(𝑑) ≤ 𝛤𝐶,𝑁
+(𝑑);
+
+Proof. This is a consequence of Proposition 3.7. □
+4. Uncertainty measurement in
+neighbourhood rough set model
+
+an
+
+HIS
+
+based
+
+1
+𝑘,𝜆
+|𝑃 𝑂𝑆𝐵,𝑁
+(𝑑)|.
+𝑛
+
+on
+
+𝑘 ,𝜆
+
+𝑲𝑵𝑵-
+
+𝑘 ,𝜆
+
+2
+1
+(4) If 𝑘1 ≤ 𝑘2 , then ∀ 𝐵 ⊆ 𝐴, ∀ 𝜆 ∈ [0, 1], 𝛤𝐵,𝑁
+(𝑑) ≤ 𝛤𝐵,𝑁
+(𝑑);
+
+𝑘,𝜆
+𝑘,𝜆
+(5) If 𝜆1 ≤ 𝜆2 , then ∀ 𝐵 ⊆ 𝐴, ∀ 𝑘 ∈ N, 𝛤𝐵,𝑁2 (𝑑) ≤ 𝛤𝐵,𝑁1 (𝑑);
+𝑘,𝜆
+𝑘,𝜆
+(6) 𝛤𝐵,𝑁 (𝑑) = 1 ⇔ ∀ 𝑖, 𝐵𝑁 (𝐷𝑖 ) = 𝐷𝑖 .
+
+In this section, we present four UMs designed to quantify the
+uncertainty inherent in an HIS using 𝐾𝑁𝑁-neighbourhood rough set
+model.
+
+Proof. Please see ‘‘Appendix’’.
+7
+
+□
+
+Applied Soft Computing 179 (2025) 113276
+
+B. Li et al.
+𝑘,𝜆
+Clearly, 𝐸𝑁
+(𝐵) =
+
+4.2.2. The subsystem’s conditional information entropy in an HIS
+Conditional information entropy captures the uncertain information
+within an HIS and is capable of handling hybrid attributes without the
+need for a discretisation process. Importantly, we define 0 log2 0 = 0 for
+the following calculations.
+
+𝑘,𝜆
+𝑛
+∑
+|𝐵𝑁
+(𝑢𝑖 )|
+
+𝑛
+
+𝑖=1
+
+log2
+
+𝑘,𝜆
+|𝐵𝑁
+(𝑢𝑖 )|
+
+𝑛
+
+𝑘,𝜆
+𝐸𝑁
+(𝑑|𝐵) =
+
+log2
+
+𝑘,𝜆
+|𝐵𝑁
+(𝑢𝑖 ) ∩ 𝐷𝑗 |
+𝑘,𝜆
+|𝐵𝑁
+(𝑢𝑖 )|
+
+𝑘,𝜆
+𝑘,𝜆
+𝐸𝑁
+(𝑑|𝐶) ≤ 𝐸𝑁
+(𝑑|𝐵).
+
+(4.10)
+
+Proof. Please see ‘‘Appendix’’.
+
+𝑘,𝜆
+𝐸𝑁
+(𝐵 ∪ 𝑑) =
+
+𝑘,𝜆
+𝑛 ∑
+𝑠
+∑
+|𝐵𝑁
+(𝑢𝑖 ) ∩ 𝐷𝑗 |
+
+𝑛
+
+𝑖=1 𝑗=1
+
+𝑘,𝜆
+𝑛 ∑
+𝑠
+∑
+|𝐵𝑁
+(𝑢𝑖 ) ∩ 𝐷𝑗 |
+
+𝑛
+
+log2
+
+𝑘,𝜆
+|𝐵𝑁
+(𝑢𝑖 ) ∩ 𝐷𝑗 |
+
+𝑛
+
+𝑘,𝜆
+𝑘,𝜆
+𝑘,𝜆
+𝐸𝑁
+(𝑑|𝐵) = 𝐸𝑁
+(𝐵 ∪ 𝑑) − 𝐸𝑁
+(𝐵).
+
+Proof. Please see ‘‘Appendix’’.
+.
+
+𝑘,𝜆
+𝑘,𝜆
+𝑘,𝜆
+𝐻𝑁
+(𝑑|𝐵) = 𝐻𝑁
+(𝐵 ∪ 𝑑) − 𝐻𝑁
+(𝐵).
+
+𝑘
+𝐷𝐼𝑁
+(𝐵) = 𝑙𝑜𝑔2
+
+□
+
+(4.11)
+
+□
+
+|𝑈 × 𝑈 |
+.
+|𝐵 𝑘 |
+
+(4.13)
+2
+
+Proposition 4.18.
+Then,
+
+□
+
+Consider an HIS (𝑈 , 𝐴, 𝑑), given 𝐵 ⊆ 𝐴 and 𝑘 ∈ N.
+
+𝑘
+0 ≤ 𝐷𝐼𝑁
+(𝐵) ≤ 𝑙𝑜𝑔2 𝑛.
+
+(4.14)
+
+𝑘 (𝐵) = 𝑙𝑜𝑔 𝑛; if 𝐵 𝑘 = 𝛿, then 𝐷𝐼 𝑘 (𝐵) = 0.
+Moreover, if 𝐵 𝑘 =▵, then 𝐷𝐼𝑁
+2
+𝑁
+
+Proof. Please see ‘‘Appendix’’.
+
+.
+
+(4.12)
+
+𝑘 (𝐵) = 𝑙𝑜𝑔 𝑛 .
+Clearly, 𝐷𝐼𝑁
+2 |𝐵 𝑘 |
+
+Definition 4.11.
+Consider an HIS (𝑈 , 𝐴, 𝑑), given 𝐵 ⊆ 𝐴, 𝑘 ∈
+N 𝑎𝑛𝑑 𝜆 ∈ [0, 1]. Then, the (𝑘, 𝜆)-neighbourhood information amount
+of 𝐵 is defined as
+
+𝑖=1
+
+).
+
+Definition 4.17. Consider an HIS (𝑈 , 𝐴, 𝑑), given 𝐵 ⊆ 𝐴 and 𝑘 ∈ N.
+The 𝑘-neighbourhood discrimination index of 𝐵 is defined as
+
+(4.6)
+
+4.2.3. The subsystem’s conditional information amount in an HIS
+The procedure of information acquisition is essentially the procedure of reducing information uncertainty.
+
+𝑛
+
+𝑛
+
+4.2.4. The subsystem’s conditional discrimination index in an HIS
+Conditional discrimination index quantifies the uncertainty related
+to the discriminative capability of an attribute subset.
+
+Proposition 4.10.
+Consider an HIS (𝑈 , 𝐴, 𝑑), given 𝐵 ⊆ 𝐴, 𝑘 ∈
+𝑘,𝜆
+N 𝑎𝑛𝑑 𝜆 ∈ [0, 1]. Then, 𝐻𝑁
+(𝑑|𝐵) ≥ 0.
+
+𝑛
+
+𝑘,𝜆
+|𝐵𝑁
+(𝑢𝑖 ) ∩ 𝐷𝑗 |
+
+(4.5)
+
+Proposition 4.9. Consider an HIS (𝑈 , 𝐴, 𝑑), given 𝐵 ⊆ 𝐴, 𝑘 ∈ N 𝑎𝑛𝑑 𝜆 ∈
+[0, 1]. Then,
+
+𝑘,𝜆
+𝑘,𝜆
+𝑛
+∑
+|𝐵𝑁
+(𝑢𝑖 )| |𝑈 − 𝐵𝑁
+(𝑢𝑖 )|
+
+(1 −
+
+Proposition 4.16.
+Consider an HIS (𝑈 , 𝐴, 𝑑), given 𝐵 ⊆ 𝐴, 𝑘 ∈
+N 𝑎𝑛𝑑 𝜆 ∈ [0, 1]. Then,
+
+□
+
+Definition 4.8. Consider an HIS (𝑈 , 𝐴, 𝑑), given 𝐵 ⊆ 𝐴, 𝑘 ∈ N 𝑎𝑛𝑑 𝜆 ∈
+[0, 1]. The (𝑘, 𝜆)-joint neighbourhood information entropy of 𝐵 and 𝑑 is
+defined as
+
+𝑘,𝜆
+𝐸𝑁
+(𝐵) =
+
+□
+
+Definition 4.15. Consider an HIS (𝑈 , 𝐴, 𝑑), given 𝐵 ⊆ 𝐴, 𝑘 ∈ N 𝑎𝑛𝑑 𝜆 ∈
+[0, 1]. Then, the (𝑘, 𝜆)-joint neighbourhood information amount of 𝐵
+and 𝑑 is defined as
+
+(4.4)
+
+Proof. Please see ‘‘Appendix’’.
+
+(4.9)
+
+.
+
+Proposition 4.14. Consider an HIS (𝑈 , 𝐴, 𝑑), given 𝑘 ∈ N 𝑎𝑛𝑑 𝜆 ∈ [0, 1].
+If 𝐵 ⊆ 𝐶 ⊆ 𝐴, then
+
+(4.3)
+
+.
+
+𝑘,𝜆
+𝑘,𝜆
+𝐻𝑁
+(𝑑|𝐶) ≤ 𝐻𝑁
+(𝑑|𝐵).
+
+Proof. Please see ‘‘Appendix’’.
+
+𝑛
+
+𝑘,𝜆
+Obviously, 𝐸𝑁
+(𝑑|𝐵) ≥ 0.
+
+□
+
+Proposition 4.7. Consider an HIS (𝑈 , 𝐴, 𝑑), given 𝑘 ∈ N 𝑎𝑛𝑑 𝜆 ∈ [0, 1].
+If 𝐵 ⊆ 𝐶 ⊆ 𝐴, then
+
+𝑖=1 𝑗=1
+
+𝑛
+
+𝑘,𝜆
+Then, 𝐸𝑁
+(𝑑|𝐵) is referred to as the (𝑘, 𝜆)-neighbourhood conditional
+information amount of 𝑑 to 𝐵 in 𝑈 .
+
+mation entropy of 𝑑 to 𝐵 in 𝑈 .
+
+𝑘,𝜆
+𝐻𝑁
+(𝐵 ∪ 𝑑) = −
+
+□
+
+𝑘,𝜆
+𝑘,𝜆
+𝑛 ∑
+𝑠
+∑
+|𝐵𝑁
+(𝑢𝑖 ) ∩ 𝐷𝑗 | |𝐵𝑁
+(𝑢𝑖 ) − 𝐷𝑗 |
+𝑖=1 𝑗=1
+
+𝑘,𝜆
+Then, 𝐻𝑁
+(𝑑|𝐵) is termed the (𝑘, 𝜆)-conditional neighbourhood infor-
+
+Proof. Please see ‘‘Appendix’’.
+
+).
+
+Definition 4.13. Consider an HIS (𝑈 , 𝐴, 𝑑), given 𝐵 ⊆ 𝐴, 𝑘 ∈ N 𝑎𝑛𝑑 𝜆 ∈
+[0, 1]. Define
+
+Definition 4.6. Consider an HIS (𝑈 , 𝐴, 𝑑), given 𝐵 ⊆ 𝐴, 𝑘 ∈ N 𝑎𝑛𝑑 𝜆 ∈
+[0, 1]. Put
+
+𝑖=1 𝑗=1
+
+𝑛
+
+(4.8)
+
+Proof. Please see ‘‘Appendix’’.
+
+(4.2)
+
+𝑛
+
+𝑘,𝜆
+|𝐵𝑁
+(𝑢𝑖 )|
+
+𝑘,𝜆
+Furthermore, if 𝐵 𝑘 =▵, then 𝐸𝑁
+(𝐵) = 1 − 1𝑛 can be obtained;
+
+𝑘,𝜆
+𝑘,𝜆
+Furthermore, if 𝐵 𝑘 =▵, then 𝐻𝑁
+(𝐵) = log2 𝑛; if 𝐵 𝑘 = 𝛿, then 𝐻𝑁
+(𝐵) = 0.
+
+𝑘,𝜆
+𝑛 ∑
+𝑠
+∑
+|𝐵𝑁
+(𝑢𝑖 ) ∩ 𝐷𝑗 |
+
+(1 −
+
+(4.1)
+
+.
+
+𝑘,𝜆
+0 ≤ 𝐻𝑁
+(𝐵) ≤ 𝑛 log2 𝑛.
+
+𝑘,𝜆
+𝐻𝑁
+(𝑑|𝐵) = −
+
+𝑛
+
+𝑘,𝜆
+0 ≤ 𝐸𝑁
+(𝐵) ≤ 𝑛 − 1.
+
+Proposition 4.5. Consider an HIS (𝑈 , 𝐴, 𝑑), given 𝐵 ⊆ 𝐴, 𝑘 ∈ N 𝑎𝑛𝑑 𝜆 ∈
+[0, 1]. Then,
+
+Proof. Please see ‘‘Appendix’’.
+
+𝑖=1
+
+Proposition 4.12.
+Consider an HIS (𝑈 , 𝐴, 𝑑), given 𝐵 ⊆ 𝐴, 𝑘 ∈
+N 𝑎𝑛𝑑 𝜆 ∈ [0, 1]. Then,
+
+Definition 4.4. Consider an HIS (𝑈 , 𝐴, 𝑑), given 𝐵 ⊆ 𝐴, 𝑘 ∈ N 𝑎𝑛𝑑 𝜆 ∈
+[0, 1]. The definition of the (𝑘, 𝜆)-neighbourhood information entropy of
+𝐵 is as follows:
+𝑘,𝜆
+𝐻𝑁
+(𝐵) = −
+
+∑𝑛
+
+𝑘,𝜆
+|𝐵𝑁
+(𝑢𝑖 )|
+
+□
+
+Definition 4.19. Consider an HIS (𝑈 , 𝐴, 𝑑), given 𝐵 ⊆ 𝐴, 𝑘 ∈ N 𝑎𝑛𝑑 𝜆 ∈
+[0, 1]. Put
+𝑘,𝜆
+𝐷𝐼𝑁
+(𝑑|𝐵) = 𝑙𝑜𝑔2
+
+(4.7)
+8
+
+|𝐵 𝑘 |
+𝑘,𝜆
+|𝐵𝑁
+∩ 𝑅𝑑 |
+
+.
+
+(4.15)
+
+Applied Soft Computing 179 (2025) 113276
+
+B. Li et al.
+𝑘,𝜆
+Then, 𝐷𝐼𝑁
+(𝑑|𝐵) is termed the (𝑘, 𝜆)-conditional neighbourhood discrimination index of 𝑑 to 𝐵 in 𝑈 .
+
+Theorem 4.26. Consider an HIS (𝑈 , 𝐴, 𝑑), given 𝑘 ∈ N 𝑎𝑛𝑑 𝜆 ∈ [0, 1].
+The statements below are equivalent:
+(1) (𝑈 , 𝐴, 𝑑) is (𝑘, 𝜆)-consistent;
+(2) 𝐴𝑘,𝜆
+⊆ 𝑅𝑑 ;
+𝑁
+
+A lower conditional discrimination index value indicates a higher
+(𝑘, 𝜆)-consistency degree in an HIS.
+
+𝑘,𝜆
+(3) 𝛤𝐴,𝑁
+(𝑑) = 1;
+𝑘,𝜆
+(4) 𝐻𝑁
+(𝑑|𝐴) = 0;
+
+Proposition 4.20.
+Consider an HIS (𝑈 , 𝐴, 𝑑), given 𝐵 ⊆ 𝐴, 𝑘 ∈
+N 𝑎𝑛𝑑 𝜆 ∈ [0, 1]. Then,
+𝑘,𝜆
+0 ≤ 𝐷𝐼𝑁
+(𝑑|𝐵) ≤ 𝑙𝑜𝑔2 𝑛.
+
+𝑘,𝜆
+(5) 𝐷𝐼𝑁
+(𝑑|𝐴) = 0.
+
+(4.16)
+
+Proof. Please see ‘‘Appendix’’.
+
+𝑘,𝜆
+𝑘,𝜆
+𝑘,𝜆
+𝑘,𝜆
+Moreover, if 𝐵𝑁
+=▵, then 𝐷𝐼𝑁
+(𝑑|𝐵) = 0; If 𝐵𝑁
+= 𝛿, then 𝐷𝐼𝑁
+(𝑑|𝐵) =
+
+Proposition 4.27.
+Consider an HIS (𝑈 , 𝐴, 𝑑), given 𝐵 ⊆ 𝐴, 𝑘 ∈
+𝑘,𝜆
+𝑘,𝜆
+N 𝑎𝑛𝑑 𝜆 ∈ [0, 1]. If 𝐵𝑁
+⊆ 𝑅𝑑 , then 𝐸𝑁
+(𝑑|𝐵) = 0.
+
+2
+
+𝑙𝑜𝑔2 |𝑅𝑛 | .
+𝑑
+
+Proof. Please see ‘‘Appendix’’.
+
+□
+
+Proof. Please see ‘‘Appendix’’.
+
+Definition 4.21. Consider an HIS (𝑈 , 𝐴, 𝑑), given 𝐵 ⊆ 𝐴, 𝑘 ∈ N 𝑎𝑛𝑑 𝜆 ∈
+[0, 1]. The (𝑘, 𝜆)-joint neighbourhood discrimination index of 𝐵 and 𝑑
+is defined as
+𝑘,𝜆
+𝐷𝐼𝑁
+(𝐵 ∪ 𝑑) = 𝑙𝑜𝑔2
+
+|𝑈 × 𝑈 |
+𝑘,𝜆
+|𝐵𝑁
+∩ 𝑅𝑑 |
+
+□
+
+Theorem 4.28. For an HIS (𝑈 , 𝐴, 𝑑), let 𝑘 ∈ N 𝑎𝑛𝑑 𝜆 ∈ [0, 1]. If (𝑈 , 𝐴, 𝑑)
+𝑘,𝜆
+is (𝑘, 𝜆)-consistent, then 𝐸𝑁
+(𝑑|𝐴) = 0.
+Proof. This can be proven using Propositions 3.8 and 4.27. □
+
+(4.17)
+
+.
+
+□
+
+5. Experiments
+Proposition 4.22.
+Consider an HIS (𝑈 , 𝐴, 𝑑), given 𝐵 ⊆ 𝐴, 𝑘 ∈
+N 𝑎𝑛𝑑 𝜆 ∈ [0, 1]. Then,
+𝑘,𝜆
+𝑘,𝜆
+𝑘,𝜆
+𝐷𝐼𝑁
+(𝑑|𝐵) = 𝐷𝐼𝑁
+(𝐵 ∪ 𝑑) − 𝐷𝐼𝑁
+(𝐵).
+
+Proof. Clearly.
+
+In this section, we perform an experimental analysis on seventeen
+datasets obtained from the Machine Learning Repository (UCI). This
+experimental analysis aims to validate the feasibility and assess the
+effectiveness of the aforementioned UMs.
+
+(4.18)
+
+□
+5.1. Datasets and parameter setup
+
+4.2.5. Properties of UMs
+Some properties of the aforementioned four UMs are described
+below.
+
+The performance specifications of the experimental setup include
+the 12th Gen Intel (R) Core (TM) i7-12700H processor platform with
+a frequency of 2.30 GHz and 16 GB of memory. The operating system
+used is Windows 11, and the code of experiment execution is carried
+out via Python 3.10. To determine the UM that has the optimal performance for handling an HIS, we perform numerical experiments on
+seventeen meticulously chosen datasets. The selection criteria for these
+datasets are based on their ability to visually emphasise the differences
+among the four UMs when represented graphically. Table 4 presents
+crucial details about these seventeen datasets.
+In ‘‘5.9. Sensitivity analysis of 𝑘 and 𝜆’’ subsections, following the
+approach of Hu et al. [32] and Hu et al. [30], we varied the neighbourhood radius parameter 𝜆 from 0.1 to 0.9 (step size 0.1) and the number
+of nearest neighbours 𝑘 from 0.05|𝑈 | to 0.5|𝑈 | (step size 0.05|𝑈 |),
+where |𝑈 | is the number of objects. Instead of tuning parameters for
+each dataset, we selected a combination that performed consistently
+well across all 17 datasets to ensure generalisability and fairness.
+Notably, in the following experiments, except for the ‘‘5.3. Dispersion
+analysis for robust UM selection’’ and ‘‘5.9. Sensitivity analysis of 𝑘
+and 𝜆’’ subsections, the parameter setup for the remaining parts is as
+follows: 𝑘 is set to 0.4|𝑈 |, where |𝑈 | is the number of objects in a
+dataset, and 𝜆 is set to 0.2.
+
+Lemma 4.23. Consider an HIS (𝑈 , 𝐴, 𝑑), given 𝐵 ⊆ 𝐴, 𝑘 ∈ N 𝑎𝑛𝑑 𝜆 ∈
+𝑘,𝜆
+[0, 1]. If 𝐵𝑁
+⊆ 𝑅𝑑 , then ∀ 𝑢 ∈ 𝑈 , ∀ 𝑗,
+{
+𝑘,𝜆
+𝐵𝑁
+(𝑢), 𝑢 ∈ 𝐷𝑗 ;
+𝑘,𝜆
+𝐵𝑁
+(𝑢) ∩ 𝐷𝑗 =
+(4.19)
+∅,
+𝑢 ∉ 𝐷𝑗 .
+Proof. Please see ‘‘Appendix’’.
+
+□
+
+Lemma 4.24. Consider an HIS (𝑈 , 𝐴, 𝑑), given 𝐵 ⊆ 𝐴, 𝑘 ∈ N 𝑎𝑛𝑑 𝜆 ∈
+𝑘,𝜆
+[0, 1]. If 𝐵𝑁
+⊆ 𝑅𝑑 , then ∀ 𝑢 ∈ 𝑈 ,
+𝑘,𝜆
+𝑠
+∑
+|𝐵𝑁
+(𝑢) ∩ 𝐷𝑗 |
+𝑗=1
+
+𝑛
+
+𝑘,𝜆
+𝑠
+∑
+|𝐵𝑁
+(𝑢) ∩ 𝐷𝑗 |
+𝑗=1
+
+𝑛
+
+(1 −
+
+log2
+
+𝑘,𝜆
+|𝐵𝑁
+(𝑢) ∩ 𝐷𝑗 |
+
+𝑛
+
+)=
+
+𝑘,𝜆
+|𝐵𝑁
+(𝑢) ∩ 𝐷𝑗 |
+
+𝑛
+
+Proof. Please see ‘‘Appendix’’.
+
+=
+
+𝑘,𝜆
+|𝐵𝑁
+(𝑢)|
+
+𝑛
+𝑘,𝜆
+|𝐵𝑁
+(𝑢)|
+
+𝑛
+
+(1 −
+
+log2
+
+𝑘,𝜆
+|𝐵𝑁
+(𝑢)|
+
+𝑛
+𝑘,𝜆
+|𝐵𝑁
+(𝑢)|
+
+𝑛
+
+),
+
+.
+
+□
+
+The subsequent Proposition 4.25 and Theorem 4.26 delineate the
+relationships among the dependence degree, conditional information
+entropy, and conditional discrimination index.
+
+5.2. Overview
+Before formally starting the experiments, we first provide a summary of the content of this section. The following subsections are
+presented in this section.
+(1) Dispersion analysis for robust UM selection: This subsection
+conducts a numerical experiment to identify the most robust UM among
+the four UMs;
+(2) Relationships between the four UMs and attribute reduction in
+an HIS: Following the selection of the robust UM, a rigorous mathematical analysis explores the relationships between the four UMs and
+reducts;
+
+Proposition 4.25.
+Consider an HIS (𝑈 , 𝐴, 𝑑), given 𝐵 ⊆ 𝐴, 𝑘 ∈
+N 𝑎𝑛𝑑 𝜆 ∈ [0, 1]. The statements below are equivalent:
+𝑘,𝜆
+(1) 𝐵𝑁
+⊆ 𝑅𝑑 ;
+𝑘,𝜆
+(2) 𝛤𝐵,𝑁
+(𝑑) = 1;
+𝑘,𝜆
+(3) 𝐻𝑁
+(𝑑|𝐵) = 0;
+𝑘,𝜆
+(4) 𝐷𝐼𝑁
+(𝑑|𝐵) = 0.
+Proof. Please see ‘‘Appendix’’.
+
+□
+9
+
+Applied Soft Computing 179 (2025) 113276
+
+B. Li et al.
+Table 4
+The details of seventeen datasets selected from UCI.
+No.
+
+Dataset
+
+Abbr.
+
+Objects
+
+Attributes
+
+Class
+
+Type
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+
+Period Changer
+Burst Header Packet
+Horse Colic
+Statlog (Heart)
+Heart failure clinical records
+TCGA InfoWithGrade
+Cryotherapy Dataset
+Credit Approval
+Immunotherapy Dataset
+Iris
+Lymphography
+Climate
+Audit data
+Breast Tissue
+Cervical Cancer Behavior Risk
+Higher Education Students Performance Evaluation Dataset
+Congressional voting records
+
+PC
+BHP
+HC
+SH
+HFC
+TCGA
+CD
+CA
+ID
+Iris
+LYM
+Climate
+Audit
+BT
+CBB
+HES
+CVR
+
+90
+1075
+368
+270
+299
+839
+90
+690
+90
+150
+148
+540
+776
+106
+72
+145
+435
+
+1177
+21
+27
+13
+12
+23
+6
+15
+7
+4
+18
+18
+17
+9
+19
+31
+16
+
+2
+3
+2
+2
+2
+2
+2
+2
+2
+3
+8
+2
+3
+6
+2
+8
+2
+
+Hybrid
+Hybrid
+Hybrid
+Hybrid
+Hybrid
+Hybrid
+Hybrid
+Hybrid
+Hybrid
+Numerical
+Numerical
+Numerical
+Numerical
+Numerical
+Categorical
+Categorical
+Categorical
+
+𝑘,𝜆
+𝑘,𝜆
+𝐻𝑁
+(𝑑|𝐵4 ), 𝐻𝑁
+(𝑑|𝐵5 )},
+
+(3) An attribute reduction algorithm based on the overlap degree
+in an HIS: Utilising the chosen UM and incorporating the concept of
+the overlap degree, this subsection presents the design of an attribute
+reduction algorithm NKRA;
+(4) Comparison against state-of-the-art methods: A comparative
+study of the proposed algorithm against six existing state-of-the-art
+methods is conducted. The performance metrics for comparison include
+the F1 score and classification accuracy;
+(5) Statistical tests on comparison results: This subsection details
+the statistical tests on the comparison results, including the Friedman
+test, the Bonferroni–Dunn test, and the Wilcoxon signed-rank test, to
+rigorously evaluate the performance of the NKRA;
+(6) Comparison of computation time: The computational efficiency
+of the NKRA algorithm is compared with that of the state-of-the-art
+methods, highlighting the practicality of the approach;
+(7) Sensitivity analysis of 𝑘 and 𝜆: This final subsection discusses
+how different combinations of 𝑘 and 𝜆 affect the classification metrics (F1 score and classification accuracy), providing insights into the
+robustness and adaptability of the algorithm NKRA.
+
+𝑘,𝜆
+𝑘,𝜆
+𝑘,𝜆
+𝑘,𝜆
+𝑋𝐸 𝑘,𝜆 (𝑑|𝑒𝑎𝑐ℎ 𝑑𝑎𝑡𝑎𝑠𝑒𝑡) = {𝐸𝑁
+(𝑑|𝐵1 ), 𝐸𝑁
+(𝑑|𝐵2 ), 𝐸𝑁
+(𝑑|𝐵3 ), 𝐸𝑁
+(𝑑|𝐵4 ),
+𝑁
+
+𝑘,𝜆
+𝐸𝑁
+(𝑑|𝐵5 )},
+𝑘,𝜆
+𝑘,𝜆
+𝑘,𝜆
+𝑋𝐷𝐼 𝑘,𝜆 (𝑑|𝑒𝑎𝑐ℎ 𝑑𝑎𝑡𝑎𝑠𝑒𝑡) = {𝐷𝐼𝑁
+(𝑑|𝐵1 ), 𝐷𝐼𝑁
+(𝑑|𝐵2 ), 𝐷𝐼𝑁
+(𝑑|𝐵3 ),
+𝑁
+
+𝑘,𝜆
+𝑘,𝜆
+𝐷𝐼𝑁
+(𝑑|𝐵4 ), 𝐷𝐼𝑁
+(𝑑|𝐵5 )}.
+
+We subsequently compute the CV values for the measurement sets
+on each dataset, as illustrated in Fig. 3.
+From Fig. 3, we can conclude that for two fixed parameters 𝑘 and
+𝜆, 𝛤𝑁𝑘,𝜆 has the minimum CV value in most datasets. This leads to a
+reasonable inference that 𝛤𝑁𝑘,𝜆 performs optimally in quantifying the
+uncertainty of an HIS.
+𝑘,𝜆
+Building upon the analysis provided, 𝛤𝐵,𝑁
+stands out as an optimal
+UM for capturing the uncertainty within an HIS. The primary objective
+of the next subsection is to design an attribute reduction algorithm for
+𝑘,𝜆
+an HIS based on 𝛤𝐵,𝑁
+and evaluate its effectiveness.
+
+5.3. Dispersion analysis for robust UM selection
+5.4. Relationships between the four UMs and attribute reduction in an HIS
+
+In this subsection, the best UM is chosen after performing a dispersion analysis. Propositions 4.7 and 4.14 reveal that, with fixed
+𝑘,𝜆
+𝑘,𝜆
+parameters 𝑘 and 𝜆, both 𝐻𝑁
+and 𝐸𝑁
+monotonically decrease as
+the cardinality of the attribute subset increases. On the other hand,
+𝛤𝑁𝑘,𝜆 monotonically increases with increasing cardinality of the attribute
+𝑘,𝜆
+𝑘,𝜆
+subset according to Proposition 4.3. Therefore, 𝛤𝑁𝑘,𝜆 , 𝐻𝑁
+, and 𝐸𝑁
+are
+suitable for quantifying the uncertainty of an HIS. The definition of UM
+𝑘,𝜆
+𝐷𝐼𝑁
+is defined based on the uncertainty of an HIS. In summary, all
+four uncertainty measures can effectively gauge the uncertainty within
+an HIS.
+The variability of the proposed UMs is assessed through the utilisation of standard deviation. Let 𝑋 = {𝑥1 , … , 𝑥𝑛 } be a dataset. Then, the
+standard deviation coefficient of X is defined as
+√ ∑
+𝑛
+1
+1 ∑𝑛
+2
+𝑖=1 (𝑥𝑖 − 𝑛
+𝑖=1 𝑥𝑖 )
+𝑛
+𝐶𝑉 (𝑋) =
+(5.1)
+1 ∑𝑛
+𝑖=1 𝑥𝑖
+𝑛
+
+Consider an HIS (𝑈 , 𝐴, 𝑑), given 𝐵 ⊆ 𝐴, 𝑘 ∈ N 𝑎𝑛𝑑 𝜆 ∈ [0, 1]. 𝐵
+𝑘,𝜆
+𝑘,𝜆
+is considered a coordinate subset of 𝐴, if 𝛤𝐵,𝑁
+(𝑑) = 𝛤𝐴,𝑁
+(𝑑). 𝑐𝑜𝑘,𝜆
+(𝐴)
+𝑑
+represents the set of all coordinate subsets. 𝐵 is a reduct of 𝐴; if
+𝐵 ∈ 𝑐𝑜𝑘,𝜆
+(𝐴) and ∀ 𝑎 ∈ 𝐵, 𝐵 − {𝑎} ∉ 𝑐𝑜𝑘,𝜆
+(𝐴). 𝑟𝑒𝑑𝑑𝑘,𝜆 (𝐴) represents the
+𝑑
+𝑑
+set of all reducts of 𝐴.
+Theorem 5.1. Consider an HIS (𝑈 , 𝐴, 𝑑), given 𝐵 ⊆ 𝐴, 𝑘 ∈ N 𝑎𝑛𝑑 𝜆 ∈
+[0, 1]. The statements below are equivalent:
+(1) 𝐵 ∈ 𝑐𝑜𝑘,𝜆
+(𝐴);
+𝑑
+𝑘,𝜆
+𝑘,𝜆
+(2) 𝑃 𝑂𝑆𝐵,𝑁
+(𝑑) = 𝑃 𝑂𝑆𝐴,𝑁
+(𝑑);
+𝑘,𝜆
+𝑘,𝜆
+(3) 𝛤𝐵,𝑁 (𝑑) = 𝛤𝐴,𝑁 (𝑑).
+
+Proof. Clearly. □
+Corollary 5.2. Consider an HIS (𝑈 , 𝐴, 𝑑), given 𝐵 ⊆ 𝐴, 𝑘 ∈ N 𝑎𝑛𝑑 𝜆 ∈
+[0, 1]. The statements below are equivalent:
+(1) 𝐵 ∈ 𝑟𝑒𝑑𝑑𝑘,𝜆 (𝐴);
+𝑘,𝜆
+𝑘,𝜆
+𝑘,𝜆
+(2) 𝑃 𝑂𝑆𝐵,𝑁
+(𝑑) = 𝑃 𝑂𝑆𝐴,𝑁
+(𝑑) and ∀ 𝑎 ∈ 𝐵, 𝑃 𝑂𝑆𝐵−{𝑎},𝑁
+(𝑑) ≠
+
+First, for each dataset, let 𝐵𝑗 = {𝑎1×𝑢𝑛𝑖𝑡 , … , 𝑎𝑗×𝑢𝑛𝑖𝑡 } (𝑗 = 1, 2, … , 5)
+be defined. ‘‘𝑈 𝑛𝑖𝑡’’ here refers to the result of dividing the total number of conditional attributes by five via integer division. The sets of
+measurements for each UM on each dataset can be expressed as follows:
+𝑋𝛤 𝑘,𝜆 (𝑑|𝑒𝑎𝑐ℎ 𝑑𝑎𝑡𝑎𝑠𝑒𝑡) = {𝛤𝐵𝑘,𝜆,𝑁 (𝑑), 𝛤𝐵𝑘,𝜆,𝑁 (𝑑), 𝛤𝐵𝑘,𝜆,𝑁 (𝑑), 𝛤𝐵𝑘,𝜆,𝑁 (𝑑), 𝛤𝐵𝑘,𝜆 (𝑑)},
+
+𝑘,𝜆
+𝑃 𝑂𝑆𝐴,𝑁
+(𝑑);
+𝑘,𝜆
+𝑘,𝜆
+𝑘,𝜆
+𝑘,𝜆
+(3) 𝛤𝐵,𝑁
+(𝑑) = 𝛤𝐴,𝑁
+(𝑑) and ∀ 𝑎 ∈ 𝐵, 𝛤𝐵−{𝑎},𝑁
+(𝑑) ≠ 𝛤𝐴,𝑁
+(𝑑).
+
+𝑘,𝜆
+𝑘,𝜆
+𝑘,𝜆
+𝑋𝐻 𝑘,𝜆 (𝑑|𝑒𝑎𝑐ℎ 𝑑𝑎𝑡𝑎𝑠𝑒𝑡) = {𝐻𝑁
+(𝑑|𝐵1 ), 𝐻𝑁
+(𝑑|𝐵2 ), 𝐻𝑁
+(𝑑|𝐵3 ),
+
+Proof. It can be proven according to Theorem 5.1. □
+
+𝑁
+
+1
+
+2
+
+3
+
+4
+
+5
+
+𝑁
+
+10
+
+Applied Soft Computing 179 (2025) 113276
+
+B. Li et al.
+
+Fig. 3. Coefficient of variation (CV) for UMs across different datasets.
+
+(1) 𝐵 ∈ 𝑟𝑒𝑑𝑑𝑘,𝜆 (𝐴);
+𝑘,𝜆
+𝑘,𝜆
+𝑘,𝜆
+𝑘,𝜆
+(2) 𝐻𝑁
+(𝑑|𝐵) = 𝐻𝑁
+(𝑑|𝐴) and ∀ 𝑎 ∈ 𝐵, 𝐻𝑁
+(𝑑|𝐵 −{𝑎}) ≠ 𝐻𝑁
+(𝑑|𝐴);
+𝑘,𝜆
+𝑘,𝜆
+𝑘,𝜆
+(3) 𝐷𝐼𝑁 (𝑑|𝐵) = 𝐷𝐼𝑁 (𝑑|𝐴) and ∀ 𝑎 ∈ 𝐵, 𝐷𝐼𝑁 (𝑑|𝐵 − {𝑎}) ≠
+𝑘,𝜆
+𝐷𝐼𝑁
+(𝑑|𝐴).
+
+The connections between the conditional information entropy and
+conditional discrimination index are illustrated in the following Theorem 5.3 and Corollary 5.4.
+Theorem 5.3. Assuming that (𝑈 , 𝐴, 𝑑) is a (𝑘, 𝜆)-consistent HIS, with
+𝑘 ∈ N and 𝜆 ∈ [0, 1], the following statements are equivalent:
+(1) 𝐵 ∈ 𝑐𝑜𝑘,𝜆
+(𝐴);
+𝑑
+𝑘,𝜆
+𝑘,𝜆
+(2) 𝐻𝑁
+(𝑑|𝐵) = 𝐻𝑁
+(𝑑|𝐴);
+
+Proof. This can be demonstrated via Theorem 5.3. □
+Theorem 5.5. Given 𝑘 ∈ N 𝑎𝑛𝑑 𝜆 ∈ [0, 1]. Assume that (𝑈 , 𝐴, 𝑑) is an
+𝑘,𝜆
+𝑘,𝜆
+(𝑘, 𝜆)-consistent HIS. If 𝐵 ∈ 𝑐𝑜𝑘,𝜆
+(𝐴), then 𝐸𝑁
+(𝑑|𝐵) = 𝐸𝑁
+(𝑑|𝐴).
+𝑑
+
+𝑘,𝜆
+𝑘,𝜆
+(3) 𝐷𝐼𝑁
+(𝑑|𝐵) = 𝐷𝐼𝑁
+(𝑑|𝐴).
+
+Proof. Please see ‘‘Appendix’’.
+
+□
+
+𝑘,𝜆
+Proof. Assume that 𝐵 ∈ 𝑐𝑜𝑘,𝜆
+(𝐴). According to Theorem 5.1, 𝛤𝐵,𝑁
+(𝑑) =
+𝑑
+𝑘,𝜆
+𝛤𝐴,𝑁 (𝑑). Following a similar proof strategy as in Theorem 5.3, it
+𝑘,𝜆
+can be established that 𝐵𝑁
+⊆ 𝑅𝑑 . According to Proposition 4.27,
+
+Corollary 5.4. Given 𝑘 ∈ N 𝑎𝑛𝑑 𝜆 ∈ [0, 1]. Suppose that (𝑈 , 𝐴, 𝑑) is an
+(𝑘, 𝜆)-consistent HIS. The statements below are equivalent:
+11
+
+Applied Soft Computing 179 (2025) 113276
+
+B. Li et al.
+𝑘,𝜆
+𝐸𝑁
+(𝑑|𝐵) = 0. Considering that (𝑈 , 𝐴, 𝑑) is (𝑘, 𝜆)-consistent, and ac𝑘,𝜆
+𝑘,𝜆
+cording to Theorem 4.28, 𝐸𝑁
+(𝑑|𝐴) = 0. Therefore, 𝐸𝑁
+(𝑑|𝐵) =
+𝑘,𝜆
+𝐸𝑁
+(𝑑|𝐴). □
+
+Algorithm 1: Attribute reduction algorithm based on 𝛤𝑁𝑘,𝜆 in an
+HIS (NKRA).
+Input: An HIS (𝑈 , 𝐴, 𝑑), and two parameters 𝜆 ∈ [0, 1], 𝑘 ∈ [1,
+|𝑈 |];
+Output: One reduct 𝐵;
+1: for any 𝑎 ∈ 𝐴 do
+2:
+Calculate the distance between two information values
+𝜌(𝑎(𝑢), 𝑎(𝑣)) under the attribute 𝑎 by Definition 2.5;
+𝜆 (𝑢) of each object 𝑢 under a
+3:
+Compute the tolerance class 𝑁{𝑎}
+single attribute 𝑎 according to Definition 2.9;
+4:
+Compute the class 𝑎𝑘 (𝑢) of each object 𝑢 under a single
+attribute 𝑎 according to Definition 3.1;
+5:
+Compute 𝑂𝐷𝑎 according to Definition 5.8;
+6: end for
+7: Attributes are arranged in descending order based on the value
+of 𝑂𝐷𝑎 , and the outcome is labelled as SORT (A).
+8: Initialise:𝐵 ← 𝑆𝑂𝑅𝑇 (𝐴), 𝑠𝑡𝑎𝑟𝑡 ← 1; /* where attributes in
+SORT(A) are ordered. */
+𝑘,𝜆
+9: Calculate 𝛤𝐴,𝑁 (𝑑) according to Definition 4.2;
+10: while 𝑠𝑡𝑎𝑟𝑡 = 1 do
+11:
+𝑠𝑡𝑎𝑟𝑡 ← 0;
+12:
+for each 𝑎 ∈ 𝐵 do
+𝑘,𝜆
+13:
+Calculate 𝛤𝐵−{𝑎},𝑁
+(𝑑)according to Definition 4.2;
+
+Corollary 5.6. Let (𝑈 , 𝐴, 𝑑) be an (𝑘, 𝜆)-consistent HIS. Given that 𝑘 ∈
+N 𝑎𝑛𝑑 𝜆 ∈ [0, 1]. Then,
+𝑘,𝜆
+𝑘,𝜆
+𝐵 ∈ 𝑟𝑒𝑑𝑑𝑘,𝜆 (𝐴) ⇔ 𝐸𝑁
+(𝑑|𝐵) = 𝐸𝑁
+(𝑑|𝐴) 𝑎𝑛𝑑 ∀ 𝑎 ∈ 𝐵,
+𝑘,𝜆
+𝑘,𝜆
+𝐸𝑁
+(𝑑|𝐵 − {𝑎}) ≠ 𝐸𝑁
+(𝑑|𝐴).
+
+Proof. It can be derived from Theorem 5.5. □
+5.5. An attribute reduction algorithm based on the overlap degree in an HIS
+In this subsection, an algorithm is designed to search for an 𝛤𝑁𝑘,𝜆 based reduction set. According to Proposition 4.3, removing a conditional attribute from a subset of attributes results in a monotonic
+decrease in the value of 𝛤𝑁𝑘,𝜆 . This implies that the reduction in this
+value can be utilised to gauge the redundancy of the removed attribute.
+In other words, we can devise a reduction algorithm via 𝛤𝑁𝑘,𝜆 . Since
+𝛤𝑁𝑘,𝜆 have the property in Corollary 5.2, we can design the 𝛤𝑁𝑘,𝜆 -based
+attribute reduction algorithm (denoted as NKRA).
+Computing 𝐾𝑁𝑁-information granules is a very time-consuming
+task, and the current heuristic search strategy has low efficiency. To address these computational challenges, we aim to increase the reduction
+efficiency by introducing a novel perspective on the search strategy.
+We plan to define measures for pre-evaluating the importance of individual attributes and pre-sort the attributes based on their importance
+levels. Starting with the attribute of least importance, we employ the
+dependency degree to assess iteratively whether each attribute can be
+removed, thereby optimising the reduction process.
+Definition 5.7.
+
+𝑘,𝜆
+
+𝑘,𝜆
+
+14:
+if 𝛤𝐵−{𝑎},𝑁 (𝑑) = 𝛤𝐴,𝑁 (𝑑) then
+15:
+𝑠𝑡𝑎𝑟𝑡 ← 1;
+16:
+𝐵 ← 𝐵 − {𝑎};
+17:
+end if
+𝑘,𝜆
+𝑘,𝜆
+18:
+if 𝛤𝐵−{𝑎},𝑁
+(𝑑) ≠ 𝛤𝐴,𝑁
+(𝑑) then
+19:
+break
+20:
+end if
+21:
+end for
+22: end while
+23: return 𝐵.
+
+For an HIS (𝑈 , 𝐴, 𝑑) with 𝑎 ∈ 𝐴. ∀ 𝑖, denote
+
+𝑐
+
+𝑎 ∈ 𝐴 , 𝑎(𝐷𝑖 ) = {𝑎(𝑢) ∶ 𝑢 ∈ 𝐷𝑖 };
+𝑎
+𝑎 ∈ 𝐴𝑛 , 𝑚𝑎𝐷 = 𝑚𝑖𝑛{𝑎(𝑢) ∶ 𝑢 ∈ 𝐷𝑖 }, 𝑀𝐷
+= 𝑚𝑎𝑥{𝑎(𝑢) ∶ 𝑢 ∈ 𝐷𝑖 }.
+𝑖
+
+𝑖
+
+Then, the coincidence degree between 𝑎(𝐷𝑖 ) and 𝑎(𝐷𝑗 ) (𝑖 ≠ 𝑗) is
+represented as
+
+The NKRA algorithm employs a heuristic approach in the attribute
+reduction process. The attributes are systematically removed from the
+complete set based on their 𝛤𝑁𝑘,𝜆 values in the attribute reduction
+process of the algorithm NKRA. The attributes in SORT(A) can be
+removed one by one until the value of the calculated function value
+changes; at this point, the algorithm NKRA concludes, and a reduct is
+obtained.
+The algorithm procedure is detailed as follows. For an HIS with 𝑠
+decision classes, 𝑛 objects, and 𝑚 conditional attributes, where 𝑠 is at
+most equal to 𝑛. In Steps 1–7, we calculate the distances between any
+two objects within each attribute using Definition 2.5. This enables the
+𝜆 (𝑢). With Definition 3.1, we
+determination of the tolerance class 𝑁{𝑎}
+obtain the class 𝑎𝑘 (𝑢) for each attribute. Importantly, the calculation
+of the distance between any two objects in Definition 2.5 involves a
+summation operation. With Definition 5.8, we calculate the overlap
+degree of the information values within each attribute. The attributes
+are then arranged in descending order based on the overlap degree
+of the information values, and the outcome is labelled SORT (A). In
+Step 8, we set the initial values of 𝐵 as 𝑆𝑂𝑅𝑇 (𝐴) and 𝑠𝑡𝑎𝑟𝑡 as 1. In
+𝑘,𝜆
+Step 9, we compute 𝛤𝐴,𝑁
+. In Steps 10–22, we enter a while loop when
+‘‘start = 1’’. The while loop concludes when there is a change in the
+dependence degree value; otherwise, if no update is made to 𝐵, then
+the complexity of Steps 10–22 is 𝑂(1) time. It is crucial to emphasise
+that the computational complexity of the dependence degree, as per
+Definition 4.2, is 𝑂(𝑛𝑠) time. If 𝐵 undergoes an update, then in the
+slowest scenario, the while loop iterates m times, so the computational
+complexity of Steps 10–22 is 𝑂(𝑚𝑛𝑠) time. The algorithm NKRA outputs
+a reduct 𝐵 in Step 23.
+Following the analysis of the algorithm NKRA provided above, Steps
+1–6 require 𝑂(𝑚𝑛2 𝑠 + 𝑚𝑛2 + 𝑚𝑘𝑛2 + 𝑚𝑠2 ) time. Step 7 takes 𝑂(𝑚) time.
+
+𝐶𝐷𝑎 (𝐷𝑖 , 𝐷𝑗 ) = 𝐶𝐷(𝑎(𝐷𝑖 ), 𝑎(𝐷𝑗 )) =
+|𝑎(𝐷 )∩𝑎(𝐷 )|
+
+𝑖
+𝑗
+⎧
+,
+𝑎 ∈ 𝐴𝑐
+⎪ |𝑎(𝐷𝑖 )∪𝑎(𝐷𝑗 )|
+⎨ |[𝑚𝑎𝐷𝑖 ,𝑀𝐷𝑎 𝑖 ]∩[𝑚𝑎𝐷𝑗 ,𝑀𝐷𝑎 𝑗 ]|
+⎪ |[𝑚𝑎 ,𝑀 𝑎 ]∪[𝑚𝑎 ,𝑀 𝑎 ]| , 𝑎 ∈ 𝐴𝑛
+⎩ 𝐷𝑖 𝐷𝑖
+𝐷𝑗
+𝐷𝑗
+
+(5.2)
+
+Definition 5.8. Consider an HIS (𝑈 , 𝐴, 𝑑) with 𝑎 ∈ 𝐴. The overlap
+degree of the information values under 𝑎 is represented as
+∑
+𝑂𝐷𝑎 =
+𝐶𝐷𝑎 (𝐷𝑖 , 𝐷𝑗 ).
+(5.3)
+1≤𝑖,𝑗≤𝑠, 𝑖≠𝑗
+
+Definition 5.9. Suppose that (𝑈 , 𝐴, 𝑑) is an HIS. Put 𝐴 = {𝑎1 , 𝑎2 , … ,
+𝑎𝑚 }. If 𝐴 = {𝑎′1 , 𝑎′2 , … , 𝑎′𝑚 } and
+𝑂𝐷𝑎′ ≥ 𝑂𝐷𝑎′ ≥ ⋯ ≥ 𝑂𝐷𝑎′𝑚 ,
+1
+
+2
+
+(5.4)
+
+then {𝑎′1 , 𝑎′2 , … , 𝑎′𝑚 } is termed 𝑆𝑂𝑅𝑇 (𝐴), i.e.,
+𝑆𝑂𝑅𝑇 (𝐴) = {𝑎′1 , 𝑎′2 , … , 𝑎′𝑚 }.
+
+(5.5)
+
+Example 5.10 (Building Upon the Illustration in Example 2.2).
+As per Definitions 5.7–5.9, we have
+𝑂𝐷𝑎1 = 1.3333, 𝑂𝐷𝑎2 = 2, 𝑂𝐷𝑎3 = 0, 𝑂𝐷𝑎4 = 1.
+Then,
+𝑆𝑂𝑅𝑇 (𝐴) = {𝑎2 , 𝑎1 , 𝑎4 , 𝑎3 }.
+12
+
+Applied Soft Computing 179 (2025) 113276
+
+B. Li et al.
+Table 5
+A detailed overview of the computational complexity of the algorithm NKRA.
+
+Table 6
+Time complexity comparison of algorithms.
+
+Steps
+
+Computational time
+
+Algorithm
+
+Time complexity
+
+1–6
+7
+8
+9
+10–22
+
+𝑂(𝑚𝑛2 𝑠 + 𝑚𝑛2 + 𝑚𝑘𝑛2 + 𝑚𝑠2 )
+𝑂(𝑚)
+𝑂(1)
+𝑂(𝑛𝑠)
+𝑂(𝑚𝑛𝑠)
+
+Total
+
+𝑂(𝑚𝑛2 𝑠 + 𝑚𝑛2 + 𝑚𝑘𝑛2 + 𝑚𝑠2 + 𝑚 + 𝑛𝑠 + 𝑚𝑛𝑠)
+
+NKRA
+𝐼𝑚𝑝𝐷
+2
+𝐼𝑚𝑝𝐷
+3
+BFB
+BFP
+ES
+ULGR
+
+𝑂(𝑚𝑛2 𝑠 + 𝑚𝑛2 + 𝑚𝑘𝑛2 + 𝑚𝑠2 + 𝑚 + 𝑛𝑠 + 𝑚𝑛𝑠)
+𝑂(𝑚𝑛2 + 𝑚2 𝑛 + 𝑚𝑛𝑠)
+𝑂(𝑚𝑛2 + 𝑚𝑛 + 𝑚𝑠)
+𝑂(𝑚𝑛2 + 𝑚3 + 𝑚2 𝑠)
+𝑂(𝑚𝑛2 + 𝑚3 + 𝑚2 𝑠)
+𝑂(𝑚𝑛2 𝑠 + 𝑚𝑛𝑠 + 𝑚𝑛 + 𝑛2 + 𝑛𝑠)
+𝑂(𝑚𝑛2 + 𝑚2 + 𝑚𝑛)
+
+The time complexity of Step 8 is 𝑂(1) time. Step 9 requires 𝑂(𝑛𝑠) time.
+Steps 10–22 require 𝑂(𝑚𝑛𝑠) time. Therefore, the NKRA algorithm has a
+computational complexity of 𝑂(𝑚𝑛2 𝑠 + 𝑚𝑛2 + 𝑚𝑘𝑛2 + 𝑚𝑠2 + 𝑚 + 𝑛𝑠 + 𝑚𝑛𝑠)
+time.
+To better illustrate, Table 5 presents a detailed overview of the
+computational complexity of the algorithm NKRA.
+
+the dependence degree, conditional information entropy, conditional
+information amount, and conditional discrimination index. Through
+dispersion analysis, the most stable UM, the dependence degree, was
+selected, which was then used to construct the attribute reduction
+algorithm. The UM selected for this algorithm is consistent with 𝐾𝑁𝑁neighbourhood rough set model and also carries the key theoretical
+advantage of 𝐾𝑁𝑁-neighbourhood rough set model: the ability to
+freely select the corresponding 𝑘 and 𝜆 to effectively identify isolated
+objects and surrounded objects within a dataset.
+To validate the effectiveness of the algorithm NKRA, we employ
+AdaBoost classifier (n estimators = 50, learning rate = 1.0), DT classifier (max depth = 3) and KNN classifier (neighbours = 4) to assess
+the performance of these six algorithms. We adapt seventeen different
+datasets, their basic information is shown in Table 4. The criteria for
+selecting the datasets in this paper include the following: (a) datasets
+are sourced from UCI; (b) datasets are advisable for classification tasks;
+(c) The datasets include categorical, numerical, and hybrid datasets
+to assess the classification performance of the algorithm NKRA on
+different types of datasets.
+Then the algorithm NKRA is utilised on the selected seventeen
+datasets. Three kinds of classifiers (AdaBoost, DT and KNN) are used
+to calculate the F1 score and classification accuracy of the reduced
+set of the algorithm NKRA for every dataset. The six state-of-the-art
+algorithms use their optimal parameters (if available). The algorithm
+NKRA maintains fixed parameters throughout the experiments: 𝑘 is set
+to 0.4|𝑈 |, where |𝑈 | is the number of objects in a dataset, and 𝜆 is set
+to 0.2. (The reason why we choose this parameter combination is in
+the ‘‘Datasets and parameter setup’’)
+Tables 7–12 present the following results: (1) The classification
+metrics (classification accuracy and F1 score) of the reduction sets
+produced by the algorithm NKRA is greater than or equal to its original
+dataset in a total of 76 cases. (2) In the majority of original HISs, the
+algorithm NKRA outperforms or equals four or more of the other six
+algorithms. (3) The average F1 score of the algorithm NKRA across all
+datasets is higher than five or more of the other six algorithms. (4)
+The average classification accuracy of the algorithm NKRA across all
+datasets is higher than (or equal to) the other six algorithms.
+Table 13 presents the win/draw/loss results of the NKRA algorithm
+compared with those of the other six algorithms under the F1 score.
+In 51 comparison cases, the NKRA algorithm outperforms BFP, 𝐼𝑚𝑝𝐷
+,
+2
+𝐼𝑚𝑝𝐷
+,
+BFP,
+ES
+and
+ULGR
+by
+28,
+49,
+51,
+28,
+12
+and
+16
+times,
+respec3
+tively. Additionally, the algorithm NKRA draws 16, 0, 0, 16, 25 and 19
+times against BFP, 𝐼𝑚𝑝𝐷
+, 𝐼𝑚𝑝𝐷
+, BFP, ES and ULGR, respectively.
+2
+3
+Table 14 presents the win/draw/loss results of the NKRA algorithm
+compared with those of the other six algorithms in terms of classification accuracy. In 51 comparison cases, the algorithm NKRA performs
+29, 44, 43, 29, 18 and 20 times better than BFP, 𝐼𝑚𝑝𝐷
+, 𝐼𝑚𝑝𝐷
+, BFP, ES
+2
+3
+and ULGR, respectively. Additionally, the algorithm NKRA draws 13, 2,
+0, 13, 25 and 15 times against BFP, 𝐼𝑚𝑝𝐷
+, 𝐼𝑚𝑝𝐷
+, BFP, ES and ULGR,
+2
+3
+respectively.
+These results indicate that the NKRA algorithm is superior to or
+equal to the other six advanced algorithms in the majority of cases,
+demonstrating its significant advantages and strong practicality.
+
+5.6. Comparison against state-of-the-art methods
+BFB [29], BFP [29], 𝐼𝑚𝑝𝐷
+[25], 𝐼𝑚𝑝𝐷
+[25], ES [34] and ULGR
+2
+3
+[35] are six existing advanced attribute reduction algorithms that are
+compared with the algorithm NKRA to validate its effectiveness. A
+succinct presentation of the six advanced attribute reduction algorithms
+is provided below.
+(1) BFB: The attribute reduction algorithm employs a novel distance
+function designed for handling incomplete and hybrid data, and integrates fuzzy belief functions with Dempster–Shafer evidence theory
+to establish a new theoretical framework. This approach demonstrates
+robust noise resistance without the need for parameter determination.
+(2) BFP: An attribute reduction algorithm for hybrid data utilising fuzzy plausibility functions. This algorithm exhibits strong noise
+resistance without requiring parameter determination.
+(3) 𝐼𝑚𝑝𝐷
+: A heuristic algorithm for partially labelled heteroge2
+neous data based on the information-theoretic neighbourhood rough
+set model. This algorithm is designed to handle both complete and
+incomplete hybrid datasets.
+(4) 𝐼𝑚𝑝𝐷
+: This algorithm is also a heuristic algorithm for partially
+3
+labelled heterogeneous data based on the information-theoretic neighbourhood rough set model. This algorithm is designed to handle both
+complete and incomplete hybrid datasets.
+(5) ES: The attribute reduction algorithm follows an ensemble selector strategy based on 𝑁-rough set model. This algorithm is designed
+to handle only complete hybrid datasets. In the case of incomplete
+datasets, where values are missing for categorical and numerical attributes, we employ a replacement strategy using patterns and means
+from the available data, as suggested by [36].
+(6) ULGR: This algorithm is also a heuristic algorithm for heterogeneous data based on gain ratio in information entropy. This algorithm is
+designed to handle only complete hybrid datasets. In the case of incomplete datasets, where values are missing for categorical and numerical
+attributes, we employ a replacement strategy using patterns and means
+from the available data, as suggested by [36].
+The distinctions among the above six algorithms and the algorithm
+NKRA are elucidated below:
+(a) Diverse data processing methods are employed.
+(b) Various UMs are utilised in these algorithms.
+(c) All these algorithms can handle hybrid data.
+In terms of the computational complexity, Table 6 shows that the
+computational complexity of the proposed algorithm in this paper is
+close to 𝑛3 , which corresponds to the worst-case scenario (i.e., when the
+corresponding for-loops run to completion). However, based on experimental results, the algorithm performs comparably to other algorithms
+in most cases in terms of execution time.
+In terms of theory, this paper employs 𝐾𝑁𝑁-neighbourhood rough
+set model and constructs four corresponding UMs based on this model:
+13
+
+Applied Soft Computing 179 (2025) 113276
+
+B. Li et al.
+Table 7
+F1 score of raw data and reduced data with AdaBoost.
+Data sets
+
+Raw data
+
+NKRA
+
+BFP
+
+𝐼𝑚𝑝𝐷
+2
+
+𝐼𝑚𝑝𝐷
+3
+
+BFB
+
+ES
+
+ULGR
+
+PC
+BHP
+HC
+SH
+HFC
+TCGA
+CD
+CA
+ID
+Iris
+LYM
+Climate
+Audit
+BT
+CBB
+HES
+CVR
+
+1.0
+1.0
+0.94
+0.88
+0.9
+0.87
+1.0
+0.88
+0.97
+0.97
+0.39
+0.98
+1.0
+0.66
+1.0
+0.18
+0.96
+
+1.0
+1.0
+0.93
+0.86
+0.9
+0.76
+1.0
+0.88
+0.97
+0.97
+0.39
+0.96
+1.0
+0.66
+0.75
+0.18
+0.96
+
+1.0
+1.0
+0.82
+0.82
+0.88
+0.74
+1.0
+0.79
+0.97
+0.97
+0.38
+0.98
+1.0
+0.74
+0.74
+0.14
+0.92
+
+0.81
+0.93
+0.58
+0.77
+0.68
+0.46
+0.87
+0.6
+0.79
+0.96
+0.25
+0.88
+0.85
+0.27
+0.74
+0.14
+0.68
+
+0.71
+0.57
+0.83
+0.65
+0.73
+0.74
+0.78
+0.74
+0.82
+0.59
+0.23
+0.88
+0.71
+0.36
+0.74
+0.14
+0.68
+
+1.0
+1.0
+0.82
+0.82
+0.88
+0.74
+1.0
+0.79
+0.97
+0.97
+0.38
+0.98
+1.0
+0.74
+0.74
+0.14
+0.92
+
+0.8
+1.0
+0.8
+0.87
+0.9
+0.87
+1.0
+0.88
+0.97
+0.97
+0.39
+0.97
+1.0
+0.66
+0.94
+0.18
+0.96
+
+0.87
+1.0
+0.81
+0.88
+0.89
+0.87
+1.0
+0.88
+0.97
+0.97
+0.4
+0.96
+0.84
+0.65
+0.93
+0.18
+0.96
+
+Average
+
+0.86
+
+0.83
+
+0.82
+
+0.66
+
+0.64
+
+0.82
+
+0.83
+
+0.83
+
+Table 8
+F1 score of raw data and reduced data with DT (max depth=3).
+Data sets
+
+Raw data
+
+NKRA
+
+BFP
+
+𝐼𝑚𝑝𝐷
+2
+
+𝐼𝑚𝑝𝐷
+3
+
+BFB
+
+ES
+
+ULGR
+
+PC
+BHP
+HC
+SH
+HFC
+TCGA
+CD
+CA
+ID
+Iris
+LYM
+Climate
+Audit
+BT
+CBB
+HES
+CVR
+
+0.87
+1.0
+0.89
+0.86
+0.87
+0.87
+0.94
+0.86
+0.94
+0.97
+0.42
+0.94
+1.0
+0.6
+0.99
+0.42
+0.96
+
+0.89
+1.0
+0.89
+0.83
+0.87
+0.76
+0.94
+0.86
+0.94
+0.97
+0.42
+0.94
+1.0
+0.6
+0.75
+0.26
+0.96
+
+0.87
+1.0
+0.8
+0.79
+0.87
+0.74
+0.94
+0.78
+0.94
+0.97
+0.43
+0.94
+0.97
+0.6
+0.72
+0.14
+0.9
+
+0.79
+0.94
+0.57
+0.77
+0.69
+0.46
+0.86
+0.58
+0.72
+0.97
+0.35
+0.88
+0.85
+0.55
+0.72
+0.14
+0.68
+
+0.69
+0.47
+0.78
+0.61
+0.72
+0.74
+0.66
+0.73
+0.74
+0.56
+0.24
+0.88
+0.72
+0.53
+0.72
+0.14
+0.68
+
+0.87
+1.0
+0.8
+0.79
+0.87
+0.74
+0.94
+0.78
+0.94
+0.97
+0.43
+0.94
+0.97
+0.6
+0.72
+0.14
+0.9
+
+0.75
+1.0
+0.63
+0.86
+0.87
+0.87
+0.94
+0.86
+0.94
+0.97
+0.42
+0.94
+0.97
+0.6
+0.88
+0.42
+0.96
+
+0.75
+1.0
+0.63
+0.86
+0.88
+0.87
+0.94
+0.86
+0.94
+0.97
+0.42
+0.94
+0.84
+0.6
+0.9
+0.35
+0.96
+
+Average
+
+0.85
+
+0.82
+
+0.79
+
+0.68
+
+0.62
+
+0.79
+
+0.82
+
+0.81
+
+Table 9
+F1 score of raw data and reduced data with KNN.
+Data sets
+
+Raw data
+
+NKRA
+
+BFP
+
+𝐼𝑚𝑝𝐷
+2
+
+𝐼𝑚𝑝𝐷
+3
+
+BFB
+
+ES
+
+ULGR
+
+PC
+BHP
+HC
+SH
+HFC
+TCGA
+CD
+CA
+ID
+Iris
+LYM
+Climate
+Audit
+BT
+CBB
+HES
+CVR
+
+0.75
+1.0
+0.86
+0.77
+0.66
+0.86
+0.92
+0.79
+0.8
+0.96
+0.55
+0.94
+0.99
+0.78
+0.91
+0.5
+0.96
+
+0.76
+1.0
+0.87
+0.77
+0.66
+0.78
+0.92
+0.79
+0.8
+0.96
+0.55
+0.94
+0.99
+0.78
+0.8
+0.36
+0.96
+
+0.74
+1.0
+0.79
+0.77
+0.7
+0.77
+0.92
+0.79
+0.8
+0.96
+0.5
+0.94
+0.99
+0.78
+0.13
+0.14
+0.94
+
+0.79
+1.0
+0.7
+0.76
+0.65
+0.45
+0.84
+0.72
+0.78
+0.97
+0.33
+0.91
+0.85
+0.7
+0.13
+0.14
+0.47
+
+0.68
+1.0
+0.83
+0.71
+0.63
+0.77
+0.78
+0.28
+0.78
+0.44
+0.14
+0.91
+0.67
+0.6
+0.13
+0.14
+0.47
+
+0.74
+1.0
+0.79
+0.77
+0.7
+0.77
+0.92
+0.79
+0.8
+0.96
+0.5
+0.94
+0.99
+0.78
+0.13
+0.14
+0.94
+
+0.78
+1.0
+0.8
+0.74
+0.66
+0.86
+0.92
+0.79
+0.8
+0.96
+0.55
+0.96
+0.99
+0.78
+0.81
+0.52
+0.95
+
+0.78
+1.0
+0.81
+0.77
+0.66
+0.87
+0.92
+0.79
+0.8
+0.97
+0.53
+0.96
+0.84
+0.76
+0.9
+0.48
+0.96
+
+Average
+
+0.82
+
+0.81
+
+0.75
+
+0.66
+
+0.58
+
+0.75
+
+0.82
+
+0.81
+
+numerical ranks to the classification accuracies of all the datasets in
+descending order. The numbering schemes used are 1, 2, ⋯, and so
+on. For example, if, in a specific dataset, the algorithm NKRA achieves
+the highest performance among the seven algorithms, it is assigned the
+number 1. In cases where two algorithms exhibit the same classification
+accuracy, they share the same ranking, which is the average of their
+positions in the order. The Friedman test can be formulated as follows:
+
+5.7. Statistical tests on comparison results
+To systematically assess the differences in classification accuracy
+among the seven algorithms, we employ the Friedman test [37]. This
+test is well suited for determining whether there exists a significant
+difference exists in the performance of various comparison algorithms.
+Prior to conducting the Friedman test, we organised and assigned
+14
+
+Applied Soft Computing 179 (2025) 113276
+
+B. Li et al.
+Table 10
+Classification accuracy of raw data and reduced data with AdaBoost.
+Data sets
+
+Raw data
+
+NKRA
+
+BFP
+
+𝐼𝑚𝑝𝐷
+2
+
+𝐼𝑚𝑝𝐷
+3
+
+BFB
+
+ES
+
+ULGR
+
+PC
+BHP
+HC
+SH
+HFC
+TCGA
+CD
+CA
+ID
+Iris
+LYM
+Climate
+Audit
+BT
+CBB
+HES
+CVR
+
+57.78
+100.0
+88.85
+81.85
+68.9
+86.77
+88.89
+84.49
+82.22
+94.67
+35.71
+94.44
+99.87
+58.36
+84.82
+29.86
+95.62
+
+70.0
+100.0
+88.84
+77.78
+71.23
+74.73
+88.89
+84.49
+82.22
+94.67
+35.71
+91.85
+99.87
+58.36
+73.39
+27.71
+95.62
+
+73.33
+100.0
+79.88
+73.33
+63.9
+70.92
+90.0
+76.81
+82.22
+94.67
+36.95
+94.44
+99.61
+63.27
+70.71
+22.0
+90.1
+
+61.11
+93.49
+65.5
+77.78
+68.89
+59.24
+80.0
+57.97
+77.78
+94.0
+25.05
+91.3
+78.72
+35.64
+70.71
+22.0
+67.37
+
+71.11
+53.3
+83.14
+52.22
+71.24
+70.92
+64.44
+72.17
+68.89
+54.0
+38.57
+91.11
+70.58
+46.73
+70.71
+22.0
+67.37
+
+73.33
+100.0
+79.88
+73.33
+63.9
+70.92
+90.0
+76.81
+82.22
+94.67
+36.95
+94.44
+99.61
+63.27
+70.71
+22.0
+90.1
+
+66.67
+100.0
+67.36
+80.74
+68.9
+86.77
+88.89
+84.49
+82.22
+94.67
+35.71
+95.56
+93.03
+58.36
+73.39
+29.19
+95.4
+
+66.67
+100.0
+68.47
+81.85
+69.56
+86.77
+90.0
+84.49
+82.22
+94.67
+35.05
+92.22
+84.24
+58.64
+70.89
+27.71
+95.4
+
+Average
+
+78.42
+
+77.37
+
+75.42
+
+66.27
+
+62.85
+
+75.42
+
+76.55
+
+75.81
+
+Table 11
+Classification accuracy of raw data and reduced data with DT (max depth=3).
+Data sets
+
+Raw data
+
+NKRA
+
+BFP
+
+𝐼𝑚𝑝𝐷
+2
+
+𝐼𝑚𝑝𝐷
+3
+
+BFB
+
+ES
+
+ULGR
+
+PC
+BHP
+HC
+SH
+HFC
+TCGA
+CD
+CA
+ID
+Iris
+LYM
+Climate
+Audit
+BT
+CBB
+HES
+CVR
+
+65.56
+100.0
+87.5
+77.78
+73.23
+86.89
+92.22
+79.71
+83.33
+96.0
+38.57
+91.11
+99.87
+55.73
+81.96
+29.71
+95.85
+
+67.78
+100.0
+87.5
+77.04
+73.23
+74.74
+92.22
+79.71
+82.22
+96.0
+38.57
+92.22
+99.87
+55.73
+73.39
+34.33
+95.85
+
+66.67
+100.0
+77.43
+65.93
+73.23
+70.92
+92.22
+73.62
+82.22
+96.0
+39.95
+91.11
+97.3
+55.73
+70.71
+22.0
+86.63
+
+65.56
+93.95
+65.22
+77.78
+67.55
+59.24
+82.22
+56.81
+76.67
+95.33
+40.48
+90.74
+73.6
+59.45
+70.71
+22.0
+67.37
+
+71.11
+50.8
+78.78
+52.22
+73.24
+70.92
+63.33
+71.74
+77.78
+55.33
+39.24
+91.11
+67.5
+43.73
+70.71
+22.0
+67.37
+
+66.67
+100.0
+77.43
+65.93
+73.23
+70.92
+92.22
+73.62
+82.22
+96.0
+39.95
+91.11
+97.3
+55.73
+70.71
+22.0
+86.63
+
+67.78
+100.0
+66.86
+80.0
+73.23
+87.01
+92.22
+79.71
+82.22
+96.0
+38.57
+92.04
+97.17
+54.82
+70.54
+29.71
+95.85
+
+64.44
+100.0
+65.24
+77.78
+74.9
+86.89
+92.22
+79.71
+83.33
+96.0
+39.24
+92.96
+84.24
+54.82
+69.11
+24.81
+95.85
+
+Average
+
+78.53
+
+77.67
+
+74.22
+
+68.51
+
+62.76
+
+74.22
+
+76.69
+
+75.38
+
+Table 12
+Classification accuracy of raw data and reduced data with KNN.
+Data sets
+
+Raw data
+
+NKRA
+
+BFP
+
+𝐼𝑚𝑝𝐷
+2
+
+𝐼𝑚𝑝𝐷
+3
+
+BFB
+
+ES
+
+ULGR
+
+PC
+BHP
+HC
+SH
+HFC
+TCGA
+CD
+CA
+ID
+Iris
+LYM
+Climate
+Audit
+BT
+CBB
+HES
+CVR
+
+56.67
+100.0
+72.24
+63.7
+65.53
+78.2
+82.22
+65.07
+71.11
+96.67
+40.67
+92.41
+94.82
+58.91
+84.46
+31.1
+94.24
+
+62.22
+100.0
+75.24
+63.33
+65.53
+71.99
+82.22
+65.07
+71.11
+96.67
+40.67
+90.56
+99.22
+58.91
+75.89
+34.48
+94.24
+
+57.78
+100.0
+64.12
+62.22
+67.53
+70.08
+82.22
+65.36
+70.0
+96.67
+38.67
+92.41
+95.07
+58.91
+26.25
+24.05
+90.32
+
+67.78
+99.35
+51.39
+74.07
+54.44
+58.16
+82.22
+53.19
+68.89
+95.33
+33.86
+88.52
+66.71
+56.55
+26.25
+24.05
+63.42
+
+72.22
+99.35
+82.05
+62.59
+56.18
+70.08
+65.56
+43.77
+63.33
+54.67
+24.95
+88.33
+65.17
+45.64
+26.25
+24.05
+63.42
+
+57.78
+100.0
+64.12
+62.22
+67.53
+70.08
+82.22
+65.36
+70.0
+96.67
+38.67
+92.41
+95.07
+58.91
+26.25
+24.05
+90.32
+
+60.0
+100.0
+66.06
+62.22
+65.53
+78.2
+82.22
+65.07
+71.11
+96.67
+40.67
+93.7
+94.82
+58.91
+72.14
+28.86
+93.54
+
+61.11
+100.0
+68.78
+63.7
+65.53
+78.2
+86.67
+65.07
+71.11
+96.0
+40.67
+92.41
+82.06
+58.0
+81.61
+22.81
+93.77
+
+Average
+
+73.41
+
+73.37
+
+68.33
+
+62.6
+
+59.27
+
+68.33
+
+72.34
+
+72.21
+
+Table 13
+The WIN/DRAW/LOSS results of NKRA against six algorithms under the F1 score.
+Classifier
+
+BFP
+
+𝐼𝑚𝑝𝐷
+2
+
+𝐼𝑚𝑝𝐷
+3
+
+BFB
+
+ES
+
+ULGR
+
+AdaBoost
+DT
+KNN
+
+9/6/2
+10/5/2
+9/5/3
+
+17/0/0
+17/0/0
+15/0/2
+
+17/0/0
+17/0/0
+17/0/0
+
+9/6/2
+10/5/2
+9/5/3
+
+4/8/5
+4/9/4
+4/8/5
+
+6/6/5
+4/8/5
+6/5/6
+
+Total
+
+28/16/7
+
+49/0/2
+
+51/0/0
+
+28/16/7
+
+12/25/14
+
+16/19/16
+
+15
+
+Applied Soft Computing 179 (2025) 113276
+
+B. Li et al.
+Table 14
+The WIN/DRAW/LOSS results of NKRA against six algorithms under the classification accuracy.
+Classifier
+
+BFP
+
+𝐼𝑚𝑝𝐷
+2
+
+𝐼𝑚𝑝𝐷
+3
+
+BFB
+
+ES
+
+ULGR
+
+AdaBoost
+DT
+KNN
+
+9/3/5
+10/6/1
+10/4/3
+
+16/1/0
+14/0/3
+14/1/2
+
+14/0/3
+14/0/3
+15/0/2
+
+9/3/5
+10/6/1
+10/4/3
+
+5/8/4
+6/9/2
+7/8/2
+
+7/5/5
+6/5/6
+7/5/5
+
+Total
+
+29/13/9
+
+44/2/5
+
+43/0/8
+
+29/13/9
+
+18/25/8
+
+20/15/16
+
+Table 15
+Statistical test of five algorithms within two classifiers.
+Classifiers
+
+AdaBoost
+DT
+KNN
+AdaBoost
+DT
+KNN
+
+𝐹𝐹 =
+
+Classification metrics
+
+F1 score
+F1 score
+F1 score
+Classification accuracy
+Classification accuracy
+Classification accuracy
+
+(𝑁 − 1)𝜒𝐹2
+𝑁(𝑘 − 1) − 𝜒𝐹2
+
+Average ranking
+BFP
+
+𝐼𝑚𝑝𝐷
+2
+
+𝐼𝑚𝑝𝐷
+3
+
+BFB
+
+ES
+
+ULGR
+
+NKRA
+
+3.59
+3.53
+3.82
+3.76
+4.03
+4.06
+
+6.26
+6.12
+5.47
+5.82
+5.12
+5.18
+
+6.09
+6.29
+6.35
+5.03
+4.94
+5.35
+
+3.59
+3.53
+3.82
+3.76
+4.03
+4.06
+
+2.88
+2.97
+2.91
+3.26
+3.50
+3.26
+
+3.00
+3.00
+2.82
+3.35
+3.56
+3.32
+
+2.59
+2.56
+2.79
+3.00
+2.82
+2.76
+
+12𝑁 ∑ 2 𝑘(𝑘 + 1)2
+( 𝑟 −
+),
+𝑘(𝑘 + 1) 𝑖=1 𝑖
+4
+
+𝐹𝐹
+
+51.26
+52.19
+42.93
+23.51
+14.45
+20.93
+
+16.16
+16.77
+11.63
+4.79
+2.64
+4.13
+
+Table 16
+The Wilcoxon signed-rank test results in two classifiers across different algorithms.
+
+(5.6)
+
+and
+𝑘
+
+𝜒𝐹2 =
+
+𝜒𝐹2
+
+(5.7)
+
+Here, 𝑁 and 𝑘 denote the number of datasets and algorithms, respectively, and 𝑟𝑖 represents the average ranking of the 𝑖th algorithm.
+The variable 𝜒𝐹2 follows a 𝜒 2 distribution with 𝜒 2 (𝑘 − 1) degrees
+of freedom. Additionally, 𝐹𝐹 adheres to the 𝐹 distribution with 𝐹 (𝑘 −
+1, (𝑘 − 1)(𝑁 − 1)) degrees of freedom.
+By examining the classification metrics (F1 score and classification
+accuracy) across the seventeen UCI datasets, as detailed in Table 4,
+we ranked the seven algorithms for each dataset and computed the
+average ranking for each algorithm. The resulting average rankings,
+along with the corresponding 𝜒𝐹2 and 𝐹𝐹 values, are presented in Table
+15. If the 𝐹𝐹 value surpasses the critical value of 𝐹 (𝑘 − 1, (𝑘 − 1)(𝑁 − 1)),
+we reject the null hypothesis that ‘‘there is no significant difference
+in the classification capabilities among all algorithms’’, thus indicating
+noteworthy performance distinctions among the algorithms.
+With a significance level of 𝛼 = 0.1, 𝐹𝐹 conforms to the F distribution with 𝐹 (6, 96) degrees of freedom, and the critical value is 1.84.
+An examination of the data in Table 15 reveals that the 𝐹𝐹 values
+surpass 1.84. This signifies significant disparities in the performance
+of the seven algorithms across each classifier under both classification
+metrics. Therefore, to delve deeper into the significant differences
+among algorithms, a post hoc test, such as the Bonferroni-Dunn test
+[38], becomes essential. The critical distance [39] is defined as:
+√
+𝑘(𝑘 + 1)
+𝐶𝐷𝛼 = 𝑞𝛼
+.
+6𝑁
+
+Classifier
+
+Evaluation index
+
+Algorithm
+
+Wilcoxon statistic
+
+𝑃 -value
+
+AdaBoost
+AdaBoost
+DT
+DT
+KNN
+KNN
+AdaBoost
+AdaBoost
+DT
+DT
+KNN
+KNN
+AdaBoost
+AdaBoost
+DT
+DT
+KNN
+KNN
+AdaBoost
+AdaBoost
+DT
+DT
+KNN
+KNN
+
+F1 Score
+Classification Accuracy
+F1 Score
+Classification Accuracy
+F1 Score
+Classification Accuracy
+F1 Score
+Classification Accuracy
+F1 Score
+Classification Accuracy
+F1 Score
+Classification Accuracy
+F1 Score
+Classification Accuracy
+F1 Score
+Classification Accuracy
+F1 Score
+Classification Accuracy
+F1 Score
+Classification Accuracy
+F1 Score
+Classification Accuracy
+F1 Score
+Classification Accuracy
+
+BFB
+BFB
+BFB
+BFB
+BFB
+BFB
+BFP
+BFP
+BFP
+BFP
+BFP
+BFP
+ES
+ES
+ES
+ES
+ES
+ES
+ULGR
+ULGR
+ULGR
+ULGR
+ULGR
+ULGR
+
+13
+24
+0
+14
+0
+14
+13
+24
+0
+14
+0
+14
+36
+41
+33
+38
+33
+38
+31
+38
+39
+42
+39
+42
+
+0.061
+0.073
+0.007
+0.007
+0.049
+0.017
+0.061
+0.073
+0.007
+0.007
+0.049
+0.017
+0.767
+0.767
+1.000
+0.400
+0.441
+0.213
+0.722
+0.432
+0.858
+0.346
+0.8139
+0.530
+
+significance level of 0.1, three of the classifiers, NKRA significantly outperforms algorithms 𝐼𝑚𝑝𝐷
+, 𝐼𝑚𝑝𝐷
+, but there is no significant difference
+2
+3
+due to BFB, BFP, ES and ULGR.
+Post hoc tests based on mean ranks, as indicated in [40], may
+result in comparison outcomes between any two reduction algorithms
+being influenced by other algorithms. Therefore, it is essential for us to
+conduct Wilcoxon signed-rank tests [41] for pairwise comparisons to
+assess the differences between NKRA and BFB, BFP, ES, and ULGR.
+The detailed Wilcoxon signed-rank test results are presented separately in Table 16. For significance level 𝛼 = 0.1, regardless of
+the choice of F1 score or classification accuracy, and irrespective of
+whether AdaBoost or DT or KNN classifiers are used, the results indicate
+that there are significant differences between the BFB and BFP algorithms and the algorithm NKRA. However, the outcomes from Table
+16 reveal that, at a significance level of 0.1, three of the classifiers,
+NKRA is not significantly better than ES and ULGR.
+
+Here, 𝛼 represents the significance level, and 𝑞𝛼 is the critical value for
+the Bonferroni-Dunn test.
+This test assesses the average ranking difference between any two
+algorithms and compares it to the critical distance 𝐶𝐷𝛼 . If the ranking
+difference between two algorithms exceeds the critical distance 𝐶𝐷𝛼 ,
+then it indicates a significant difference in their classification performance. For a significance level of 𝛼 = 0.1, the corresponding critical
+value 𝐶𝐷𝛼 = 1.7739 can be calculated according to the above formula.
+Fig. 4 illustrates the results of the Bonferroni-Dunn test conducted
+on the seven algorithms for different classifiers under the F1 score.
+Similarly, Fig. 5 illustrates the results of the Bonferroni-Dunn test
+conducted on the seven algorithms for the different classifiers under the
+classification accuracy. The outcomes from Figs. 4–5 reveal that, at a
+
+5.8. Comparison of computation times
+In this subsection, to test the efficiency of the algorithm NKRA, we
+compare the computation time of the algorithm NKRA with those of
+six other feature selection algorithms. Based on the results from Fig.
+16
+
+Applied Soft Computing 179 (2025) 113276
+
+B. Li et al.
+
+Fig. 4.
+
+Fig. 5.
+
+Bonferroni-Dunn test results for different classifiers under the F1 score.
+
+Bonferroni-Dunn test results for different classifiers under the classification.
+
+6 and Table 17, the NKRA generally shorter computation time across
+the seventeen datasets than at least four of the other six algorithms do.
+This validates the effectiveness of the NKRA algorithm.
+As seen in Table 17, our algorithm, which is based on KNN rule,
+occasionally takes longer than simpler methods, primarily because it
+carries out repeated distance metrics on heterogeneous data (including both numeric and categorical attributes, with possible missing
+values) and iteratively refines neighbourhoods. Even on moderately
+
+sized datasets, such meticulous checks – which improve reliability for
+isolated or surrounded objects – introduce additional overhead.
+Meanwhile, the four other algorithms (𝐼𝑀𝑃2 , 𝐼𝑀𝑃3 , BFB, and
+BFP) can also spend considerable time in practice despite promising
+theoretical complexity. This is not due to shortcomings in their design;
+rather, they each employ nested loops and multiple global updates,
+often re-checking attributes or object pairs to maintain high accuracy
+in mixed-attribute scenarios. When data distribution or missingness
+17
+
+Applied Soft Computing 179 (2025) 113276
+
+B. Li et al.
+
+Fig. 6. Comparison of computation time.
+
+Table 17
+Actual running time for seven algorithms on seventeen datasets.
+Dataset
+
+NKRA
+
+𝐼𝑀𝑃2
+
+𝐼𝑀𝑃3
+
+BFB
+
+BFP
+
+ES
+
+ULGR
+
+PC
+BHP
+HC
+SH
+HFC
+TCGA
+CD
+CA
+ID
+Iris
+LYM
+Climate
+Audit
+BT
+CBB
+HES
+CVR
+
+139.149
+2741.393
+181.169
+53.074
+75.839
+1944.466
+1.592
+889.096
+1.585
+0.883
+4.66
+56.926
+150.531
+1.117
+4.578
+109.852
+280.762
+
+2925.918
+48 740.550
+454.936
+237.822
+277.166
+1234.316
+4.651
+4248.499
+9.435
+36.063
+139.366
+11 130.66
+20 215.834
+50.8
+0.238
+1.174
+4.344
+
+2578.976
+56 801.550
+1323.208
+316.933
+425.549
+13 916.335
+6.785
+5635.147
+10.269
+35.504
+119.482
+11 166.845
+14 968.349
+55.173
+0.173
+1.052
+4.421
+
+3361.623
+12 413.606
+181.07
+59.462
+113.719
+1020.016
+1.731
+1157.268
+2.245
+7.302
+28.094
+1927.53
+2232.73
+9.979
+2.018
+53.839
+133.334
+
+3370.372
+12 425.203
+183.16
+60.043
+108.093
+1011.37
+1.748
+1126.483
+2.215
+7.837
+26.932
+1956.62
+2187.82
+9.93
+2.013
+55.301
+130.893
+
+21.307
+217.424
+4.277
+2.609
+4.574
+97.644
+0.182
+29.797
+0.223
+0.388
+8.706
+16.501
+57.293
+0.583
+0.117
+7.577
+7.866
+
+34.555
+153.810
+13.846
+4.805
+7.072
+116.542
+0.26
+44.685
+0.285
+0.394
+2.933
+19.733
+28.78
+0.445
+0.408
+3.541
+16.74
+
+hinders early pruning, these steps must be fully executed, amplifying
+constant factors and occasionally resulting in higher runtime.
+By contrast, ULGR and ES typically utilise fewer nested iterations or
+narrower searches, so they often finish faster under most distributions.
+Their lighter implementations are well-optimised for typical feature
+selection tasks, whereas our algorithm (and the aforementioned four
+methods) emphasise exhaustive checks that facilitate robust handling
+of more complex or partially-labelled data. Hence, these observed
+timing differences reflect varied trade-offs between thoroughness and
+efficiency, rather than any intrinsic flaw or failing in a given technique.
+
+an impact on the prediction, resulting in prediction errors. Referring to
+the practices of Hu et al. [32] and Hu et al. [30], the parameter 𝑘 is
+varied from 0.05|𝑈 | to 0.5|𝑈 | with an increment of 0.05|𝑈 |, where |𝑈 |
+is the number of objects in an HIS. We analyse how the algorithm NKRA
+behaves with different parameter values 𝑘 and 𝜆 when employed with
+the DT classifier under both the F1 score and classification accuracy.
+The experimental results are shown in Figs. 7–8.
+For simplicity, we focus solely on examining the impact of variations
+in both the F1 score and classification accuracy of the algorithm NKRA
+within the DT classifier (max depth = 3) concerning the parameters 𝑘
+and 𝜆. The experimental outcomes are depicted in Figs. 7–8. Figs. 7–8
+comprises a set of bubble charts. In each bubble chart, the horizontal
+axis represents the 𝜆 parameter, the vertical axis represents the 𝑘
+parameter, and the size of each bubble corresponds to the F1 score
+(or the classification accuracy). The legend positioned on the right
+delineates the ranges of F1 score (or classification accuracy) values.
+The more consistent the sizes of the bubbles in the chart are, the lower
+the sensitivity of the algorithm to the parameters. If multiple datasets
+show similar sensitivity analysis results, only one figure is presented in
+Figs. 7–8.
+
+5.9. Sensitivity analysis of 𝑘 and 𝜆
+In theory, the effectiveness of the algorithm NKRA is influenced by
+the parameters 𝑘 and 𝜆. To assess the influence of the parameters 𝑘 and
+𝜆 on the performance of the algorithm NKRA, we evaluate the F1 score
+and the classification accuracy of the reduced sets obtained from each
+dataset listed in Table 4. The parameter 𝜆 is varied from 0.1 to 0.9 with
+an increment of 0.1. If a smaller value of 𝑘 is chosen, only the closest
+samples to the test object will have an impact on the prediction result,
+while the less close objects will not have any effect, leading to a larger
+estimation error. On the other hand, if a larger value of 𝑘 is chosen,
+some samples that are farther away from the test sample will also have
+
+(1) When 𝑘 is fixed, the algorithm NKRA has a notable influence on
+classification performance with respect to 𝜆, as illustrated in Figs. 7–8.
+18
+
+Applied Soft Computing 179 (2025) 113276
+
+B. Li et al.
+
+Fig. 7. Sensitivity analysis for the DT classifier under the F1 score across different datasets.
+
+Fig. 8. Sensitivity analysis for the DT classifier under the classification accuracy across different datasets.
+
+(2) When 𝜆 is fixed, the algorithm NKRA has a significant effect
+on classification performance with respect to 𝑘 across the majority of
+datasets, as illustrated in Figs. 7–8.
+In summary, the classification performance of the algorithm NKRA
+is significantly influenced by 𝑘 and 𝜆. Therefore, effective adjustment
+of 𝑘 and 𝜆 can enhance the classification performance of the NKRA
+algorithm.
+
+based on the selected UM and overlap degree is designed. By using the
+AdaBoost, DT and KNN classifiers, the algorithm NKRA under the fixed
+parameters is compared with six other attribute reduction algorithms.
+A statistical test on comparison results is conducted. The statistical test
+has shown that the NKRA algorithm exhibits significant advantages in
+both F1 score and classification accuracy at a confidence level of 0.1
+compared to BFB, BFP, 𝐼𝑚𝑝𝐷
+, and 𝐼𝑚𝑝𝐷
+and there is no significant
+2
+3
+difference between NKRA and ES or ULGR. In summary, the NKRA
+algorithm is superior to BFB, BFP, 𝐼𝑚𝑝𝐷
+, and 𝐼𝑚𝑝𝐷
+, and is on par
+2
+3
+with ES and ULGR. Following this, a parameter analysis and a time
+comparison are conducted to show the effect of two parameters, and
+that the NKRA algorithms time efficiency is at least on par with four of
+the other six algorithms in most cases.
+Based on the theoretical analysis and experimental results, it is
+reasonable to believe that the 𝐾𝑁𝑁-neighbourhood rough set model
+has effectively utilised the strengths of both the 𝑁-rough set and KNNrule to overcome their individual limitations. Future work will explore
+how to extend the application of 𝐾𝑁𝑁-neighbourhood rough set to
+explore attribute reduction in different information systems.
+
+6. Conclusions
+In this paper, a distance function in an HIS is introduced. Based
+on this function, a tolerance relation is defined, and an 𝑁-rough set
+model is built. Considering the limitation of 𝑁-rough set model under
+a surrounded category pattern, 𝐾𝑁𝑁-neighbourhood rough set model,
+is established through the combination of 𝑁-rough set model and
+𝐾𝑁𝑁-rule. Four UMs based on 𝐾𝑁𝑁-neighbourhood rough set model
+are investigated. Their properties are validated through mathematical
+proofs, and the UM with optimal performance is selected through dispersion analysis. An attribute reduction algorithm (denoted as NKRA)
+19
+
+Applied Soft Computing 179 (2025) 113276
+
+B. Li et al.
+
+CRediT authorship contribution statement
+
+Proof. (1) and (2) are obvious.
+𝑘,𝜆
+𝑘,𝜆
+(3) (i) ∀ 𝑢 ∈ 𝐵𝑁
+(𝑋), this implies that 𝐵𝑁
+(𝑢) ⊆ 𝑋.
+
+Bozhan Li: Writing – original draft, Methodology, Investigation.
+Qin Huang: Writing – original draft, Investigation, Formal analysis. Zhaowen Li: Writing – review & editing, Methodology, Formal
+analysis. Yonghua Lin: Software, Investigation, Data curation.
+
+𝑘,𝜆
+𝑘,𝜆
+It can be seen that 𝐶𝑁
+(𝑢) ⊆ 𝐵𝑁
+(𝑢) ⊆ 𝑋 according to Proposition
+3.3.
+𝑘,𝜆
+𝑘,𝜆
+𝑘,𝜆
+It follows that 𝑢 ∈ 𝐶𝑁
+(𝑋), thus 𝐵𝑁
+(𝑋) ⊆ 𝐶𝑁
+(𝑋).
+𝑘,𝜆
+𝑘,𝜆
+(ii) ∀ 𝑢 ∈ 𝐶𝑁
+(𝑋), this shows that 𝐶𝑁
+(𝑢) ∩ 𝑋 ≠ ∅.
+𝑘,𝜆
+𝑘,𝜆
+It can be seen that 𝐶𝑁 (𝑢) ⊆ 𝐵𝑁 (𝑢) according to Proposition 3.3.
+
+Declaration of competing interest
+
+𝑘,𝜆
+𝑘,𝜆
+Then 𝐵𝑁
+(𝑢) ∩ 𝑋 ≠ ∅. Therefore 𝑢 ∈ 𝐵𝑁
+(𝑋).
+
+The authors declare that they have no known competing financial interests or personal relationships that could have appeared to
+influence the work reported in this paper.
+
+𝑘,𝜆
+𝑘,𝜆
+This implies that 𝐶𝑁
+(𝑋) ⊆ 𝐵𝑁
+(𝑋).
+𝑘 ,𝜆
+𝑘 ,𝜆
+(4) (i)∀ 𝑢 ∈ 𝐵𝑁2 (𝑋), this shows that 𝐵𝑁2 (𝑢) ⊆ 𝑋.
+𝑘 ,𝜆
+
+𝑘 ,𝜆
+
+Acknowledgements
+
+The fact that 𝐵𝑁1 (𝑢) ⊆ 𝐵𝑁2 (𝑢) follows from Proposition 3.3.
+𝑘 ,𝜆
+𝑘 ,𝜆
+Then 𝐵𝑁1 (𝑢) ⊆ 𝑋. This indicates that 𝑢 ∈ 𝐵𝑁1 (𝑋).
+
+The authors would like to thank the editors and the anonymous
+reviewers for their valuable comments and suggestions, which have
+helped immensely in improving the quality of the paper. This work
+is supported by Doctoral Research of Guangdong University of Science Technology (GKY-2024BSQDK-11) and Science Foundation in
+Guangdong University of Science and Technology (GKY-023KYZDK-1).
+
+Therefore 𝐵𝑁2 (𝑋) ⊆ 𝐵𝑁1 (𝑋).
+
+𝑘 ,𝜆
+
+𝑘 ,𝜆
+
+𝑘 ,𝜆
+
+(ii) ∀ 𝑢 ∈ 𝐵𝑁1 (𝑋), this indicates that 𝐵𝑁1 (𝑢) ∩ 𝑋 ≠ ∅.
+𝑘 ,𝜆
+
+𝑘 ,𝜆
+
+According to Proposition 3.3, we have 𝐵𝑁1 (𝑢) ⊆ 𝐵𝑁2 (𝑢).
+𝑘 ,𝜆
+
+𝑘 ,𝜆
+
+Therefore 𝐵𝑁2 (𝑢) ∩ 𝑋 ≠ ∅. It shows that 𝑢 ∈ 𝐵𝑁2 (𝑋).
+𝑘 ,𝜆
+𝑘 ,𝜆
+Thus 𝐵𝑁1 (𝑋) ⊆ 𝐵𝑁2 (𝑋).
+𝑘,𝜆2
+𝑘,𝜆
+(5) (i) ∀ 𝑢 ∈ 𝐵𝑁 (𝑋), it shows that 𝐵𝑁 2 (𝑢) ⊆ 𝑋.
+𝑘,𝜆
+𝑘,𝜆
+The fact that 𝐵𝑁 1 (𝑢) ⊆ 𝐵𝑁 2 (𝑢) follows from Proposition 3.3.
+𝑘,𝜆1
+𝑘,𝜆2
+𝑘,𝜆
+Therefore 𝐵𝑁 (𝑢) ⊆ 𝐵𝑁 (𝑢) ⊆ 𝑋. It shows that 𝑢 ∈ 𝐵𝑁 1 (𝑋).
+𝑘,𝜆
+𝑘,𝜆
+Thus 𝐵𝑁 2 (𝑋) ⊆ 𝐵𝑁 1 (𝑋).
+
+Appendix
+
+Proposition 3.3. Consider an HIS (𝑈 , 𝐴, 𝑑), and given 𝑢 ∈ 𝑈 .
+𝑘,𝜆
+𝑘,𝜆
+(1) If 𝐵 ⊆ 𝐶 ⊆ 𝐴, then ∀ 𝑘 ∈ N, ∀ 𝜆 ∈ [0, 1], 𝐶𝑁
+(𝑢) ⊆ 𝐵𝑁
+(𝑢).
+𝑘 ,𝜆
+
+𝑘 ,𝜆
+
+𝑘 ,𝜆
+
+(2) If 𝑘1 ≤ 𝑘2 , then ∀ 𝐵 ⊆ 𝐴, ∀ 𝜆 ∈ [0, 1], 𝐵𝑁1 (𝑢) ⊆ 𝐵𝑁2 (𝑢).
+
+𝑘,𝜆
+
+𝑘,𝜆
+
+(ii) ∀ 𝑢 ∈ 𝐵𝑁 1 (𝑋), it indicates that 𝐵𝑁 1 (𝑢) ∩ 𝑋 ≠ ∅.
+𝑘,𝜆
+𝑘,𝜆
+It can be seen that 𝐵𝑁 1 (𝑢) ⊆ 𝐵𝑁 2 (𝑢) according to Proposition 3.3.
+
+𝑘,𝜆
+𝑘,𝜆
+(3) If 𝜆1 ≤ 𝜆2 , then ∀ 𝐵 ⊆ 𝐴, ∀ 𝑘 ∈ N, 𝐵𝑁 1 (𝑢) ⊆ 𝐵𝑁 2 (𝑢).
+
+𝑘,𝜆
+
+𝑘,𝜆
+
+Proof. (1) Suppose 𝐵 ⊆ 𝐶 ⊆ 𝐴. Obviously,
+
+Then 𝐵𝑁 2 (𝑢) ∩ 𝑋 ≠ ∅. It shows that 𝑢 ∈ 𝐵𝑁 2 (𝑋).
+
+𝐶 𝑘 (𝑢) ⊆ 𝐵 𝑘 (𝑢), 𝑁𝐶𝜆 (𝑢) ⊆ 𝑁𝐵𝜆 (𝑢).
+
+Thus 𝐵𝑁 1 (𝑋) ⊆ 𝐵𝑁 2 (𝑋). □
+
+𝑘,𝜆
+
+This indicates that
+
+Proposition 3.7. Consider an HIS (𝑈 , 𝐴, 𝑑), given 𝐵 ⊆ 𝐴, 𝑘 ∈ N 𝑎𝑛𝑑 𝜆 ∈
+[0, 1]. Then
+
+𝑘
+
+𝐶 (𝑢) ∩ 𝑁𝐶𝜆 (𝑢) ⊆ 𝐵 𝑘 (𝑢) ∩ 𝑁𝐵𝜆 (𝑢).
+
+𝑘,𝜆
+𝑘,𝜆
+∀ 𝑢 ∈ 𝑈 , |𝜕𝐵,𝑁
+(𝑢)| = 1 ⇔ 𝐵𝑁
+⊆ 𝑅𝑑 .
+
+This shows that
+𝑘,𝜆
+𝑘,𝜆
+𝐶𝑁
+(𝑢) ⊆ 𝐵𝑁
+(𝑢).
+
+𝑘,𝜆
+𝑘,𝜆
+Proof. ‘‘ ⇐ ’’. Let 𝐵𝑁
+⊆ 𝑅𝑑 and 𝑢 ∈ 𝑈 . ∀ 𝑤 ∈ 𝜕𝐵,𝑁
+(𝑢), there exists
+𝑘,𝜆
+𝑘,𝜆
+𝑣 ∈ 𝐵𝑁 (𝑢) such that 𝑤 = 𝑑(𝑣). As 𝑣 ∈ 𝐵𝑁 (𝑢) ⊆ [𝑢]𝑑 , we conclude that
+𝑘,𝜆
+𝑣 ∈ [𝑢]𝑑 . Consequently, 𝑤 = 𝑑(𝑣) = 𝑑(𝑢). Thus, |𝜕𝐵,𝑁
+(𝑢)| = 1.
+𝑘,𝜆
+𝑘,𝜆
+‘‘ ⇒ ’’. In view of the fact that ∀ 𝑢 ∈ 𝑈 , |𝜕𝐵,𝑁
+(𝑢)| = 1. ∀ 𝑣 ∈ 𝐵𝑁
+(𝑢), it
+𝑘,𝜆
+𝑘,𝜆
+is evident that 𝑑(𝑣) ∈ 𝜕𝐵,𝑁 (𝑢). It is worth noting that 𝑑(𝑢) ∈ 𝜕𝐵,𝑁 (𝑢) and
+𝑘,𝜆
+|𝜕𝐵,𝑁
+(𝑢)| = 1. Consequently, 𝑑(𝑢) = 𝑑(𝑣). This indicates that 𝑣 ∈ [𝑢]𝑑 .
+𝑘,𝜆
+𝑘,𝜆
+Thus 𝐵𝑁
+(𝑢) ⊆ [𝑢]𝑑 . Therefore 𝐵𝑁
+⊆ 𝑅𝑑 . □
+
+(2) Suppose 𝑘1 ≤ 𝑘2 . Then 𝐵 𝑘1 (𝑢) ⊆ 𝐵 𝑘2 (𝑢). Hence
+𝐵 𝑘1 (𝑢) ∩ 𝑁𝐵𝜆 (𝑢) ⊆ 𝐵 𝑘2 (𝑢) ∩ 𝑁𝐵𝜆 (𝑢).
+𝑘 ,𝜆
+
+𝑘 ,𝜆
+
+Therefore 𝐵𝑁1 (𝑢) ⊆ 𝐵𝑁2 (𝑢).
+𝜆
+𝜆
+(3) Suppose 𝜆1 ≤ 𝜆2 . Then 𝑁𝐵1 (𝑢) ⊆ 𝑁𝐵2 (𝑢). Hence
+𝜆
+
+𝜆
+
+𝐵 𝑘 (𝑢) ∩ 𝑁𝐵1 (𝑢) ⊆ 𝐵 𝑘 (𝑢) ∩ 𝑁𝐵2 (𝑢).
+𝑘,𝜆
+
+𝑘,𝜆
+
+Therefore 𝐵𝑁 1 (𝑢) ⊆ 𝐵𝑁 2 (𝑢). □
+
+Proposition 4.3. Consider an HIS (𝑈 , 𝐴, 𝑑), the ensuing properties can
+be delineated:
+(1) ∀ 𝐵 ⊆ 𝐴, ∀ 𝑘 ∈ N, ∀ 𝜆 ∈ [0, 1],
+
+Theorem 3.5. Consider an HIS (𝑈 , 𝐴, 𝑑).
+(1) ∀ 𝐵 ⊆ 𝐴, ∀ 𝑋 ∈ 2𝑈 , ∀ 𝑘 ∈ N, ∀ 𝜆 ∈ [0, 1],
+
+𝑘,𝜆
+𝛤𝐵,𝑁
+(𝑑) =
+
+(2) 𝑋 ⊆ 𝑌 ⊆ 𝑈 ⇒ ∀ 𝐵 ⊆ 𝐴, ∀ 𝑘 ∈ N, ∀ 𝜆 ∈ [0, 1],
+
+(2) ∀ 𝐵 ⊆ 𝐴, ∀ 𝑘 ∈ N, ∀ 𝜆 ∈ [0, 1],
+
+𝑘,𝜆
+𝑘,𝜆
+𝑘,𝜆
+𝐵𝑁
+(𝑌 ), 𝐵𝑁
+(𝑋) ⊆ 𝐵𝑁
+(𝑌 );
+
+𝑘,𝜆
+0 ≤ 𝛤𝐵,𝑁
+(𝑑) ≤ 1;
+
+(3) If 𝐵 ⊆ 𝐶 ⊆ 𝐴, then ∀ 𝑋 ∈ 2𝑈 , ∀ 𝑘 ∈ N, ∀ 𝜆 ∈ [0, 1],
+𝑘,𝜆
+𝐵𝑁
+(𝑋) ⊆
+
+𝑘,𝜆
+𝑘,𝜆
+𝐶𝑁
+(𝑋), 𝐶𝑁
+(𝑋) ⊆
+
+(3) If 𝐵 ⊆ 𝐶 ⊆ 𝐴, then ∀ 𝑘 ∈ N, ∀ 𝜆 ∈ [0, 1],
+
+𝑘,𝜆
+𝐵𝑁
+(𝑋);
+
+𝑘,𝜆
+𝑘,𝜆
+𝛤𝐵,𝑁
+(𝑑) ≤ 𝛤𝐶,𝑁
+(𝑑);
+
+(4) If 𝑘1 ≤ 𝑘2 , then ∀ 𝐵 ⊆ 𝐴, ∀ 𝜆 ∈ [0, 1],
+
+(4) If 𝑘1 ≤ 𝑘2 , then ∀ 𝐵 ⊆ 𝐴, ∀ 𝜆 ∈ [0, 1], ∀ 𝑋 ∈ 2𝑈
+𝑘 ,𝜆
+
+𝑘 ,𝜆
+
+𝑘 ,𝜆
+
+𝑘2 ,𝜆
+𝑘1 ,𝜆
+𝛤𝐵,𝑁
+(𝑑) ≤ 𝛤𝐵,𝑁
+(𝑑);
+
+𝑘 ,𝜆
+
+𝐵𝑁2 (𝑋) ⊆ 𝐵𝑁1 (𝑋), 𝐵𝑁1 (𝑋) ⊆ 𝐵𝑁2 (𝑋).
+
+(5) If 𝜆1 ≤ 𝜆2 , then ∀ 𝐵 ⊆ 𝐴, ∀ 𝑘 ∈ N,
+
+(5) If 𝜆1 ≤ 𝜆2 , then ∀ 𝐵 ⊆ 𝐴, ∀ 𝑘 ∈ N, ∀ 𝑋 ∈ 2𝑈
+𝑘,𝜆
+
+𝑘,𝜆
+
+1 ∑ 𝑘,𝜆
+|𝐵 (𝐷𝑖 )|;
+𝑛 𝑖=1 𝑁
+𝑠
+
+𝑘,𝜆
+𝑘,𝜆
+𝐵𝑁
+(𝑋) ⊆ 𝑋 ⊆ 𝐵𝑁
+(𝑋);
+
+𝑘,𝜆
+𝐵𝑁
+(𝑋) ⊆
+
+𝑘,𝜆
+
+𝑘,𝜆
+
+𝑘,𝜆
+𝑘,𝜆
+𝛤𝐵,𝑁2 (𝑑) ≤ 𝛤𝐵,𝑁1 (𝑑);
+
+𝑘,𝜆
+
+𝐵𝑁 2 (𝑋) ⊆ 𝐵𝑁 1 (𝑋), 𝐵𝑁 1 (𝑋) ⊆ 𝐵𝑁 2 (𝑋).
+
+𝑘,𝜆
+𝑘,𝜆
+(6) 𝛤𝐵,𝑁
+(𝑑) = 1 ⇔ ∀ 𝑖, 𝐵𝑁
+(𝐷𝑖 ) = 𝐷𝑖 .
+
+20
+
+Applied Soft Computing 179 (2025) 113276
+
+B. Li et al.
+𝑘,𝜆
+Proof. (1) Clearly, 𝐵𝑁
+(𝐷𝑖 ) ⊆ 𝐷𝑖 .
+
+Proposition 4.7. Consider an HIS (𝑈 , 𝐴, 𝑑), given 𝑘 ∈ N 𝑎𝑛𝑑 𝜆 ∈ [0, 1].
+If 𝐵 ⊆ 𝐶 ⊆ 𝐴, then
+
+Because 𝑈 ∕𝑑 = {𝐷1 , 𝐷2 , … , 𝐷𝑠 }, it follows that
+𝑘,𝜆
+|𝑃 𝑂𝑆𝐵,𝑁
+(𝑑)| = |
+
+𝑠
+⋃
+
+𝑘,𝜆
+𝐵𝑁
+(𝐷𝑖 )| =
+
+𝑖=1
+
+𝑠
+∑
+
+𝑘,𝜆
+𝑘,𝜆
+𝐻𝑁
+(𝑑|𝐶) ≤ 𝐻𝑁
+(𝑑|𝐵).
+
+𝑘,𝜆
+|𝐵𝑁
+(𝐷𝑖 )|.
+
+𝑖=1
+
+∑
+𝑘,𝜆
+𝑘,𝜆
+Hence 𝛤𝐵,𝑁
+(𝑑) = 1𝑛 𝑠𝑖=1 |𝐵𝑁
+(𝐷𝑖 )|.
+
+Proof.
+
+(2) It can be evidenced by Definition 4.2.
+(3) Let 𝐵 ⊆ 𝐶 ⊆ 𝐴, by Definition 4.2 and (1), it follows that
+
+(2)
+𝑘,𝜆
+𝑘,𝜆
+𝑝(1)
+𝑖𝑗 = |𝐵𝑁 (𝑢𝑖 ) ∩ 𝐷𝑗 |, 𝑝𝑖𝑗 = |𝐵𝑁 (𝑢𝑖 ) ∩ (𝑈 − 𝐷𝑗 )|;
+
+𝑘,𝜆
+𝛤𝐵,𝑁
+(𝑑) =
+
+𝑠
+1
+1 ∑ 𝑘,𝜆
+𝑘,𝜆
+|𝑃 𝑂𝑆𝐵,𝑁
+(𝑑)| =
+|𝐵 (𝐷𝑖 )|.
+𝑛
+𝑛 𝑖=1 𝑁
+
+𝑘,𝜆
+𝛤𝐶,𝑁
+(𝑑) =
+
+𝑠
+1
+1 ∑ 𝑘,𝜆
+𝑘,𝜆
+|𝑃 𝑂𝑆𝐶,𝑁
+(𝑑)| =
+|𝐶 (𝐷𝑖 )|.
+𝑛
+𝑛 𝑖=1 𝑁
+
+𝑘,𝜆
+𝑘,𝜆
+𝑞𝑖𝑗(1) = |𝐶𝑁
+(𝑢𝑖 ) ∩ 𝐷𝑗 |, 𝑞𝑖𝑗(2) = |𝐶𝑁
+(𝑢𝑖 ) ∩ (𝑈 − 𝐷𝑗 )|.
+
+Then
+(2)
+(1)
+(2)
+𝑘,𝜆
+𝑘,𝜆
+∀ 𝑖, 𝑗, |𝐵𝑁
+(𝑢𝑖 )| = 𝑝(1)
+𝑖𝑗 + 𝑝𝑖𝑗 , |𝐶𝑁 (𝑢𝑖 )| = 𝑞𝑖𝑗 + 𝑞𝑖𝑗 .
+
+𝑘,𝜆
+𝑘,𝜆
+𝑘,𝜆
+𝑘,𝜆
+By Theorem 3.5, ∀ 𝑖, 𝐵𝑁
+(𝐷𝑖 ) ⊆ 𝐶𝑁
+(𝐷𝑖 ). Thus 𝛤𝐵,𝑁
+(𝑑) ≤ 𝛤𝐶,𝑁
+(𝑑).
+𝑘2 ,𝜆
+𝑘1 ,𝜆
+(4) By Theorem 3.5, ∀ 𝑖, 𝐵𝑁 (𝐷𝑖 ) ⊆ 𝐵𝑁 (𝐷𝑖 )
+𝑘 ,𝜆
+
+𝑘,𝜆
+𝑘,𝜆
+By Proposition 3.3, ∀ 𝑖, 𝐶𝑁
+(𝑢𝑖 ) ⊆ 𝐵𝑁
+(𝑢𝑖 ).
+
+Then
+
+𝑘 ,𝜆
+
+Hence ∀ 𝑖, |𝐵𝑁2 (𝐷𝑖 )| ≤ |𝐵𝑁1 (𝐷𝑖 )|. Thus
+𝑘 ,𝜆
+
+(2)
+(2)
+∀ 𝑖, 𝑗, 0 ≤ 𝑞𝑖𝑗(1) ≤ 𝑝(1)
+𝑖𝑗 , 0 ≤ 𝑞𝑖𝑗 ≤ 𝑝𝑖𝑗 .
+
+𝑘 ,𝜆
+
+2
+1
+𝛤𝐵,𝑁
+(𝑑) ≤ 𝛤𝐵,𝑁
+(𝑑).
+
+𝑘,𝜆
+
+𝑘,𝜆
+
+(5) It can be evidenced that ∀ 𝑖, 𝐵𝑁 2 (𝐷𝑖 ) ⊆ 𝐵𝑁 1 (𝐷𝑖 ) by Theorem
+3.5.
+𝑘 ,𝜆
+𝑘 ,𝜆
+Hence, ∀ 𝑖, |𝐵𝑁2 (𝐷𝑖 )| ≤ |𝐵𝑁1 (𝐷𝑖 )|. Thus
+𝑘,𝜆
+
+𝑘,𝜆
+𝐻𝑁
+(𝑑|𝐵) = −
+
+𝑖=1
+
+𝑛 ∑
+𝑠 𝑝
+∑
+𝑖𝑗
+𝑖=1 𝑗=1
+
+(6) ‘‘Sufficiency’’. This is obvious.
+𝑘,𝜆
+‘‘Necessity’’. Assume that 𝛤𝐵,𝑁
+(𝑑) = 1. According to (1),
+𝑠
+∑
+
+≜
+
+𝑘,𝜆
+𝑖=1 (|𝐷𝑖 | − |𝐵𝑁 (𝐷𝑖 )|) = 0.
+𝑘,𝜆
+By Theorem 3.5, ∀ 𝑖, 𝐵𝑁 (𝐷𝑖 ) ⊆ 𝐷𝑖 .
+𝑘,𝜆
+It follows that ∀ 𝑖, |𝐷𝑖 | − |𝐵𝑁
+(𝐷𝑖 )| ≥ 0. Then
+
+This suggest that
+
+𝑛
+(1)
+
+=−
+
+𝑛 ∑
+𝑠 𝑞
+∑
+𝑖𝑗
+𝑖=1 𝑗=1
+
+≜
+
+𝑘,𝜆
+Thus ∀ 𝑖, 𝐵𝑁
+(𝐷𝑖 ) = 𝐷𝑖 . □
+
+𝑘,𝜆
+|𝐵𝑁
+(𝑢𝑖 )|
+
+𝑝(1)
+𝑖𝑗
+(1)
+𝑝𝑖𝑗 + 𝑝(2)
+𝑖𝑗
+
+𝑘,𝜆
+𝑛 ∑
+𝑠
+∑
+|𝐶𝑁
+(𝑢𝑖 ) ∩ 𝐷𝑗 |
+𝑖=1 𝑗=1
+
+𝑘,𝜆
+∀ 𝑖, |𝐷𝑖 | − |𝐵𝑁
+(𝐷𝑖 )| = 0.
+
+𝑘,𝜆
+|𝐵𝑁
+(𝑢𝑖 ) ∩ 𝐷𝑗 |
+
+1
+(2)
+𝑓 (𝑝(1)
+𝑖𝑗 , 𝑝𝑖𝑗 );
+𝑛
+𝑖=1 𝑗=1
+
+𝑘,𝜆
+𝐻𝑁
+(𝑑|𝐶) = −
+
+∑𝑠
+
+𝑛
+
+log2
+
+log2
+
+𝑛 ∑
+𝑠
+∑
+
+|𝐷𝑖 |.
+
+𝑖=1
+
+𝑛
+(1)
+
+=−
+
+𝑘,𝜆
+
+𝑘,𝜆
+|𝐵𝑁
+(𝐷𝑖 )| =
+
+𝑘,𝜆
+𝑛 ∑
+𝑠
+∑
+|𝐵𝑁
+(𝑢𝑖 ) ∩ 𝐷𝑗 |
+𝑖=1 𝑗=1
+
+𝛤𝐵,𝑁2 (𝑑) ≤ 𝛤𝐵,𝑁1 (𝑑).
+
+𝑠
+∑
+
+(A.2)
+
+𝑛
+
+log2
+
+log2
+
+𝑘,𝜆
+|𝐶𝑁
+(𝑢𝑖 ) ∩ 𝐷𝑗 |
+𝑘,𝜆
+|𝐶𝑁
+(𝑢𝑖 )|
+
+𝑞𝑖𝑗(1)
+(1)
+𝑞𝑖𝑗 + 𝑞𝑖𝑗(2)
+
+𝑛 ∑
+𝑠
+∑
+
+1
+𝑓 (𝑞𝑖𝑗(1) , 𝑞𝑖𝑗(2) ).
+𝑛
+𝑖=1 𝑗=1
+
+𝑢
+Put 𝑓 (𝑢, 𝑣) = −𝑢 log2 𝑢+𝑣
+(𝑢 > 0, 𝑣 ≥ 0). If 𝑢 or 𝑣 is held constant, the
+
+Proposition 4.5. Consider an HIS (𝑈 , 𝐴, 𝑑), given 𝐵 ⊆ 𝐴, 𝑘 ∈ N 𝑎𝑛𝑑 𝜆 ∈
+[0, 1]. Then
+𝑘,𝜆
+0 ≤ 𝐻𝑁
+(𝐵) ≤ 𝑛 log2 𝑛.
+
+function 𝑓 (𝑢, 𝑣) becomes a univariate function and exhibits monotonic
+increase.
+(2)
+(2)
+Since 𝑞𝑖𝑗(1) ≤ 𝑝(1)
+𝑖𝑗 , 𝑞𝑖𝑗 ≤ 𝑝𝑖𝑗 , it can be seen that
+
+(A.1)
+
+𝑘,𝜆
+𝑘,𝜆
+Furthermore, if 𝐵 𝑘 =▵, then 𝐻𝑁
+(𝐵) = log2 𝑛; if 𝐵 𝑘 = 𝛿, then 𝐻𝑁
+(𝐵) =
+0.
+
+(2)
+(1) (2)
+𝑓 (𝑞𝑖𝑗(1) , 𝑞𝑖𝑗(2) ) ≤ 𝑓 (𝑝(1)
+𝑖𝑗 , 𝑞𝑖𝑗 ) ≤ 𝑓 (𝑝𝑖𝑗 , 𝑝𝑖𝑗 ).
+
+Thus
+𝑘,𝜆
+Proof. Note that ∀ 𝑖, 1 ≤ |𝐵𝑁
+(𝑢𝑖 )| ≤ 𝑛. It follows that
+
+𝑘,𝜆
+𝑘,𝜆
+𝐻𝑁
+(𝑑|𝐶) ≤ 𝐻𝑁
+(𝑑|𝐵). □
+
+|𝐵 𝑘,𝜆 (𝑢𝑖 )|
+1
+≤ 𝑁
+≤ 1,
+𝑛
+𝑛
+0 ≤ − log2
+
+𝑘,𝜆
+|𝐵𝑁
+(𝑢𝑖 )|
+
+𝑛
+
+Proposition 4.9. Consider an HIS (𝑈 , 𝐴, 𝑑), given 𝐵 ⊆ 𝐴, 𝑘 ∈ N 𝑎𝑛𝑑 𝜆 ∈
+≤ log2 𝑛.
+
+[0, 1]. Then
+
+Then
+0≤−
+
+𝑘,𝜆
+|𝐵𝑁
+(𝑢𝑖 )|
+
+𝑛
+Therefore
+
+log2
+
+𝑘,𝜆
+|𝐵𝑁
+(𝑢𝑖 )|
+
+𝑛
+
+𝑘,𝜆
+𝑘,𝜆
+𝑘,𝜆
+𝐻𝑁
+(𝑑|𝐵) = 𝐻𝑁
+(𝐵 ∪ 𝑑) − 𝐻𝑁
+(𝐵).
+
+(A.3)
+
+≤ log2 𝑛.
+Proof. As {𝐷1 , 𝐷2 ⋯ , 𝐷𝑠 } forms a partition of 𝑈 , it can be observed
+
+𝑘,𝜆
+0 ≤ 𝐻𝑁
+(𝐵) ≤ 𝑛 log2 𝑛.
+𝑘,𝜆
+𝑘,𝜆
+Let 𝐵 𝑘 =▵. Then ∀ 𝑖, |𝐵𝑁
+(𝑢𝑖 )| = 1. Thus 𝐻𝑁
+(𝐵) = log2 𝑛.
+𝑘,𝜆
+𝑘,𝜆
+Let 𝐵 𝑘 = 𝛿. Then ∀ 𝑖, |𝐵𝑁
+(𝑢𝑖 )| = 𝑛. This shows that 𝐻𝑁
+(𝐵) = 0.
+
+that ∀ 𝑖,
+𝑠
+∑
+
+□
+
+𝑗=1
+
+21
+
+𝑘,𝜆
+𝑘,𝜆
+|𝐵𝑁
+(𝑢𝑖 ) ∩ 𝐷𝑗 | = |𝐵𝑁
+(𝑢𝑖 )|;
+
+Applied Soft Computing 179 (2025) 113276
+
+B. Li et al.
+𝑘,𝜆
+𝑛 ∑
+𝑠
+∑
+|𝐵𝑁
+(𝑢𝑖 ) ∩ 𝐷𝑗 |
+
+|𝐵 𝑘,𝜆 (𝑢𝑖 ) ∩ 𝐷𝑗 |
+𝑘,𝜆
+𝐻𝑁
+(𝑑|𝐵) = −
+log2 𝑁 𝑘,𝜆
+𝑛
+|𝐵𝑁 (𝑢𝑖 )|
+𝑖=1 𝑗=1
+𝑘,𝜆
+𝑘,𝜆
+𝑛 ∑
+𝑠
+∑
+|𝐵𝑁
+(𝑢𝑖 ) ∩ 𝐷𝑗 |
+|𝐵𝑁
+(𝑢𝑖 ) ∩ 𝐷𝑗 |
+=−
+(log2
+𝑛
+𝑛
+𝑖=1 𝑗=1
+𝑘,𝜆
+|𝐵 (𝑢𝑖 )|
+− log2 𝑁
+)
+=−
+
+𝑛
+𝑘,𝜆
+𝑛 ∑
+𝑠
+∑
+|𝐵𝑁
+(𝑢𝑖 ) ∩ 𝐷𝑗 |
+𝑛
+
+𝑖=1 𝑗=1
+
++
+
+𝑘,𝜆
+|𝐵𝑁
+(𝑢𝑖 ) ∩ 𝐷𝑗 |
+
+𝑛 ∑
+𝑠
+∑
+
+log2
+
+𝑛
+
+𝑖=1 𝑗=1
+
+𝑛
+∑
+
+𝑘,𝜆
+= 𝐻𝑁
+(𝐵 ∪ 𝑑) +
+
+log2
+
+0≤
+
+𝑘,𝜆
+𝑛
+∑
+|𝐵𝑁
+(𝑢𝑖 )|
+
+𝑛
+
+𝑖=1
+
+(1 −
+
+𝑘,𝜆
+|𝐵𝑁
+(𝑢𝑖 )|
+
+𝑛
+
+)≤𝑛−1
+
+Thus
+𝑘,𝜆
+0 ≤ 𝐸𝑁
+(𝐵) ≤ 𝑛 − 1.
+
+𝑘,𝜆
+|𝐵𝑁
+(𝑢𝑖 ) ∩ 𝐷𝑗 |
+
+𝑘,𝜆
+𝑘,𝜆
+Let 𝐵 𝑘 =▵. Then ∀ 𝑖, |𝐵𝑁
+(𝑢𝑖 )| = 1. Therefore 𝐸𝑁
+(𝐵) = 1 − 1𝑛 . □
+
+𝑛
+Proposition 4.14. Consider an HIS (𝑈 , 𝐴, 𝑑), given 𝑘 ∈ N 𝑎𝑛𝑑 𝜆 ∈ [0, 1].
+If 𝐵 ⊆ 𝐶 ⊆ 𝐴, then
+
+𝑘,𝜆
+|𝐵𝑁
+(𝑢𝑖 )|
+
+𝑛
+
+𝑘,𝜆
+|𝐵𝑁
+(𝑢𝑖 )|
+
+log2
+
+𝑛
+
+𝑖=1
+𝑘,𝜆
+𝑘,𝜆
+= 𝐻𝑁
+(𝐵 ∪ 𝑑) − 𝐻𝑁
+(𝐵).
+
+It shows that
+
+𝑘,𝜆
+𝑘,𝜆
+𝐸𝑁
+(𝑑|𝐶) ≤ 𝐸𝑁
+(𝑑|𝐵).
+
+𝑘,𝜆
+|𝐵𝑁
+(𝑢𝑖 )|
+
+𝑛
+
+(A.5)
+
+𝑘,𝜆
+Proof. Assume that 𝐵 ⊆ 𝐶 ⊆ 𝐴 . By Proposition 3.3, ∀ 𝑖, 𝐶𝑁
+(𝑢𝑖 ) ⊆
+𝑘,𝜆
+𝐵𝑁 (𝑢𝑖 ). It follows that
+
+□
+
+𝑘,𝜆
+𝑘,𝜆
+𝑘,𝜆
+𝑘,𝜆
+∀ 𝑖, 𝑗, 𝐶𝑁
+(𝑢𝑖 ) ∩ 𝐷𝑗 ⊆ 𝐵𝑁
+(𝑢𝑖 ) ∩ 𝐷𝑗 , 𝐶𝑁
+(𝑢𝑖 ) − 𝐷𝑗 ⊆ 𝐵𝑁
+(𝑢𝑖 ) − 𝐷𝑗 .
+
+Proposition 4.10. Consider an HIS (𝑈 , 𝐴, 𝑑), given 𝐵 ⊆ 𝐴, 𝑘 ∈
+𝑘,𝜆
+N 𝑎𝑛𝑑 𝜆 ∈ [0, 1]. Then 𝐻𝑁
+(𝑑|𝐵) ≥ 0.
+
+This implies that
+Proof. According to Definition 4.4,
+𝑘,𝜆
+𝐻𝑁
+(𝐵) = −
+
+𝑘,𝜆
+𝑛
+∑
+|𝐵𝑁
+(𝑢𝑖 )|
+
+𝑛
+
+𝑖=1
+
+log2
+
+𝑘,𝜆
+|𝐵𝑁
+(𝑢𝑖 )|
+
+𝑛
+
+𝑘,𝜆
+𝑘,𝜆
+𝑘,𝜆
+𝑘,𝜆
+∀ 𝑖, 𝑗, |𝐶𝑁
+(𝑢𝑖 ) ∩ 𝐷𝑗 | ≤ |𝐵𝑁
+(𝑢𝑖 ) ∩ 𝐷𝑗 |, |𝐶𝑁
+(𝑢𝑖 ) − 𝐷𝑗 | ≤ |𝐵𝑁
+(𝑢𝑖 ) − 𝐷𝑗 |.
+
+.
+
+Thus
+
+As {𝐷1 , 𝐷2 ⋯ , 𝐷𝑠 } forms a partition of 𝑈 , it can be observed that
+
+𝑘,𝜆
+𝑘,𝜆
+𝐸𝑁
+(𝑑|𝐶) ≤ 𝐸𝑁
+(𝑑|𝐵).
+
+𝑘,𝜆
+𝑘,𝜆
+|𝐵𝑁
+(𝑢𝑖 ) ∩ 𝐷𝑗 | = |𝐵𝑁
+(𝑢𝑖 )|.
+
+Proposition 4.16. Consider an HIS (𝑈 , 𝐴, 𝑑), given 𝐵 ⊆ 𝐴, 𝑘 ∈
+N 𝑎𝑛𝑑 𝜆 ∈ [0, 1]. Then
+
+□
+
+∀ 𝑖,
+𝑠
+∑
+𝑗=1
+
+Then
+𝑘,𝜆
+𝐻𝑁
+(𝐵) = −
+
+𝑛
+∑
+
+𝑘,𝜆
+𝑘,𝜆
+𝑘,𝜆
+𝐸𝑁
+(𝑑|𝐵) = 𝐸𝑁
+(𝐵 ∪ 𝑑) − 𝐸𝑁
+(𝐵).
+
+∑𝑠
+
+𝑘,𝜆
+𝑗=1 |𝐵𝑁 (𝑢𝑖 ) ∩ 𝐷𝑗 |
+
+=−
+
+log2
+
+𝑛
+
+𝑖=1
+
+𝑘,𝜆
+𝑛 ∑
+𝑠
+∑
+|𝐵𝑁
+(𝑢𝑖 ) ∩ 𝐷𝑗 |
+
+𝑛
+
+𝑖=1 𝑗=1
+
+log2
+
+𝑘,𝜆
+|𝐵𝑁
+(𝑢𝑖 )|
+
+𝑛
+
+Proof. As {𝐷1 , 𝐷2 , … , 𝐷𝑠 } forms a partition of 𝑈 , it can be observed
+that ∀ 𝑖,
+
+𝑛
+
+𝑠
+∑
+
+.
+
+𝑘,𝜆
+𝑘,𝜆
+|𝐵𝑁
+(𝑢𝑖 ) ∩ 𝐷𝑗 | = |𝐵𝑁
+(𝑢𝑖 )|;
+
+𝑗=1
+
+By Definition 4.8,
+𝑘,𝜆
+𝐻𝑁
+(𝐵 ∪ 𝑑) = −
+
+𝑘,𝜆
+𝑛 ∑
+𝑠
+∑
+|𝐵𝑁
+(𝑢𝑖 ) ∩ 𝐷𝑗 |
+
+𝑛
+
+𝑖=1 𝑗=1
+
+log2
+
+𝑘,𝜆
+|𝐵𝑁
+(𝑢𝑖 ) ∩ 𝐷𝑗 |
+
+𝑛
+
+𝑘,𝜆
+𝐸𝑁
+(𝑑|𝐵) =
+
+.
+
+𝑘,𝜆
+𝑘,𝜆
+𝑘,𝜆
+𝑛
+𝑠
+∑
+∑
+|𝐵𝑁
+(𝑢𝑖 ) ∩ 𝐷𝑗 | |𝐵𝑁
+(𝑢𝑖 ) − 𝐵𝑁
+(𝑢𝑖 ) ∩ 𝐷𝑗 |
+
+≤ 𝑙𝑜𝑔2
+
+𝑛
+
+𝑘,𝜆
+|𝐵𝑁
+(𝑢𝑖 )|
+
+𝑛
+
+=
+
+𝑠
+
+𝑛
+
+𝑖=1 𝑗=1
+
+.
+=
+
+𝑠
+
+𝑛
+
+𝑖=1 𝑗=1
+
+𝑘,𝜆
+𝑘,𝜆
+𝐻𝑁
+(𝐵) ≤ 𝐻𝑁
+(𝐵 ∪ 𝑑).
+
+=
+
+𝑘,𝜆
+The fact that 𝐻𝑁
+(𝑑|𝐵) ≥ 0 follows from Proposition 4.9. □
+
+𝑘,𝜆
+0 ≤ 𝐸𝑁
+(𝐵) ≤ 𝑛 − 1.
+
+=
+
+1
+≤
+𝑛
+
+𝑛
+
+0≤1−
+
+𝑖=1 𝑗=1
+
+𝑛
+
+𝑘,𝜆
+|𝐵𝑁
+(𝑢𝑖 )|
+
+𝑛
+
+(1 −
+
+𝑛
+
+(1 −
+
+(1 −
+
+−
+
+𝑛
+
+𝑛
+𝑘,𝜆
+|𝐵𝑁
+(𝑢𝑖 ) ∩ 𝐷𝑗 |
+
+𝑛
+
+𝑘,𝜆
+|𝐵𝑁
+(𝑢𝑖 )|
+
+𝑛
+
+𝑛
+
+𝑘,𝜆
+|𝐵𝑁
+(𝑢𝑖 ) ∩ 𝐷𝑗 |
+
+𝑘,𝜆
+|𝐵𝑁
+(𝑢𝑖 ) ∩ 𝐷𝑗 |
+
+𝑘,𝜆
+𝑛
+∑
+|𝐵𝑁
+(𝑢𝑖 )|
+
+𝑖=1
+𝑘,𝜆
+𝑘,𝜆
+= 𝐸𝑁
+(𝐵 ∪ 𝑑) − 𝐸𝑁
+(𝐵).
+
+(1 −
+
+) − (1 −
+
+)
+𝑘,𝜆
+|𝐵𝑁
+(𝑢𝑖 )|
+
+𝑛
+
+))
+
+)−
+
+)
+
+𝑘,𝜆
+|𝐵𝑁
+(𝑢𝑖 )|
+
+𝑛
+
+)
+
+□
+
+Proposition 4.18. Consider an HIS (𝑈 , 𝐴, 𝑑), given 𝐵 ⊆ 𝐴 and 𝑘 ∈ N.
+Then
+
+≤1−
+
+𝑘
+0 ≤ 𝐷𝐼𝑁
+(𝐵) ≤ 𝑙𝑜𝑔2 𝑛.
+
+1
+.
+𝑛
+
+𝑘,𝜆
+|𝐵𝑁
+(𝑢𝑖 )|
+
+𝑛
+
+(A.7)
+
+𝑘 (𝐵) = 𝑙𝑜𝑔 𝑛; if 𝐵 𝑘 = 𝛿, then 𝐷𝐼 𝑘 (𝐵) = 0.
+Moreover, if 𝐵 𝑘 =▵, then 𝐷𝐼𝑁
+2
+𝑁
+
+So
+0≤
+
+𝑛
+
+𝑘,𝜆
+= 𝐸𝑁
+(𝐵 ∪ 𝑑) −
+
+≤ 1,
+
+𝑘,𝜆
+|𝐵𝑁
+(𝑢𝑖 )|
+
+𝑛
+
+(
+
+𝑘,𝜆
+|𝐵𝑁
+(𝑢𝑖 )|
+
+((1 −
+
+𝑘,𝜆
+𝑛
+𝑠
+∑
+∑
+|𝐵𝑁
+(𝑢𝑖 ) ∩ 𝐷𝑗 |
+
+𝑘,𝜆
+𝑛
+𝑠
+∑
+∑
+|𝐵𝑁
+(𝑢𝑖 ) ∩ 𝐷𝑗 |
+
+(A.4)
+
+𝑘,𝜆
+Clearly, ∀ 𝑖, 1 ≤ |𝐵𝑁
+(𝑢𝑖 )| ≤ 𝑛. This indicates that
+
+𝑘,𝜆
+|𝐵𝑁
+(𝑢𝑖 )|
+
+𝑛
+
+𝑖=1 𝑗=1
+
+𝑘,𝜆
+Furtherover, if 𝐵 𝑘 =▵, it can be obtained that 𝐸𝑁
+(𝐵) = 1 − 1𝑛 ;
+
+Proof.
+
+𝑘,𝜆
+𝑛
+𝑠
+∑
+∑
+|𝐵𝑁
+(𝑢𝑖 ) ∩ 𝐷𝑗 |
+𝑖=1 𝑗=1
+
+Proposition 4.12. Consider an HIS (𝑈 , 𝐴, 𝑑), given 𝐵 ⊆ 𝐴, 𝑘 ∈
+N 𝑎𝑛𝑑 𝜆 ∈ [0, 1]. Then
+
+𝑛
+
+𝑘,𝜆
+∑ ∑ |𝐵𝑁
+(𝑢𝑖 ) ∩ 𝐷𝑗 |
+𝑛
+
+Then
+
+𝑛
+
+𝑘,𝜆
+𝑘,𝜆
+𝑘,𝜆
+∑ ∑ |𝐵𝑁
+(𝑢𝑖 ) ∩ 𝐷𝑗 | |𝐵𝑁
+(𝑢𝑖 )| − |𝐵𝑁
+(𝑢𝑖 ) ∩ 𝐷𝑗 |
+𝑛
+
+𝑘,𝜆
+|𝐵𝑁
+(𝑢𝑖 ) ∩ 𝐷𝑗 |
+
+𝑛
+
+𝑖=1 𝑗=1
+
+∀ 𝑖, 𝑗,
+𝑙𝑜𝑔2
+
+(A.6)
+
+𝑘,𝜆
+|𝐵𝑁
+(𝑢𝑖 )|
+
+)≤1−
+
+1
+𝑛
+
+Proof. Since 𝑛 ≤ |𝐵 𝑘 | ≤ 𝑛2 , it follows that 𝑛12 ≤ |𝐵1𝑘 | ≤ 1𝑛 .
+22
+
+B. Li et al.
+
+Applied Soft Computing 179 (2025) 113276
+
+Then
+
+Proposition 4.25. Consider an HIS (𝑈 , 𝐴, 𝑑), given 𝐵 ⊆ 𝐴, 𝑘 ∈
+N 𝑎𝑛𝑑 𝜆 ∈ [0, 1]. The statements below are equivalent:
+𝑘,𝜆
+(1) 𝐵𝑁
+⊆ 𝑅𝑑 ;
+𝑘,𝜆
+(2) 𝛤𝐵,𝑁
+(𝑑) = 1;
+𝑘,𝜆
+(3) 𝐻𝑁
+(𝑑|𝐵) = 0;
+𝑘,𝜆
+(4) 𝐷𝐼𝑁
+(𝑑|𝐵) = 0.
+
+𝑛2
+1 ≤ 𝑘 ≤ 𝑛.
+|𝐵 |
+Thus
+𝑘
+0 ≤ 𝐷𝐼𝑁
+(𝐵) ≤ 𝑙𝑜𝑔2 𝑛.
+𝑘 (𝐵) = 𝑙𝑜𝑔 𝑛.
+Let 𝐵 𝑘 =▵. Then |𝐵 𝑘 | = 𝑛. This implies that 𝐷𝐼𝑁
+2
+𝑘 (𝐵) = 0. □
+Let 𝐵 𝑘 = 𝛿. Then |𝐵 𝑘 | = 𝑛2 . This indicates that 𝐷𝐼𝑁
+
+𝑘,𝜆
+Proof. ‘‘(1) ⇒ (2)’’. Let 𝐵𝑁
+⊆ 𝑅𝑑 . Suppose there exists 𝑗 ∗ such that
+𝑘,𝜆
+𝑘,𝜆
+𝐷𝑗 ∗ ⊈ 𝐵𝑁 (𝐷𝑗 ∗ ). Then 𝐷𝑗 ∗ − 𝐵𝑁
+(𝐷𝑗 ∗ ) ≠ ∅. Pick
+
+Proposition 4.20. Consider an HIS (𝑈 , 𝐴, 𝑑), given 𝐵 ⊆ 𝐴, 𝑘 ∈
+N 𝑎𝑛𝑑 𝜆 ∈ [0, 1]. Then
+𝑘,𝜆
+0 ≤ 𝐷𝐼𝑁
+(𝑑|𝐵) ≤ 𝑙𝑜𝑔2 𝑛.
+
+𝑘,𝜆
+𝑢∗ ∈ 𝐷𝑗 ∗ − 𝐵𝑁
+(𝐷𝑗 ∗ ).
+
+(A.8)
+
+𝑘,𝜆
+This indicates that 𝑢∗ ∈ 𝐷𝑗 ∗ , 𝑢∗ ∉ 𝐵𝑁
+(𝐷𝑗 ∗ ).
+∗
+∗
+𝑢 ∈ 𝐷𝑗 ∗ implies that 𝐷𝑗 ∗ = [𝑢 ]𝑑 .
+
+𝑘,𝜆
+𝑘,𝜆
+𝑘,𝜆
+𝑘,𝜆
+Moreover, if 𝐵𝑁
+=▵, then 𝐷𝐼𝑁
+(𝑑|𝐵) = 0; if 𝐵𝑁
+= 𝛿, then 𝐷𝐼𝑁
+(𝑑|𝐵)
+𝑛2
+= 𝑙𝑜𝑔2 |𝑅 | .
+𝑑
+
+𝑘,𝜆
+𝑘,𝜆 ∗
+𝑢∗ ∉ 𝐵𝑁
+(𝐷𝑗 ∗ ) implies that 𝐵𝑁
+(𝑢 ) ⊈ 𝐷𝑗 ∗ .
+𝑘,𝜆 ∗
+𝑘,𝜆
+Then 𝐵𝑁
+(𝑢 ) ⊈ [𝑢∗ ]𝑑 . So 𝐵𝑁
+⊈ 𝑅𝑑 . This leads to a contradiction.
+
+𝑘,𝜆
+𝑘,𝜆
+Proof. Since ▵⊆ 𝐵𝑁
+and ▵⊆ 𝑅𝑑 , it can be seen that ▵⊆ 𝐵𝑁
+∩ 𝑅𝑑 .
+𝑘,𝜆
+2
+Then 𝑛 ≤ |𝐵𝑁 ∩ 𝑅𝑑 | ≤ 𝑛 . This implies that
+
+𝑘,𝜆
+It follows that ∀ 𝑗, 𝐷𝑗 ⊆ 𝐵𝑁
+(𝐷𝑗 ). Then by Theorem 3.5, ∀ 𝑗, 𝐷𝑗 =
+𝑘,𝜆
+𝑘,𝜆
+𝐵𝑁 (𝐷𝑗 ). By Proposition 4.3, 𝛤𝐵,𝑁
+(𝑑) = 1.
+𝑘,𝜆
+𝑘,𝜆
+‘‘(2) ⇒ (1)’’. Let 𝛤𝐵,𝑁 (𝑑) = 1. The fact that ∀ 𝑗, 𝐷𝑗 = 𝐵𝑁
+(𝐷𝑗 ) follows
+𝑘,𝜆
+∗
+from Proposition 4.3. ∀ 𝑢 ∈ 𝑈 , ∃𝑗 , 𝑢 ∈ 𝐷𝑗 ∗ . Since 𝐷𝑗 ∗ = 𝐵𝑁
+(𝐷𝑗 ∗ ),
+𝑘,𝜆
+𝑘,𝜆
+we have 𝑢 ∈ 𝐵𝑁
+(𝐷𝑗 ∗ ), Then 𝑢 ∈ 𝐵𝑁
+(𝑢) ⊆ 𝐷𝑗 ∗ . 𝑢 ∈ 𝐷𝑗 ∗ implies that
+𝑘,𝜆
+𝑘,𝜆
+𝐷𝑗 ∗ = [𝑢]𝑑 . Hence ∀ 𝑢 ∈ 𝑈 , 𝐵𝑁
+(𝑢) ⊆ [𝑢]𝑑 . Therefore 𝐵𝑁
+⊆ 𝑅𝑑 .
+𝑘,𝜆
+‘‘(1) ⇒ (3)’’. Let 𝐵𝑁 ⊆ 𝑅𝑑 , then according to Lemma 4.24,
+
+1
+1
+1
+≤ 𝑘,𝜆
+≤ .
+𝑛
+𝑛2
+|𝐵 ∩ 𝑅𝑑 |
+𝑁
+
+𝑘,𝜆
+Clearly, 𝑛 ≤ |𝐵 𝑘 | ≤ 𝑛2 , |𝐵𝑁
+∩ 𝑅𝑑 | ≤ |𝐵 𝑘 |. Then
+
+1≤
+
+|𝐵 𝑘 |
+𝑘,𝜆
+|𝐵𝑁
+∩ 𝑅𝑑 |
+
+≤ 𝑛.
+
+Thus
+𝑘,𝜆
+0 ≤ 𝐷𝐼𝑁
+(𝑑|𝐵) ≤ 𝑙𝑜𝑔2 𝑛.
+
+∀ 𝑖,
+
+𝑘,𝜆
+𝑘,𝜆
+Let 𝐵 𝑘 =▵. Then 𝐵𝑁
+∩ 𝑅𝑑 =▵= 𝐵 𝑘 . Therefore 𝐷𝐼𝑁
+(𝑑|𝐵) = 0.
+𝑘,𝜆
+𝑘,𝜆
+𝑘,𝜆
+Let 𝐵𝑁 = 𝛿. Then 𝐵𝑁 ∩ 𝑅𝑑 = 𝑅𝑑 . It shows that 𝐷𝐼𝑁
+(𝑑|𝐵)
+𝑛2
+𝑙𝑜𝑔2 |𝑅 | . □
+𝑑
+
+𝑘,𝜆
+𝑛 ∑
+𝑠
+∑
+|𝐵𝑁
+(𝑢𝑖 ) ∩ 𝐷𝑗 |
+
+𝑗=1
+
+𝑛
+
+𝑘,𝜆
+𝑠
+∑
+|𝐵𝑁
+(𝑢) ∩ 𝐷𝑗 |
+𝑗=1
+
+𝑛
+
+(1 −
+
+log2
+
+𝑛
+𝑘,𝜆
+|𝐵𝑁
+(𝑢) ∩ 𝐷𝑗 |
+
+𝑛
+
+)=
+
+=
+
+𝑘,𝜆
+|𝐵𝑁
+(𝑢)|
+
+𝑛
+𝑘,𝜆
+|𝐵𝑁
+(𝑢)|
+
+𝑛
+
+(1 −
+
+log2
+
+𝑘,𝜆
+|𝐵𝑁
+(𝑢)|
+
+𝑛
+𝑘,𝜆
+|𝐵𝑁
+(𝑢)|
+
+𝑛
+
+𝑗=1
+
+𝑛
+
+𝑘,𝜆
+𝑠
+∑
+|𝐵𝑁
+(𝑢) ∩ 𝐷𝑗 |
+𝑗=1
+
+𝑛
+
+(1 −
+
+log2
+
+𝑘,𝜆
+|𝐵𝑁
+(𝑢) ∩ 𝐷𝑗 |
+
+𝑛
+𝑘,𝜆
+|𝐵𝑁
+(𝑢) ∩ 𝐷𝑗 |
+
+𝑛
+
+)=
+
+=
+
+𝑘,𝜆
+|𝐵𝑁
+(𝑢)|
+
+𝑛
+𝑘,𝜆
+|𝐵𝑁
+(𝑢)|
+
+𝑛
+
+(1 −
+
+log2
+
+𝑘,𝜆
+|𝐵𝑁
+(𝑢)|
+
+𝑛
+
+𝑛
+
+𝑙𝑜𝑔2
+
+𝑘,𝜆
+|𝐵𝑁
+(𝑢𝑖 )|
+
+log2
+
+We have
+
+It follows that
+𝑘,𝜆
+|𝐵𝑁
+(𝑢𝑖∗ ) ∩ 𝐷𝑗 ∗ |
+
+𝑛
+
+log2
+
+𝑘,𝜆
+|𝐵𝑁
+(𝑢𝑖∗ )|
+> 0.
+𝑘,𝜆
+|𝐵𝑁 (𝑢𝑖∗ ) ∩ 𝐷𝑗 ∗ |
+
+Note that
+),
+
+𝑘,𝜆
+𝑘,𝜆
+∀ 𝑖, 𝑗, |𝐵𝑁
+(𝑢𝑖 )| ≥ |𝐵𝑁
+(𝑢𝑖 ) ∩ 𝐷𝑗 |.
+
+Then
+.
+∀ 𝑖, 𝑗,
+
+𝑘,𝜆
+|𝐵𝑁
+(𝑢)|
+
+𝑛
+
+𝑛
+
+𝑘,𝜆
+|𝐵𝑁
+(𝑢𝑖 )|
+
+𝑘,𝜆
+𝑘,𝜆
+|𝐵𝑁
+(𝑢𝑖∗ )| > |𝐵𝑁
+(𝑢𝑖∗ ) ∩ 𝐷𝑗 ∗ |.
+
+𝑛
+
+𝑘,𝜆
+𝑛 ∑
+𝑠
+∑
+|𝐵𝑁
+(𝑢𝑖 ) ∩ 𝐷𝑗 |
+𝑖=1 𝑗=1
+
+log2
+
+𝑘,𝜆
+|𝐵𝑁
+(𝑢𝑖 )|
+≥ 0.
+𝑘,𝜆
+|𝐵𝑁 (𝑢𝑖 ) ∩ 𝐷𝑗 |
+
+𝑛
+
+log2
+
+𝑘,𝜆
+|𝐵𝑁
+(𝑢𝑖 )|
+𝑘,𝜆
+|𝐵𝑁
+(𝑢𝑖 ) ∩ 𝐷𝑗 |
+
+> 0.
+
+𝑘,𝜆
+Hence 𝐻𝑁
+(𝑑|𝐵) > 0. This is a contradiction.
+𝑘,𝜆
+Thus 𝐵𝑁
+⊆ 𝑅𝑑 .
+𝑘,𝜆
+‘‘(1) ⇒ (4)’’. Let 𝐵𝑁
+⊆ 𝑅𝑑 .
+
+),
+
+.
+
+𝑘,𝜆
+|𝐵𝑁
+(𝑢𝑖 ) ∩ 𝐷𝑗 |
+
+It shows that
+
+It follows that
+𝑘,𝜆
+|𝐵𝑁
+(𝑢) ∩ 𝐷𝑗 |
+
+=
+
+[𝑢𝑖∗ ]𝑑 = 𝐷𝑗 ∗ .
+
+Proof. As {𝐷1 , 𝐷2 , … , 𝐷𝑠 } forms a partition of 𝑈 , it can be seen that
+𝑢 ∈ 𝐷𝑗 ∗ for some 𝑗 ∗ .
+𝑘,𝜆
+Since 𝐵𝑁
+⊆ 𝑅𝑑 . Then by Lemma 4.23,
+{
+𝑘,𝜆
+𝐵𝑁
+(𝑢), 𝑗 = 𝑗 ∗ ;
+𝑘,𝜆
+𝐵𝑁 (𝑢) ∩ 𝐷𝑗 =
+∅,
+𝑗 ≠ 𝑗∗.
+𝑠
+∑
+
+𝑘,𝜆
+|𝐵𝑁
+(𝑢𝑖 ) ∩ 𝐷𝑗 |
+
+𝑛
+
+𝑘,𝜆
+|𝐵𝑁
+(𝑢𝑖 )|
+= 0.
+𝑘,𝜆
+𝑛
+|𝐵
+(𝑢
+)
+𝑖=1 𝑗=1
+𝑖 ∩ 𝐷𝑗 |
+𝑁
+𝑘,𝜆
+𝑘,𝜆
+Assume that 𝐵𝑁
+⊈ 𝑅𝑑 . Then ∃ 𝑖∗ , 𝐵𝑁
+(𝑢𝑖∗ ) ⊈ [𝑢𝑖∗ ]𝑑 . Denote
+
+Lemma 4.24. Consider an HIS (𝑈 , 𝐴, 𝑑), given 𝐵 ⊆ 𝐴, 𝑘 ∈ N 𝑎𝑛𝑑 𝜆 ∈
+𝑘,𝜆
+[0, 1]. If 𝐵𝑁
+⊆ 𝑅𝑑 , then ∀ 𝑢 ∈ 𝑈 ,
+𝑘,𝜆
+|𝐵𝑁
+(𝑢) ∩ 𝐷𝑗 |
+
+𝑙𝑜𝑔2
+
+.
+
+𝑘,𝜆
+𝑘,𝜆
+This indicates that 𝐻𝑁
+(𝐵 ∪ 𝑑) = 𝐻𝑁
+(𝐵). Then the fact that
+𝑘,𝜆
+𝐻𝑁 (𝑑|𝐵) = 0 follows from Proposition 4.9.
+𝑘,𝜆
+‘‘(3) ⇒ (1)’’. Let 𝐻𝑁
+(𝑑|𝐵) = 0. This shows that
+
+=
+
+𝑘,𝜆
+Proof. Assume that 𝑢 ∈ 𝐷𝑗 . This indicates that 𝐷𝑗 = [𝑢]𝑑 . 𝐵𝑁
+⊆ 𝑅𝑑
+𝑘,𝜆
+𝑘,𝜆
+𝑘,𝜆
+implies that 𝐵𝑁 (𝑢) ⊆ [𝑢]𝑑 . Therefore 𝐵𝑁 (𝑢) ∩ 𝐷𝑗 = 𝐵𝑁 (𝑢).
+𝑘,𝜆
+Assume that 𝑢 ∉ 𝐷𝑗 . This shows that [𝑢]𝑑 ∩𝐷𝑗 = ∅. 𝐵𝑁
+⊆ 𝑅𝑑 implies
+𝑘,𝜆
+𝑘,𝜆
+that 𝐵𝑁 (𝑢) ⊆ [𝑢]𝑑 . Thus 𝐵𝑁 (𝑢) ∩ 𝐷𝑗 = ∅. □
+
+𝑘,𝜆
+|𝐵𝑁
+(𝑢) ∩ 𝐷𝑗 |
+
+𝑛
+
+𝑗=1
+
+Lemma 4.23. Consider an HIS (𝑈 , 𝐴, 𝑑), given 𝐵 ⊆ 𝐴, 𝑘 ∈ N 𝑎𝑛𝑑 𝜆 ∈
+𝑘,𝜆
+[0, 1]. If 𝐵𝑁
+⊆ 𝑅𝑑 , then ∀ 𝑢 ∈ 𝑈 , ∀ 𝑗,
+{
+𝑘,𝜆
+𝐵𝑁
+(𝑢), 𝑢 ∈ 𝐷𝑗 ;
+𝑘,𝜆
+𝐵𝑁
+(𝑢) ∩ 𝐷𝑗 =
+∅,
+𝑢 ∉ 𝐷𝑗 .
+
+𝑠
+∑
+
+𝑘,𝜆
+𝑠
+∑
+|𝐵𝑁
+(𝑢𝑖 ) ∩ 𝐷𝑗 |
+
+Hence 𝐵 𝑘 ⊆ 𝑅𝑑 , 𝑁𝐵𝜆 ⊆ 𝑅𝑑 .
+Since 𝑅𝑑 ⊆ 𝑁𝐵𝜆 .
+𝑘,𝜆
+It follows that 𝑁𝐵𝜆 = 𝑅𝑑 , 𝐵𝑁
+= 𝐵 𝑘 ∩ 𝑁𝐵𝜆 = 𝐵 𝑘 ∩ 𝑅𝑑 = 𝐵 𝑘 .
+
+□
+
+𝑘,𝜆
+𝑘,𝜆
+Clearly, 𝐵𝑁
+∩ 𝑅𝑑 = 𝐵𝑁
+.
+
+23
+
+Applied Soft Computing 179 (2025) 113276
+
+B. Li et al.
+𝑘,𝜆
+𝑘,𝜆
+Thus |𝐵𝑁
+∩ 𝑅𝑑 | = |𝐵𝑁
+| = |𝐵 𝑘 |.
+𝑘,𝜆
+Therefore 𝐷𝐼𝑁 (𝑑|𝐵) = 0.
+𝑘,𝜆
+‘‘(4) ⇒ (1)’’. Suppose 𝐷𝐼𝑁
+(𝑑|𝐵) = 0.
+𝑘,𝜆
+𝑘,𝜆
+It can be seen that 𝐵𝑁 ∩ 𝑅𝑑 ⊆ 𝐵 𝑘 according to 𝐵𝑁
+⊆ 𝐵𝑘 .
+𝑘,𝜆
+𝑘,𝜆
+𝑘
+Since 𝐷𝐼𝑁 (𝑑|𝐵) = 0 indicates |𝐵𝑁 ∩ 𝑅𝑑 | = |𝐵 |.
+𝑘,𝜆
+It follows that 𝐵 𝑘 = 𝐵𝑁
+∩ 𝑅𝑑 .
+Hence 𝐵 𝑘 ⊆ 𝑁𝐵𝜆 ∩ 𝑅𝑑 .
+Thus 𝐵 𝑘 ∩ 𝑁𝐵𝜆 ⊆ 𝑁𝐵𝜆 ∩ 𝑅𝑑 ⊆ 𝑅𝑑 .
+𝑘,𝜆
+This shows that 𝐵𝑁
+⊆ 𝑅𝑑 . □
+
+𝑘,𝜆
+𝑘,𝜆
+‘‘(2) ⇒ (3)’’. Let 𝐻𝑁
+(𝑑|𝐵) = 𝐻𝑁
+(𝑑|𝐴). Notably, (𝑈 , 𝐴, 𝑑) being
+𝑘,𝜆
+𝑘,𝜆
+(𝑘, 𝜆)-consistent implies, by Theorem 4.26, that 𝐻𝑁
+(𝑑|𝐴) = 𝐷𝐼𝑁
+(𝑑|𝐴)
+𝑘,𝜆
+= 0. This leads to 𝐻𝑁
+(𝑑|𝐵) = 0. Therefore
+𝑘,𝜆
+𝑘,𝜆
+𝐷𝐼𝑁
+(𝑑|𝐵) = 𝐷𝐼𝑁
+(𝑑|𝐴).
+𝑘,𝜆
+𝑘,𝜆
+‘‘(3) ⇒ (1)’’. Let 𝐷𝐼𝑁
+(𝑑|𝐵) = 𝐷𝐼𝑁
+(𝑑|𝐴). Note that (𝑈 , 𝐴, 𝑑) is (𝑘, 𝜆)𝑘,𝜆
+consistent. Then 𝐷𝐼𝑁
+(𝑑|𝐴) = 0 follows from Theorem 4.26. Therefore
+𝑘,𝜆
+𝑘,𝜆
+𝐷𝐼𝑁 (𝑑|𝐵) = 0. By Proposition 4.25, 𝐵𝑁
+⊆ 𝑅𝑑 . Suppose that ∃ 𝑗 ∗ ,
+𝑘,𝜆
+𝐴𝑘,𝜆
+(𝐷𝑗 ∗ ) ⊈ 𝐵𝑁
+(𝐷𝑗 ∗ ).
+𝑁
+
+Theorem 4.26. Consider an HIS (𝑈 , 𝐴, 𝑑), given 𝑘 ∈ N 𝑎𝑛𝑑 𝜆 ∈ [0, 1].
+The statements below are equivalent:
+(1) (𝑈 , 𝐴, 𝑑) is (𝑘, 𝜆)-consistent;
+(2) 𝐴𝑘,𝜆
+⊆ 𝑅𝑑 ;
+𝑁
+
+𝑘,𝜆
+Then 𝐴𝑘,𝜆
+(𝐷𝑗 ∗ ) − 𝐵𝑁
+(𝐷𝑗 ∗ ) ≠ ∅. Pick
+𝑁
+𝑘,𝜆
+𝑢∗ ∈ 𝐴𝑘,𝜆
+(𝐷𝑗 ∗ ) − 𝐵𝑁
+(𝐷𝑗 ∗ ).
+𝑁
+
+𝑘,𝜆
+(3) 𝛤𝐴,𝑁
+(𝑑) = 1;
+
+This indicates that
+
+𝑘,𝜆
+(4) 𝐻𝑁
+(𝑑|𝐴) = 0;
+𝑘,𝜆
+(5) 𝐷𝐼𝑁 (𝑑|𝐴) = 0.
+
+𝑘,𝜆
+𝑢∗ ∈ 𝐴𝑘,𝜆
+(𝐷𝑗 ∗ ), 𝑢∗ ∉ 𝐵𝑁
+(𝐷𝑗 ∗ ).
+𝑁
+
+The fact that 𝑢∗ ∈ 𝐴𝑘,𝜆
+(𝑢∗ ) ⊆ 𝐷𝑗 ∗ follows from 𝑢∗ ∈ 𝐴𝑘,𝜆
+(𝐷𝑗 ∗ ). Hence
+𝑁
+𝑁
+𝑘,𝜆 ∗
+𝑘,𝜆
+𝐷𝑗 ∗ = [𝑢∗ ]𝑑 . Then 𝐵𝑁
+(𝑢 ) ⊈ 𝐷𝑗 ∗ follows from 𝑢∗ ∉ 𝐵𝑁
+(𝐷𝑗 ∗ ). Thus
+
+Proof. It can be evidenced using Propositions 3.8 and 4.25. □
+
+𝑘,𝜆 ∗
+𝑘,𝜆
+𝐵𝑁
+(𝑢 ) ⊈ [𝑢∗ ]𝑑 . It follows that 𝐵𝑁
+⊈ 𝑅𝑑 . This leads to a contradiction.
+Therefore ∀ 𝑗,
+
+Proposition 4.27. Consider an HIS (𝑈 , 𝐴, 𝑑), given 𝐵 ⊆ 𝐴, 𝑘 ∈
+𝑘,𝜆
+𝑘,𝜆
+N 𝑎𝑛𝑑 𝜆 ∈ [0, 1]. If 𝐵𝑁
+⊆ 𝑅𝑑 , then 𝐸𝑁
+(𝑑|𝐵) = 0.
+
+𝑘,𝜆
+𝐴𝑘,𝜆
+(𝐷𝑗 ) ⊆ 𝐵𝑁
+(𝐷𝑗 ).
+𝑁
+
+𝑘,𝜆
+Proof. Let 𝐵𝑁
+⊆ 𝑅𝑑 . Then according to Lemma 4.24,
+
+∀ 𝑖,
+
+𝑘,𝜆
+𝑠
+∑
+|𝐵𝑁
+(𝑢𝑖 ) ∩ 𝐷𝑗 |
+𝑗=1
+
+𝑛
+
+(1 −
+
+𝑘,𝜆
+|𝐵𝑁
+(𝑢𝑖 ) ∩ 𝐷𝑗 |
+
+𝑛
+
+)=
+
+𝑘,𝜆
+|𝐵𝑁
+(𝑢𝑖 )|
+
+𝑛
+
+(1 −
+
+𝑘,𝜆
+According to Theorem 3.5, ∀ 𝑗, 𝐴𝑘,𝜆
+(𝐷𝑗 ) ⊇ 𝐵𝑁
+(𝐷𝑗 ). Hence ∀ 𝑗,
+𝑁
+𝑘,𝜆
+|𝐵𝑁
+(𝑢𝑖 )|
+
+𝑛
+
+𝑘,𝜆
+𝐴𝑘,𝜆
+(𝐷𝑗 ) = 𝐵𝑁
+(𝐷𝑗 ).
+𝑁
+
+).
+
+Thus
+
+𝑘,𝜆
+𝑘,𝜆
+𝑘,𝜆
+Thus 𝐸𝑁
+(𝐵 ∪ 𝑑) = 𝐸𝑁
+(𝐵). The fact that 𝐸𝑁
+(𝑑|𝐵) = 0 follows from
+Proposition 4.16. □
+
+𝑘,𝜆
+𝑃 𝑂𝑆𝐴,𝑁
+(𝑑) =
+
+𝑠
+⋃
+
+𝐴𝑘,𝜆
+(𝐷𝑗 ) =
+𝑁
+
+𝑗=1
+
+𝑘,𝜆
+𝑘,𝜆
+𝐵𝑁
+(𝐷𝑗 ) = 𝑃 𝑂𝑆𝐵,𝑁
+(𝑑).
+
+𝑗=1
+
+Hence 𝐵 ∈ 𝑐𝑜𝑘,𝜆
+(𝐴). □
+𝑑
+
+Theorem 5.3. Assuming (𝑈 , 𝐴, 𝑑) is a (𝑘, 𝜆)-consistent HIS, with 𝑘 ∈ N
+and 𝜆 ∈ [0, 1], the following statements are equivalent:
+(1) 𝐵 ∈ 𝑐𝑜𝑘,𝜆
+(𝐴);
+𝑑
+𝑘,𝜆
+𝑘,𝜆
+(2) 𝐻𝑁
+(𝑑|𝐵) = 𝐻𝑁
+(𝑑|𝐴);
+𝑘,𝜆
+𝑘,𝜆
+(3) 𝐷𝐼𝑁 (𝑑|𝐵) = 𝐷𝐼𝑁
+(𝑑|𝐴).
+
+Data availability
+No data was used for the research described in the article.
+
+𝑘,𝜆
+𝑘,𝜆
+Proof. ‘‘(1) ⇒ (2)’’. Let 𝐵 ∈ 𝑐𝑜𝑘,𝜆
+(𝐴). The fact that 𝛤𝐵,𝑁
+(𝑑) = 𝛤𝐴,𝑁
+(𝑑)
+𝑑
+follows from Theorem 5.1. By Proposition 4.3,
+𝑠
+∑
+
+𝑠
+⋃
+
+References
+[1] Z. Pawlak, Rough Sets: Theoretical Aspects of Reasoning About Data, Kluwer
+Academic Publishers, Dordrecht, 1991.
+[2] D. Miao, Information representation of the concepts and operations in rough set
+theory, J. Softw. 22 (1999) 113–116.
+[3] J.Y. Liang, Z.Z. Shi, D. Li, M.J. Wierman, Information entropy, rough entropy
+and knowledge granulation in incomplete information systems, Int. J. Gen. Syst.
+35 (2006) 641–654.
+[4] X.D. Wang, Y.F. Song, Uncertainty measure in evidence theory with its
+applications, Appl. Intell. 48 (2018) 1672–1688.
+[5] J.S. Zeng, Z.W. Li, P.F. Zhang, P. Wang, Information structures and uncertainty
+measures in a hybrid information system: gaussian kernel method, Int. J. Fuzzy
+Syst. 22 (2020) 212–231.
+[6] S.C. Zhang, Cost-sensitive KNN classification, Neurocomputing 391 (2020)
+234–242.
+[7] W. Li, Y.M. Chen, Y.P. Song, Boosted K-nearest neighbor classifiers based on
+fuzzy granules, Knowl.-Based Syst. 195 (2020) 105606.
+[8] D. Huang, Y.Y. Chen, F. Liu, Z.W. Li, Feature selection for multiset-valued data
+based on fuzzy conditional information entropy using iterative model and matrix
+operation, Appl. Soft Comput. 142 (2023) 110345.
+[9] F. Jiang, Y.M. Chen, Outlier detection based on granular computing and rough
+set theory, Appl. Intell. 42 (2015) 303–322.
+[10] J.H. Dai, H.W. Tian, Entropy measures and granularity measures for set-valued
+information systems, Inform. Sci. 240 (2013) 72–82.
+[11] H.R. Su, J.K. Chen, Y.J. Lin, A four-stage branch local search algorithm for
+minimal test cost attribute reduction based on the set covering, Appl. Soft
+Comput. J. 153 (2024) 111303.
+[12] X. Ji, J.H. Peng, P. Zhao, S. Yao, Extended rough sets model based on fuzzy
+granular ball and its attribute reduction, Inform. Sci. 640 (2023) 119071.
+[13] D. Zhang, P. Zhu, Variable radius neighborhood rough sets and attribute
+reduction, Internat. J. Approx. Reason. 150 (2022) 98–121.
+
+𝑘,𝜆
+(|𝐴𝑘,𝜆
+(𝐷𝑗 )| − |𝐵𝑁
+(𝐷𝑗 )|) = 0.
+𝑁
+
+𝑗=1
+𝑘,𝜆
+According to Theorem 3.5, ∀ 𝑗, 𝐴𝑘,𝜆
+(𝐷𝑗 ) ⊇ 𝐵𝑁
+(𝐷𝑗 ). Then ∀ 𝑗,
+𝑁
+𝑘,𝜆
+|𝐴𝑘,𝜆
+(𝐷𝑗 )| − |𝐵𝑁
+(𝐷𝑗 )| ≥ 0.
+𝑁
+
+So ∀ 𝑗,
+𝑘,𝜆
+|𝐴𝑘,𝜆
+(𝐷𝑗 )| − |𝐵𝑁
+(𝐷𝑗 )| = 0.
+𝑁
+
+It follows that ∀ 𝑗,
+𝑘,𝜆
+𝐴𝑘,𝜆
+(𝐷𝑗 ) = 𝐵𝑁
+(𝐷𝑗 ).
+𝑁
+
+Thus ∀ 𝑗,
+𝑘,𝜆
+𝐴𝑘,𝜆
+(𝑢) ⊆ 𝐷𝑗 ⇔ 𝐵𝑁
+(𝑢) ⊆ 𝐷𝑗 .
+𝑁
+
+Note that (𝑈 , 𝐴, 𝑑) is (𝑘, 𝜆)-consistent, as per Proposition 3.8, it
+implies that 𝐴𝑘,𝜆
+⊆ 𝑅𝑑 . Consequently, ∀ 𝑢 ∈ 𝑈 , 𝐴𝑘,𝜆
+(𝑢) ⊆ [𝑢]𝑑 . Assume
+𝑁
+𝑁
+𝑢
+that [𝑢]𝑑 = 𝐷 ∈ {𝐷1 , 𝐷2 , … , 𝐷𝑠 }. This leads to the conclusion that
+𝑘,𝜆
+𝑘,𝜆
+∀ 𝑢 ∈ 𝑈 , 𝐵𝑁
+(𝑢) ⊆ 𝐷𝑢 = [𝑢]𝑑 . Therefore, 𝐵𝑁
+⊆ 𝑅𝑑 . According to
+𝑘,𝜆
+Proposition 4.25, 𝐻𝑁 (𝑑|𝐵) = 0.
+Considering (𝑈 , 𝐴, 𝑑) being (𝑘, 𝜆)-consistent, based on Theorem 4.26,
+𝑘,𝜆
+𝑘,𝜆
+𝑘,𝜆
+it follows that 𝐻𝑁
+(𝑑|𝐴) = 0. Consequently, 𝐻𝑁
+(𝑑|𝐵) = 𝐻𝑁
+(𝑑|𝐴).
+24
+
+Applied Soft Computing 179 (2025) 113276
+
+B. Li et al.
+[14] F. Xu, M.J. Cai, Q.G. Li, H.C. Wang, H. Fujita, Shared neighbors rough set model
+and neighborhood classifiers, Expert Syst. Appl. 244 (2024) 122965.
+[15] X.B. Yang, S.C. Liang, H.L. Yu, S. Gao, Y.H. Qian, Pseudo-label neighborhood
+rough set: Measures and attribute reductions, Internat. J. Approx. Reason. 105
+(2019) 112–129.
+[16] T.X. Shu, Y.J. Lin, L. Guo, Online hierarchical streaming feature selection based
+on adaptive neighborhood rough set, Appl. Soft Comput. J. 152 (2024) 111276.
+[17] C.Z. Wang, Y.P. Shi, X.D. Fan, M.W. Shao, Attribute reduction based on k-nearest
+neighborhood rough sets, Internat. J. Approx. Reason. 106 (2019) 18–31.
+[18] N. Wang, E.H. Zhao, A new method for feature selection based on weighted
+𝑘-nearest neighborhood rough set, Expert Syst. Appl. 238 (2024) 122324.
+[19] S.Y. Xia, C. Wang, G.Y. Wang, X.B. Gao, W.P. Ding, J.H. Yu, Y.J. Zhai, Z.Z.
+Chen, GBRS: A unified granular-ball learning model of pawlak rough set and
+neighborhood rough set, IEEE Trans. Neural Netw. Learn. Syst. (2024) 1–15.
+[20] Y.B. Wang, X.J. Chen, K. Dong, Attribute reduction via local conditional entropy,
+Int. J. Mach. Learn. Cybern. 10 (2019) 3619–3634.
+[21] C.Z. Wang, Y. Wang, M.W. Shao, Y.H. Qian, D.G. Chen, Fuzzy rough attribute
+reduction for categorical data, IEEE Trans. Fuzzy Syst. 28 (2020) 818–830.
+[22] B.B. Sang, H.M. Chen, L. Yang, T.R. Li, Incremental feature selection using a
+conditional entropy based on fuzzy dominance neighborhood rough sets, IEEE
+Trans. Fuzzy Syst. 30 (2022) 1683–1697.
+[23] D. Huang, Q.L. Zhang, Z.W. Li, Semi-supervised attribute reduction for partially
+labeled categorical data based on predicted label, Internat. J. Approx. Reason.
+154 (2023) 242–261.
+[24] M.A.N.D. Sewwandi, Y.F. Li, J.L. Zhang, A class-specific feature selection and
+classification approach using neighborhood rough set and K-nearest neighbor
+theories, Appl. Soft Comput. 143 (2023) 110366.
+[25] H.Y. Zhang, Q.Q. Sun, K.Z. Dong, Information-theoretic partially labeled heterogeneous feature selection based on neighborhood rough sets, Internat. J. Approx.
+Reason. 154 (2023) 200–217.
+[26] S.G. Cui, G.S. Li, B.B. Sang, W.H. Xu, H.M. Chen, Distance metric learningbased multi-granularity neighborhood rough sets for attribute reduction, Appl.
+Soft Comput. J. 159 (2024) 111656.
+
+[27] M.A.N.D. Sewwandi, Y.F. Li, J.L. Zhang, Granule-specific feature selection for
+continuous data classification using neighborhood rough sets, Expert Syst. Appl.
+238 (2024) 121765.
+[28] S.Z. Wu, L.T. Wang, S.Y. Ge, Z.W. Hao, Y.L. Liu, Neighborhood rough set with
+neighborhood equivalence relation for feature selection, Knowl. Inf. Syst. 66
+(2024) 1833–1859.
+[29] Q.L. Zhang, Y. Song, Y.C. Peng, Z.W. Li, Attribute reduction algorithms with an
+anti-noise mechanism for hybrid data based on fuzzy evidence theory, Eng. Appl.
+Artif. Intell. 129 (2024) 107659.
+[30] M. Hu, E.C.C. Tsang, Y.T. Guo, D.G. Chen, W.H. Xu, Attribute reduction based
+on overlap degree and k-nearest-neighbor rough sets in decision information
+systems, Inform. Sci. 584 (2022) 301–324.
+[31] P. Wang, J.L. He, Z.W. Li, Attribute reduction for hybrid data based on fuzzy
+rough iterative computation model, Inform. Sci. 632 (2023) 555–575.
+[32] Q.H. Hu, J.F. Liu, D.R. Yu, Mixed feature selection based on granulation and
+approximation, Knowl.-Based Syst. 21 (2008) 294–304.
+[33] M. Kryszkiewicz, Rules in incomplete information systems, Inform. Sci. 113
+(1999) 271–292.
+[34] X.B. Yang, Y.Y. Yao, Ensemble selector for attribute reduction, Appl. Soft
+Comput. 70 (2018) 1–11.
+[35] Z.W. Li, L.D. Qu, G.Q. Zhang, N.X. Xie, Attribute selection for heterogeneous
+data based on information entropy, Int. J. Gen. Syst. 50 (2021) 548–566.
+[36] J.W. Grzymala-Busse, M. Hu, A comparison of several approaches tomissing
+attribute values in data mining, in: International Conferenceon Rough Sets and
+Current Trends in Computing, Springer, Berlin, Heidelberg, 2001, pp. 378–385.
+[37] M. Friedman, A comparison of alternative tests of significance for the problem
+of m rankings, Ann. Math. Stat. 11 (1940) 86–92.
+[38] O.J. Dunn, Multiple comparisons among means, J. Amer. Statist. Assoc. 56 (1961)
+52–64.
+[39] J. Demsar, Statistical comparisons of classifiers over multiple datasets, J. Mach.
+Learn. Res. 7 (2006) 1–30.
+[40] A. Benavoli, C. Giorgio, M. Francesca, Should we really use post-hoc tests based
+on mean-ranks? J. Mach. Learn. Res. 17 (2016) 152–161.
+[41] F. Wilcoxon, Individual comparisons by ranking methods, Biom. 1 (1945) 80–83.
+
+25
+
+
