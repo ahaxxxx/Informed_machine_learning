@@ -57,6 +57,16 @@ NOTES = [
         source_label="Knowledge/survey_notes_zh.md",
         legacy_paths=("Knowledge/survey_notes_zh.html",),
     ),
+    NoteConfig(
+        source=ROOT / "Knowledge" / "survey_notes_en.md",
+        slug="survey-en",
+        title="Informed ML Survey Structured Notes",
+        eyebrow="Survey / English Notes",
+        summary="A structured English note on the informed machine learning survey, centered on the taxonomy of knowledge source, representation, and integration location, together with close reading of the figures and method families.",
+        source_label="Knowledge/survey_notes_en.md",
+        ui_lang="en",
+        legacy_paths=("Knowledge/survey_notes_en.html",),
+    ),
 ]
 
 
