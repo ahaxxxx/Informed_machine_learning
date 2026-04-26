@@ -424,7 +424,7 @@ The word “stably” is crucial here. The authors do not want rules to remain o
 
 Using the notation from Section 0.5, if we classify methods by which interface the rule actually uses to enter the neural model, then early neural-symbolic methods can roughly be grouped into two main routes, while Hu 2016 clearly takes a third one:
 
-![Two early neural-symbolic routes and the Hu 2016 alternative](images/neural_symbolic_routes_en.svg)
+![Two early neural-symbolic routes and the Hu 2016 alternative](images/neural_symbolic_routes_en.jpg)
 
 ##### Route A: Directly Constructing the Network or Graph Model from Rules
 
@@ -495,7 +495,7 @@ Therefore, the statement “the latter does not truly enter the optimization cor
 
 The entry point of Hu 2016 can be summarized in one sentence: do not let the rules determine the network structure, and do not let the rules remain only at the feature or post-processing level; instead, let the rules first reshape the current predictive distribution, and then distill that distributional bias back into the parameters.
 
-![Hu 2016 three-step injection mechanism](images/hu2016_injection_mechanism_en.svg)
+![Hu 2016 three-step injection mechanism](images/hu2016_injection_mechanism_en.jpg)
 
 Below we still use the notation from Section 0.5, and only unpack the three steps at the interface level.
 

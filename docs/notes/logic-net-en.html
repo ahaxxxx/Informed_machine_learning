@@ -524,7 +524,7 @@ above is a soft truth value computed directly on the continuous outputs $(u,v)$;
 <p>The word “stably” is crucial here. The authors do not want rules to remain only at the post-processing stage; they want the rules to enter the learning process itself.</p>
 <h4 id="the-gap-it-tries-to-fill">The Gap It Tries to Fill</h4>
 <p>Using the notation from Section 0.5, if we classify methods by which interface the rule actually uses to enter the neural model, then early neural-symbolic methods can roughly be grouped into two main routes, while Hu 2016 clearly takes a third one:</p>
-<p><img alt="Two early neural-symbolic routes and the Hu 2016 alternative" src="../assets/knowledge/images/neural_symbolic_routes_en.svg"></p>
+<p><img alt="Two early neural-symbolic routes and the Hu 2016 alternative" src="../assets/knowledge/images/neural_symbolic_routes_en.jpg"></p>
 <h5 id="route-a-directly-constructing-the-network-or-graph-model-from-rules">Route A: Directly Constructing the Network or Graph Model from Rules</h5>
 <p>The core idea of this route is to first write the rule set
 $$
@@ -586,7 +586,7 @@ $$</p>
 <p>Therefore, the statement “the latter does not truly enter the optimization core” more precisely means that the rule does not enter each learning step as an online, explicit posterior-constraint object, but instead remains attached to the scoring function or stays at the post-prediction repair stage.</p>
 <h5 id="hu-2016-a-third-interface-route">Hu 2016: A Third Interface Route</h5>
 <p>The entry point of Hu 2016 can be summarized in one sentence: do not let the rules determine the network structure, and do not let the rules remain only at the feature or post-processing level; instead, let the rules first reshape the current predictive distribution, and then distill that distributional bias back into the parameters.</p>
-<p><img alt="Hu 2016 three-step injection mechanism" src="../assets/knowledge/images/hu2016_injection_mechanism_en.svg"></p>
+<p><img alt="Hu 2016 three-step injection mechanism" src="../assets/knowledge/images/hu2016_injection_mechanism_en.jpg"></p>
 <p>Below we still use the notation from Section 0.5, and only unpack the three steps at the interface level.</p>
 <h5 id="1-preserve-the-parameterized-expressive-power-of-a-generic-neural-network">1. Preserve the Parameterized Expressive Power of a Generic Neural Network</h5>
 <p>First, use a parameterized student model in the usual way:
