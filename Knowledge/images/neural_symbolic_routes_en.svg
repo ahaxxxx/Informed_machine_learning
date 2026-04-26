@@ -1,0 +1,113 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="920" viewBox="0 0 1500 920" role="img" aria-labelledby="title desc">
+  <title id="title">Two early neural-symbolic routes and the Hu 2016 alternative</title>
+  <desc id="desc">A comparison of structure-inducing rule injection, rule-as-feature or post-processing approaches, and Hu 2016's posterior-then-distill route.</desc>
+  <defs>
+    <style>
+      .bg { fill: #f8fafc; }
+      .panel { fill: #ffffff; stroke: #94a3b8; stroke-width: 2.2; rx: 20; ry: 20; }
+      .blue { fill: #eff6ff; stroke: #3b82f6; stroke-width: 2.2; rx: 16; ry: 16; }
+      .amber { fill: #fff7ed; stroke: #f59e0b; stroke-width: 2.2; rx: 16; ry: 16; }
+      .green { fill: #f0fdf4; stroke: #22c55e; stroke-width: 2.2; rx: 16; ry: 16; }
+      .warn-red { fill: #fef2f2; stroke: #ef4444; stroke-width: 2; rx: 14; ry: 14; }
+      .warn-amber { fill: #fff7ed; stroke: #f97316; stroke-width: 2; rx: 14; ry: 14; }
+      .good { fill: #ecfeff; stroke: #06b6d4; stroke-width: 2; rx: 14; ry: 14; }
+      .title { font-family: "Segoe UI", sans-serif; font-size: 32px; font-weight: 700; fill: #0f172a; }
+      .subtitle { font-family: "Segoe UI", sans-serif; font-size: 22px; fill: #334155; }
+      .head { font-family: "Segoe UI", sans-serif; font-size: 26px; font-weight: 700; fill: #0f172a; }
+      .body { font-family: "Segoe UI", sans-serif; font-size: 20px; fill: #1e293b; }
+      .small { font-family: "Segoe UI", sans-serif; font-size: 18px; fill: #475569; }
+      .math { font-family: "Times New Roman", serif; font-size: 24px; fill: #0f172a; }
+      .maths { font-family: "Times New Roman", serif; font-size: 21px; fill: #0f172a; }
+      .arrow { stroke: #64748b; stroke-width: 3; fill: none; marker-end: url(#arrowhead); }
+    </style>
+    <marker id="arrowhead" markerWidth="12" markerHeight="12" refX="9" refY="6" orient="auto">
+      <path d="M0,0 L12,6 L0,12 Z" fill="#64748b" />
+    </marker>
+  </defs>
+
+  <rect class="bg" x="0" y="0" width="1500" height="920" />
+
+  <text x="60" y="56" class="title">Injecting Rules into Neural Models: Three Typical Interfaces</text>
+  <text x="60" y="92" class="subtitle">The key difference is not that all of them use rules, but where the rule actually enters the system.</text>
+
+  <rect x="50" y="130" width="430" height="730" class="panel" />
+  <rect x="530" y="130" width="430" height="730" class="panel" />
+  <rect x="1010" y="130" width="440" height="730" class="panel" />
+
+  <rect x="76" y="156" width="378" height="70" class="blue" />
+  <text x="98" y="199" class="head">Route A: Rules Directly Decide the Structure</text>
+
+  <rect x="102" y="258" width="326" height="92" class="blue" />
+  <text x="124" y="295" class="body">Rule set or clause set</text>
+  <text x="124" y="330" class="math">F = {C<tspan baseline-shift="sub" font-size="15">j</tspan>}<tspan baseline-shift="sub" font-size="15">j=1</tspan><tspan baseline-shift="super" font-size="15">m</tspan></text>
+
+  <rect x="102" y="392" width="326" height="118" class="blue" />
+  <text x="124" y="428" class="body">Induce a network / graph structure from rules</text>
+  <text x="124" y="463" class="maths">G<tspan baseline-shift="sub" font-size="14">F</tspan> = Build(F)</text>
+  <text x="124" y="496" class="small">Each clause corresponds to a factor, a gate, or a local connection pattern</text>
+
+  <rect x="102" y="552" width="326" height="138" class="blue" />
+  <text x="124" y="588" class="body">Define inference or scoring on that structure</text>
+  <text x="124" y="624" class="maths">p<tspan baseline-shift="sub" font-size="14">F</tspan>(y | x) = Z<tspan baseline-shift="sub" font-size="14">F</tspan>(x)<tspan baseline-shift="super" font-size="14">-1</tspan> prod<tspan baseline-shift="sub" font-size="14">j</tspan> psi<tspan baseline-shift="sub" font-size="14">j</tspan>(S<tspan baseline-shift="sub" font-size="14">j</tspan>(x,y))</text>
+  <text x="124" y="658" class="small">S<tspan baseline-shift="sub" font-size="12">j</tspan>(x,y) is determined by the syntax of clause C<tspan baseline-shift="sub" font-size="12">j</tspan></text>
+
+  <rect x="96" y="736" width="338" height="94" class="warn-red" />
+  <text x="118" y="772" class="body">Why this becomes rule-form dependent</text>
+  <text x="118" y="800" class="small">Once the rule changes, the graph structure, factor order,</text>
+  <text x="118" y="824" class="small">and even the inference pipeline often have to change too.</text>
+
+  <path d="M265 350 L265 392" class="arrow" />
+  <path d="M265 510 L265 552" class="arrow" />
+  <path d="M265 690 L265 736" class="arrow" />
+
+  <rect x="556" y="156" width="378" height="70" class="amber" />
+  <text x="580" y="199" class="head">Route B: Rules as Features or Post-processing</text>
+
+  <rect x="582" y="258" width="326" height="118" class="amber" />
+  <text x="604" y="294" class="body">First train a generic predictor</text>
+  <text x="604" y="329" class="maths">theta* = argmin<tspan baseline-shift="sub" font-size="14">theta</tspan> (1/N) sum<tspan baseline-shift="sub" font-size="14">n</tspan> l(y<tspan baseline-shift="sub" font-size="14">n</tspan>, p<tspan baseline-shift="sub" font-size="14">theta</tspan>(.|x<tspan baseline-shift="sub" font-size="14">n</tspan>))</text>
+
+  <rect x="582" y="418" width="326" height="118" class="amber" />
+  <text x="604" y="454" class="body">Then write the rule as an extra interface</text>
+  <text x="604" y="489" class="maths">f<tspan baseline-shift="sub" font-size="14">R</tspan>(x,y) = f<tspan baseline-shift="sub" font-size="14">theta</tspan>(x,y) + alpha<tspan baseline-shift="super" font-size="14">T</tspan> phi<tspan baseline-shift="sub" font-size="14">R</tspan>(x,y)</text>
+  <text x="604" y="520" class="maths">y<tspan baseline-shift="super" font-size="14">post</tspan> = T<tspan baseline-shift="sub" font-size="14">R</tspan>(p<tspan baseline-shift="sub" font-size="14">theta</tspan>(.|x))</text>
+
+  <rect x="582" y="578" width="326" height="112" class="amber" />
+  <text x="604" y="614" class="body">Rules affect extra features or output repair</text>
+  <text x="604" y="648" class="small">The training objective usually remains the task loss itself</text>
+
+  <rect x="576" y="736" width="338" height="94" class="warn-amber" />
+  <text x="598" y="772" class="body">Why it does not enter the optimization core</text>
+  <text x="598" y="800" class="small">The rule does not explicitly rewrite the posterior or the feasible set;</text>
+  <text x="598" y="824" class="small">it behaves more like an extra signal or an output fix-up.</text>
+
+  <path d="M745 376 L745 418" class="arrow" />
+  <path d="M745 536 L745 578" class="arrow" />
+  <path d="M745 690 L745 736" class="arrow" />
+
+  <rect x="1038" y="156" width="384" height="70" class="green" />
+  <text x="1068" y="199" class="head">Hu 2016: First Rewrite the Distribution, Then the Parameters</text>
+
+  <rect x="1068" y="258" width="324" height="96" class="green" />
+  <text x="1090" y="295" class="body">Keep a generic student network</text>
+  <text x="1090" y="330" class="math">p<tspan baseline-shift="sub" font-size="15">theta</tspan>(y | x)</text>
+
+  <rect x="1068" y="392" width="324" height="124" class="green" />
+  <text x="1090" y="428" class="body">Project rules at the predictive-distribution level</text>
+  <text x="1090" y="463" class="maths">q* = P<tspan baseline-shift="sub" font-size="14">R</tspan>(p<tspan baseline-shift="sub" font-size="14">theta</tspan>)</text>
+  <text x="1090" y="494" class="maths">q*(y|x) = Renorm[p<tspan baseline-shift="sub" font-size="14">theta</tspan>(y|x) exp(-E<tspan baseline-shift="sub" font-size="14">R</tspan>(x,y))]</text>
+
+  <rect x="1068" y="554" width="324" height="136" class="green" />
+  <text x="1090" y="590" class="body">Then write that bias back through distillation</text>
+  <text x="1090" y="625" class="maths">L = (1-pi<tspan baseline-shift="sub" font-size="14">t</tspan>) L<tspan baseline-shift="sub" font-size="14">task</tspan> + pi<tspan baseline-shift="sub" font-size="14">t</tspan> L<tspan baseline-shift="sub" font-size="14">distill</tspan></text>
+  <text x="1090" y="658" class="small">The teacher is generated online from the current student, not given externally</text>
+
+  <rect x="1062" y="736" width="338" height="94" class="good" />
+  <text x="1084" y="772" class="body">Why this is a third route</text>
+  <text x="1084" y="800" class="small">The structure is not rewritten by rules; the rule first changes the posterior,</text>
+  <text x="1084" y="824" class="small">and learning then internalizes that bias into the parameters.</text>
+
+  <path d="M1230 354 L1230 392" class="arrow" />
+  <path d="M1230 516 L1230 554" class="arrow" />
+  <path d="M1230 690 L1230 736" class="arrow" />
+</svg>

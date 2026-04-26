@@ -1,0 +1,2626 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Logic-Net Structured Analysis | Informed Machine Learning</title>
+    <meta name="description" content="A structured English note on Logic-Net-type methods, organized around the posterior, loss, and feasible-set routes by which logic constraints enter optimization, together with optimization-level analysis, limitations, and research extensions.">
+    <link rel="stylesheet" href="../assets/site.css">
+    <script defer src="../assets/site.js"></script>
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']]
+        },
+        options: {
+          skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      };
+    </script>
+    <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+  </head>
+  <body data-page="notes">
+    <div class="page-shell">
+      <header class="site-header">
+        <a class="brand" href="../index.html">
+          <span class="brand-mark">IML</span>
+          <span class="brand-text">Informed Machine Learning</span>
+        </a>
+        <button class="nav-toggle" type="button" aria-expanded="false" aria-label="Toggle navigation">
+          <span></span>
+          <span></span>
+        </button>
+        <nav class="site-nav">
+          <a href="../index.html">Home</a>
+          <a href="../reading-map.html">Reading Map</a>
+          <a href="../notes.html">Research Notes</a>
+          <a href="../toys.html">Toy Projects</a>
+          <a href="../deploy.html">Deployment</a>
+        </nav>
+      </header>
+
+      <main class="content-page note-page">
+        <section class="page-intro note-intro">
+          <p class="eyebrow">Logic Rules / English Notes</p>
+          <h1>Logic-Net Structured Analysis</h1>
+          <p>A structured English note on Logic-Net-type methods, organized around the posterior, loss, and feasible-set routes by which logic constraints enter optimization, together with optimization-level analysis, limitations, and research extensions.</p>
+        </section>
+
+        <section class="note-layout">
+          <aside class="note-sidebar">
+            <article class="note-block">
+              <h2>Note Info</h2>
+              <p>Source file:<code>Knowledge/logic_net_notes_en.md</code></p>
+              <p>Published as:Generated from local Markdown into in-site HTML.</p>
+              <div class="link-list">
+                <a href="../notes.html">Back to notes</a>
+                <a href="https://github.com/ahaxxxx/Informed_machine_learning/blob/main/Knowledge/logic_net_notes_en.md">View source on GitHub</a>
+              </div>
+            </article>
+
+            <article class="note-block">
+              <h2>Contents</h2>
+              <ul class="note-toc-list">
+<li class="toc-level-2"><a href="#0-name-disambiguation-and-source-paper-confirmation">0. Name Disambiguation and Source-Paper Confirmation</a></li>
+<li class="toc-level-3"><a href="#01-why-disambiguation-must-come-first">0.1 Why Disambiguation Must Come First</a></li>
+<li class="toc-level-3"><a href="#02-which-paper-this-document-mainly-refers-to">0.2 Which Paper This Document Mainly Refers To</a></li>
+<li class="toc-level-3"><a href="#03-another-homonymous-entry-that-is-still-unconfirmed">0.3 Another Homonymous Entry That Is Still Unconfirmed</a></li>
+<li class="toc-level-3"><a href="#04-default-conventions-in-this-document">0.4 Default Conventions in This Document</a></li>
+<li class="toc-level-3"><a href="#05-minimal-problem-setup-and-notation">0.5 Minimal Problem Setup and Notation</a></li>
+<li class="toc-level-3"><a href="#051-the-full-pipeline-from-the-training-set-to-the-closed-form-teacher-distribution">0.5.1 The Full Pipeline from the Training Set to the Closed-Form Teacher Distribution</a></li>
+<li class="toc-level-3"><a href="#052-a-unified-running-example">0.5.2 A Unified Running Example</a></li>
+<li class="toc-level-3"><a href="#053-the-mathematical-definition-and-closed-form-of-the-teacher-distribution">0.5.3 The Mathematical Definition and Closed Form of the Teacher Distribution</a></li>
+<li class="toc-level-3"><a href="#054-state-level-specialization-and-full-computation-for-bird-animal">0.5.4 State-Level Specialization and Full Computation for bird =&gt; animal</a></li>
+<li class="toc-level-3"><a href="#06-the-running-example-used-throughout-the-whole-text">0.6 The Running Example Used Throughout the Whole Text</a></li>
+<li class="toc-level-2"><a href="#1-analysis-of-the-hu-et-al-2016-method">1. Analysis of the Hu et al. 2016 Method</a></li>
+<li class="toc-level-3"><a href="#11-core-goal-of-the-paper">1.1 Core Goal of the Paper</a></li>
+<li class="toc-level-3"><a href="#12-mathematical-level-analysis">1.2 Mathematical-Level Analysis</a></li>
+<li class="toc-level-2"><a href="#2-logic-net-icml-2019-placeholder-to-be-completed-if-the-paper-is-provided">2. Logic-Net (ICML 2019?) Placeholder (to be completed if the paper is provided)</a></li>
+<li class="toc-level-3"><a href="#21-information-that-is-still-unconfirmed">2.1 Information That Is Still Unconfirmed</a></li>
+<li class="toc-level-3"><a href="#22-current-writing-boundary">2.2 Current Writing Boundary</a></li>
+<li class="toc-level-2"><a href="#3-mechanism-comparison-a-unified-perspective">3. Mechanism Comparison (A Unified Perspective)</a></li>
+<li class="toc-level-3"><a href="#31-the-unified-question-where-does-the-constraint-actually-enter">3.1 The Unified Question: Where Does the Constraint Actually Enter?</a></li>
+<li class="toc-level-3"><a href="#32-a-unified-abstract-form">3.2 A Unified Abstract Form</a></li>
+<li class="toc-level-3"><a href="#33-constraint-entering-the-posterior-hu-et-al-2016">3.3 Constraint Entering the Posterior: Hu et al. 2016</a></li>
+<li class="toc-level-3"><a href="#34-constraint-entering-the-loss-semantic-loss-and-dl2">3.4 Constraint Entering the Loss: Semantic Loss and DL2</a></li>
+<li class="toc-level-3"><a href="#35-constraint-entering-the-feasible-set-dl2s-second-interface">3.5 Constraint Entering the Feasible Set: DL2’s Second Interface</a></li>
+<li class="toc-level-3"><a href="#36-unified-comparison-table">3.6 Unified Comparison Table</a></li>
+<li class="toc-level-2"><a href="#4-unified-analysis-of-optimization-mechanisms">4. Unified Analysis of Optimization Mechanisms</a></li>
+<li class="toc-level-3"><a href="#41-first-write-the-three-families-as-unified-optimization-programs">4.1 First Write the Three Families as Unified Optimization Programs</a></li>
+<li class="toc-level-3"><a href="#42-hu-2016-training-is-essentially-a-projection-distillation-alternation">4.2 Hu 2016 Training Is Essentially a Projection-Distillation Alternation</a></li>
+<li class="toc-level-3"><a href="#43-student-step-gradient-which-terms-are-truly-optimized-and-which-are-not-backpropagated">4.3 Student-Step Gradient: Which Terms Are Truly Optimized, and Which Are Not Backpropagated</a></li>
+<li class="toc-level-3"><a href="#44-differentiability-of-the-posterior-projection-itself-nonsmooth-points-and-flat-regions">4.4 Differentiability of the Posterior Projection Itself, Nonsmooth Points, and Flat Regions</a></li>
+<li class="toc-level-3"><a href="#45-constraint-entering-the-loss-the-single-level-objective-is-more-direct-but-the-gradient-geometry-is-completely-different">4.5 Constraint Entering the Loss: The Single-Level Objective Is More Direct, but the Gradient Geometry Is Completely Different</a></li>
+<li class="toc-level-3"><a href="#46-constraint-entering-the-feasible-set-this-is-a-bilevel-problem-not-an-ordinary-penalty">4.6 Constraint Entering the Feasible Set: This Is a Bilevel Problem, Not an Ordinary Penalty</a></li>
+<li class="toc-level-3"><a href="#47-unified-conclusion-what-are-these-three-families-actually-optimizing">4.7 Unified Conclusion: What Are These Three Families Actually Optimizing?</a></li>
+<li class="toc-level-2"><a href="#5-limitations-and-research-extensions">5. Limitations and Research Extensions</a></li>
+<li class="toc-level-3"><a href="#51-first-write-the-failure-chain-as-an-operator-diagram">5.1 First Write the Failure Chain as an Operator Diagram</a></li>
+<li class="toc-level-3"><a href="#52-limitation-analysis-at-the-mechanism-level">5.2 Limitation Analysis at the Mechanism Level</a></li>
+<li class="toc-level-3"><a href="#53-summary-table-of-limitations-at-which-interface-does-the-problem-get-stuck">5.3 Summary Table of Limitations: At Which Interface Does the Problem Get Stuck?</a></li>
+<li class="toc-level-3"><a href="#54-research-extensions-not-generic-future-work-but-specific-operator-level-modifications">5.4 Research Extensions: Not Generic Future Work, but Specific Operator-Level Modifications</a></li>
+<li class="toc-level-3"><a href="#55-map-of-possible-improvement-directions">5.5 Map of Possible Improvement Directions</a></li>
+<li class="toc-level-3"><a href="#56-connection-to-my-own-research">5.6 Connection to My Own Research</a></li>
+</ul>
+            </article>
+          </aside>
+
+          <article class="note-article">
+            <h2 id="0-name-disambiguation-and-source-paper-confirmation">0. Name Disambiguation and Source-Paper Confirmation</h2>
+<h3 id="01-why-disambiguation-must-come-first">0.1 Why Disambiguation Must Come First</h3>
+<p>The name <code>Logic-Net</code> in the existing literature, project naming, and secondary notes does not always refer to one unique paper.</p>
+<p>The key issue is that if the source paper is not identified first, then later discussions of logic encoding, optimization objectives, teacher-student mechanisms, and experimental settings can easily mix up mechanisms from different works.</p>
+<h3 id="02-which-paper-this-document-mainly-refers-to">0.2 Which Paper This Document Mainly Refers To</h3>
+<p>This document mainly corresponds to:</p>
+<ul>
+<li>Hu et al., ACL 2016, <em>Harnessing Deep Neural Networks with Logic Rules</em></li>
+</ul>
+<p>This is also the paper that the <code>LogicNet</code> entry, <code>logic-net.txt</code>, and the actual reading path in this repository all point to.</p>
+<h3 id="03-another-homonymous-entry-that-is-still-unconfirmed">0.3 Another Homonymous Entry That Is Still Unconfirmed</h3>
+<p>There is another homonymous entry that has not yet been fully verified. For now it remains only as a placeholder, with no technical details added:</p>
+<ul>
+<li>Possible ICML 2019 paper (to be confirmed)</li>
+</ul>
+<h3 id="04-default-conventions-in-this-document">0.4 Default Conventions in This Document</h3>
+<p>Therefore, whenever this document involves the following topics, they all default to Hu et al. 2016:</p>
+<ul>
+<li>teacher-student distillation</li>
+<li>posterior regularization</li>
+<li>soft logic encoding</li>
+<li>the closed-form teacher distribution $q^\star$</li>
+</ul>
+<p>In other words, this document analyzes a class of “Logic-Net-type methods” whose main axis is Hu 2016, rather than an unverified same-name paper.</p>
+<h3 id="05-minimal-problem-setup-and-notation">0.5 Minimal Problem Setup and Notation</h3>
+<p>To make the whole document self-contained, we first fix the minimal setup used by default below.</p>
+<p>Let the training set be
+$$
+\mathcal D=\{(x_n,y_n)\}_{n=1}^N.
+$$</p>
+<p>Here $x_n$ is the input and $y_n$ is the supervised label. If the output is a classification distribution, we write the base network as
+$$
+p_\theta(Y\mid X),
+$$
+where $\theta$ is the network parameter, $Y\in\mathcal Y$ is the output variable, and $\mathcal Y$ is the output space.</p>
+<p>If we need to explicitly refer to the output layer, we write the logit as $z_\theta(x)$, and obtain $p_\theta$ from it through softmax or sigmoid.</p>
+<p>The rule set is written uniformly as
+$$
+\mathcal R=\{(R_l,\lambda_l)\}_{l=1}^L,
+$$
+where $R_l$ is the $l$-th rule and $\lambda_l$ is its confidence weight. The number of groundings of the $l$-th rule is denoted by $G_l$.</p>
+<p>For any grounding, let its relaxed soft truth value be
+$$
+r_{lg}(X,Y)\in[0,1],\qquad g=1,\dots,G_l.
+$$</p>
+<p>Based on this, define the rule energy as
+$$
+E_{\mathcal R}(X,Y)=C\sum_{l=1}^L\sum_{g=1}^{G_l}\lambda_l\bigl(1-r_{lg}(X,Y)\bigr),
+$$
+where $C>0$ is the overall strength coefficient for rule violation.</p>
+<h3 id="051-the-full-pipeline-from-the-training-set-to-the-closed-form-teacher-distribution">0.5.1 The Full Pipeline from the Training Set to the Closed-Form Teacher Distribution</h3>
+<p>This subsection does only one thing: it reorganizes the main line from “obtaining the training set” to “computing the closed-form teacher distribution $q^\star$” into a single non-jumping chain. All formulas and examples below follow this order.</p>
+<p>If you prefer a more diagram-like presentation, you can directly look at the figure below. The subscripts and superscripts are built into the image, so they do not depend on code-block rendering:</p>
+<p><img alt="The full pipeline from the training set to the closed-form teacher distribution" src="../assets/knowledge/images/train_to_teacher_flow_en.svg"></p>
+<p>If you only want to remember one sentence, the whole chain is:
+$$
+(x_n,y_n)\in\mathcal D
+\Longrightarrow
+x:=x_n,\ y\in\mathcal Y,\ \mathcal R,\ C,\{\lambda_l\}
+\Longrightarrow
+p_\theta(y\mid x)
+\Longrightarrow
+r_{lg}(x,y)
+\Longrightarrow
+E_{\mathcal R}(x,y)
+\Longrightarrow
+w(y)
+\Longrightarrow
+Z(x)
+\Longrightarrow
+q^\star(y\mid x).
+$$</p>
+<p>There are three points along this chain that are especially easy to confuse, but also especially important:</p>
+<ul>
+<li>The closed-form teacher distribution $q^\star(\cdot\mid x)$ is defined for a fixed input $x$. It is not computed directly for the whole training set $\mathcal D$ in one shot.</li>
+<li>The supervised label $y_n$ does not directly enter the closed-form projection formula. It mainly updates the student network $p_\theta$ through the supervised loss, and only then indirectly affects every later step that generates $q^\star$.</li>
+<li>The rule and the student distribution truly merge at
+$$
+w(y)=p_\theta(y\mid x)\exp\bigl(-E_{\mathcal R}(x,y)\bigr),
+$$
+that is, the student distribution first gives the raw tendency, and the rule energy then determines how much each output state should be suppressed.</li>
+</ul>
+<h3 id="052-a-unified-running-example">0.5.2 A Unified Running Example</h3>
+<p>To avoid switching back and forth between different numbers later, we first fix a minimal example that runs through this entire section. The later concept explanations, state-level formulas, and closed-form computations all use it.</p>
+<ul>
+<li>Task: binary-label <code>bird/animal</code></li>
+<li>Rule: <code>bird =&gt; animal</code></li>
+<li>Input: fix one sample $x$</li>
+<li>Student marginal outputs:
+$$
+u=p_\theta(Y_b=1\mid x)=0.8,\qquad v=p_\theta(Y_a=1\mid x)=0.5
+$$</li>
+<li>One possible corresponding pair of logits:
+$$
+z_{\text{bird}}(x)=\operatorname{logit}(0.8)=\ln 4\approx 1.386,\qquad
+z_{\text{animal}}(x)=\operatorname{logit}(0.5)=0
+$$</li>
+<li>Rule strength: temporarily set
+$$
+C=2,\qquad \lambda=1
+$$</li>
+</ul>
+<p>First look only at these local concepts at the continuous-output level:</p>
+<table>
+<thead>
+<tr>
+<th>Concept</th>
+<th>Formula</th>
+<th>Value</th>
+<th>Interpretation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>logit</td>
+<td>$z_{\text{bird}}(x),z_{\text{animal}}(x)$</td>
+<td>$\ln 4,0$</td>
+<td>The raw network scores, not probabilities yet</td>
+</tr>
+<tr>
+<td>grounding</td>
+<td><code>bird(x) =&gt; animal(x)</code></td>
+<td>1 grounding</td>
+<td>The instantiation of the abstract rule on the current sample</td>
+</tr>
+<tr>
+<td>soft truth value</td>
+<td>$r_{\phi_{ba}}(u,v)=\min\{1,1-u+v\}$</td>
+<td>$\min\{1,1-0.8+0.5\}=0.7$</td>
+<td>How well the current continuous outputs satisfy the rule</td>
+</tr>
+<tr>
+<td>local rule energy at the continuous-output level</td>
+<td>$C\lambda(1-r_{\phi_{ba}}(u,v))$</td>
+<td>$2\times 1\times (1-0.7)=0.6$</td>
+<td>If we look directly at the continuous outputs, this is the violation cost of the rule</td>
+</tr>
+</tbody>
+</table>
+<p>It is important to stress that the $r_{\phi_{ba}}(u,v)$ and $C\lambda(1-r_{\phi_{ba}}(u,v))$ in the table above are local quantities defined directly on the continuous outputs $(u,v)$, while the later $E_{\mathcal R}(x,y)$ inside the teacher distribution is a state-level energy computed separately for each concrete candidate output state $y\in\mathcal Y$. They are related, but not the same kind of object.</p>
+<h3 id="053-the-mathematical-definition-and-closed-form-of-the-teacher-distribution">0.5.3 The Mathematical Definition and Closed Form of the Teacher Distribution</h3>
+<p>In Hu 2016, the teacher distribution obtained from rule projection is written uniformly as
+$$
+q^\star(\cdot\mid X)=\mathcal P_{\mathcal R}\bigl(p_\theta(\cdot\mid X)\bigr).
+$$</p>
+<p>If we discuss the $t$-th training round, we write it as $q_t^\star$ and $p_{\theta_t}$. The weight with which the student imitates the teacher is denoted by $\pi_t\in[0,1]$.</p>
+<p>For a fixed input $x$, the teacher distribution can be viewed as a probability distribution on the output space $\mathcal Y$:
+$$
+q^\star(\cdot\mid x)\in \Delta(\mathcal Y)
+:=
+\left\{q:\mathcal Y\to[0,1]\ \middle|\ \sum_{y\in\mathcal Y}q(y)=1\right\}.
+$$</p>
+<p>It is first defined by the following optimization problem:
+$$
+q^\star(\cdot\mid x)
+=
+\arg\min_{q\in\Delta(\mathcal Y)}
+\left[
+\mathrm{KL}\bigl(q(\cdot\mid x)\,\|\,p_\theta(\cdot\mid x)\bigr)
++
+C\sum_{l,g}\lambda_l\Bigl(1-\mathbb E_q[r_{lg}(x,Y)]\Bigr)
+\right].
+$$</p>
+<p>The two terms respectively represent:</p>
+<ol>
+<li>
+<p>Staying close to the original student distribution:
+$$
+\mathrm{KL}\bigl(q(\cdot\mid x)\,\|\,p_\theta(\cdot\mid x)\bigr)
+=
+\sum_{y\in\mathcal Y}q(y\mid x)\log\frac{q(y\mid x)}{p_\theta(y\mid x)}.
+$$
+The smaller this term is, the less the teacher distribution $q$ deviates from the current student distribution $p_\theta$.</p>
+</li>
+<li>
+<p>Increasing average rule satisfaction:
+$$
+\mathbb E_q[r_{lg}(x,Y)]
+=
+\sum_{y\in\mathcal Y}q(y\mid x)\,r_{lg}(x,y).
+$$
+Therefore
+$$
+1-\mathbb E_q[r_{lg}(x,Y)]
+$$
+is the average violation degree of the rule under the distribution $q$, and
+$$
+C\sum_{l,g}\lambda_l\Bigl(1-\mathbb E_q[r_{lg}(x,Y)]\Bigr)
+$$
+is the weighted total cost of average rule violation over all rules.</p>
+</li>
+</ol>
+<p>So the whole objective is a tradeoff between two requirements:</p>
+<ul>
+<li>keep $q$ from straying too far from the original student distribution $p_\theta$;</li>
+<li>at the same time, let $q$ shift probability mass toward output states that satisfy the rules better.</li>
+</ul>
+<p>The closed-form solution of this optimization problem is
+$$
+q^\star(y\mid x)
+=
+\frac{p_\theta(y\mid x)\exp\bigl(-E_{\mathcal R}(x,y)\bigr)}
+{Z(x)},
+\qquad y\in\mathcal Y,
+$$
+where
+$$
+Z(x)=\sum_{y'\in\mathcal Y}p_\theta(y'\mid x)\exp\bigl(-E_{\mathcal R}(x,y')\bigr),
+$$
+and
+$$
+E_{\mathcal R}(x,y)=C\sum_{l,g}\lambda_l\bigl(1-r_{lg}(x,y)\bigr).
+$$</p>
+<p>That is, $q^\star(\cdot\mid x)$ is not a single number. Rather, for every $y\in\mathcal Y$, one computes a separate component according to the formula above, and then stitches these components together into the full distribution.</p>
+<p>If one expands the expectation term in the objective, it becomes more transparent why the exponential reweighting form appears. The original objective is equivalent to minimizing
+$$
+\sum_{y\in\mathcal Y} q(y\mid x)\log\frac{q(y\mid x)}{p_\theta(y\mid x)}
+-\sum_{y\in\mathcal Y}q(y\mid x)\Bigl(C\sum_{l,g}\lambda_l r_{lg}(x,y)\Bigr),
+$$
+together with the normalization constraint $\sum_y q(y\mid x)=1$. Solving the corresponding Lagrangian problem yields
+$$
+q^\star(y\mid x)\propto
+p_\theta(y\mid x)\exp\!\Bigl(C\sum_{l,g}\lambda_l r_{lg}(x,y)\Bigr),
+$$
+and then by using
+$$
+E_{\mathcal R}(x,y)=C\sum_{l,g}\lambda_l(1-r_{lg}(x,y))
+$$
+one can equivalently rewrite it as
+$$
+q^\star(y\mid x)\propto p_\theta(y\mid x)e^{-E_{\mathcal R}(x,y)}.
+$$</p>
+<h3 id="054-state-level-specialization-and-full-computation-for-bird-animal">0.5.4 State-Level Specialization and Full Computation for <code>bird =&gt; animal</code></h3>
+<p>Now we plug the same numbers fixed in 0.5.2 into the closed-form teacher distribution and obtain a self-contained full computation chain.</p>
+<p>First fix the output space:
+$$
+\mathcal Y=\{(0,0),(0,1),(1,0),(1,1)\}.
+$$</p>
+<p>Since there is only one rule <code>bird =&gt; animal</code> here, and only one grounding, the only violating state is $(1,0)$. Therefore the state-level rule energy can be written as
+$$
+E_{\mathcal R}(x,y_b,y_a)=C\lambda\,\mathbf 1_{\{y_b=1,\ y_a=0\}}.
+$$</p>
+<p>In the current unified example, $u=0.8,v=0.5$, and we adopt the conditional-independence approximation between the labels. Thus the four components of the student distribution are
+$$
+\begin{aligned}
+p_\theta(0,0\mid x)&=(1-u)(1-v)=0.2\times 0.5=0.1,\\
+p_\theta(0,1\mid x)&=(1-u)v=0.2\times 0.5=0.1,\\
+p_\theta(1,0\mid x)&=u(1-v)=0.8\times 0.5=0.4,\\
+p_\theta(1,1\mid x)&=uv=0.8\times 0.5=0.4.
+\end{aligned}
+$$</p>
+<p>Then compute the rule energy separately for the four concrete output states. Because only $(1,0)$ violates the rule, and here we take $C=2,\lambda=1$, we have
+$$
+\begin{aligned}
+E_{\mathcal R}(x,(0,0))&=0,\\
+E_{\mathcal R}(x,(0,1))&=0,\\
+E_{\mathcal R}(x,(1,0))&=2,\\
+E_{\mathcal R}(x,(1,1))&=0.
+\end{aligned}
+$$</p>
+<p>Therefore the unnormalized weights are
+$$
+\begin{aligned}
+w(0,0)&=0.1e^0=0.1,\\
+w(0,1)&=0.1e^0=0.1,\\
+w(1,0)&=0.4e^{-2}\approx 0.054,\\
+w(1,1)&=0.4e^0=0.4.
+\end{aligned}
+$$</p>
+<p>The normalization constant is
+$$
+Z(x)=0.1+0.1+0.4e^{-2}+0.4\approx 0.654.
+$$</p>
+<p>Hence the closed-form teacher distribution becomes
+$$
+\begin{aligned}
+q^\star(0,0\mid x)&=\frac{0.1}{0.654}\approx 0.153,\\
+q^\star(0,1\mid x)&=\frac{0.1}{0.654}\approx 0.153,\\
+q^\star(1,0\mid x)&=\frac{0.4e^{-2}}{0.654}\approx 0.083,\\
+q^\star(1,1\mid x)&=\frac{0.4}{0.654}\approx 0.612.
+\end{aligned}
+$$</p>
+<p>This example makes the role of the projection especially transparent:</p>
+<ul>
+<li>the violating state $(1,0)$ is strongly downweighted;</li>
+<li>the probability mass removed from that violating state is reassigned to the three satisfying states;</li>
+<li>and after normalization we obtain a new teacher distribution that is more rule-consistent than the original student distribution.</li>
+</ul>
+<h3 id="06-the-running-example-used-throughout-the-whole-text">0.6 The Running Example Used Throughout the Whole Text</h3>
+<p>To avoid returning to abstract notation later, we fix one minimal but representative binary-label example throughout the whole document:</p>
+<ul>
+<li>$Y_b\in\{0,1\}$: whether the object is <code>bird</code></li>
+<li>$Y_a\in\{0,1\}$: whether the object is <code>animal</code></li>
+<li>rule: $\phi_{ba}: Y_b \Rightarrow Y_a$</li>
+</ul>
+<p>This rule is equivalent to
+$$
+Y_b \le Y_a.
+$$</p>
+<p>The benefit of this example is that there is exactly one violating state, so the differences among the posterior path, the loss path, and the feasible-set path become very clear.</p>
+<table>
+<thead>
+<tr>
+<th>State $(Y_b,Y_a)$</th>
+<th>Does it satisfy $\phi_{ba}$?</th>
+<th>Interpretation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>$(0,0)$</td>
+<td>yes</td>
+<td>not a bird, and not an animal</td>
+</tr>
+<tr>
+<td>$(0,1)$</td>
+<td>yes</td>
+<td>not a bird, but it may still be an animal</td>
+</tr>
+<tr>
+<td>$(1,0)$</td>
+<td>no</td>
+<td>a bird but not an animal</td>
+</tr>
+<tr>
+<td>$(1,1)$</td>
+<td>yes</td>
+<td>it is a bird, so it should also be an animal</td>
+</tr>
+</tbody>
+</table>
+<p>If we move to continuous outputs, write
+$$
+u=p_\theta(Y_b=1\mid X),\qquad v=p_\theta(Y_a=1\mid X).
+$$</p>
+<p>Under the soft-logic semantics adopted in this text, using $\neg Y_b \vee Y_a$ allows us to write the rule as
+$$
+r_{\phi_{ba}}(u,v)=\min\{1,\,1-u+v\},
+$$
+and hence its violation degree is
+$$
+1-r_{\phi_{ba}}(u,v)=\max\{u-v,0\}.
+$$</p>
+<p>The intuitive meaning of these formulas is:</p>
+<ul>
+<li>as long as $u\le v$, the rule is completely satisfied;</li>
+<li>once $u>v$, the violation degree is proportional to the difference between them;</li>
+<li>therefore the same rule can enter a soft-logic energy, can enter a surrogate loss, and can also directly define a feasible set.</li>
+</ul>
+<p>If we return to the state-level notation used in the earlier flowchart, then the
+$$
+R_l \longrightarrow R_{lg}(x,y)
+$$
+there is not, strictly speaking, a numerical formula. It is a grounding step: it instantiates the abstract rule $R_l$ on the current sample $x$ and a concrete output state $y$, yielding the $g$-th concrete rule instance $R_{lg}(x,y)$.</p>
+<p>If the $l$-th rule contains variables
+$$
+\xi=(\xi_1,\dots,\xi_m),
+$$
+and the $g$-th grounding corresponds to a substitution
+$$
+\sigma_{lg}:\ \xi_i\mapsto a_{gi}(x),
+$$
+then the grounded rule can be written as
+$$
+R_{lg}(x,y):=R_l[\sigma_{lg},\,Y:=y].
+$$
+Equivalently,
+$$
+R_{lg}(x,y)=R_l\!\bigl[a_{g1}(x)/\xi_1,\dots,a_{gm}(x)/\xi_m,\ y/Y\bigr].
+$$</p>
+<p>The meaning of this step is: first replace the object variables in the rule with concrete objects from the current sample, and then fix the output variable $Y$ to some candidate output state $y$. In this way one obtains a concrete rule instance whose truth value or soft truth value can be directly checked.</p>
+<p>The next object in the figure,
+$$
+r_{lg}(x,y),
+$$
+is what turns the grounded rule into a number. In general one writes
+$$
+r_{lg}(x,y)=\operatorname{Truth}\bigl(R_{lg}(x,y)\bigr)\in[0,1].
+$$
+Thus, $R_{lg}(x,y)$ is the concrete rule instance, while $r_{lg}(x,y)$ is the truth value or soft truth value of that instance.</p>
+<p>For the current <code>bird =&gt; animal</code> rule, if we write
+$$
+R_l:\ Y_b\Rightarrow Y_a,
+$$
+then there is usually only one grounding:
+$$
+G_l=1,\qquad R_{l1}(x,y)=\bigl(y_b\Rightarrow y_a\bigr),
+$$
+where
+$$
+y=(y_b,y_a)\in\{0,1\}^2.
+$$</p>
+<p>Hence the discrete truth value can be written as
+$$
+r_{l1}(x,y)=\mathbf 1\{y_b=0\ \text{or}\ y_a=1\}
+=
+\begin{cases}
+1, & y\in\{(0,0),(0,1),(1,1)\},\\
+0, & y=(1,0).
+\end{cases}
+$$</p>
+<p>It is important to distinguish the two levels:
+$$
+r_{\phi_{ba}}(u,v)=\min\{1,1-u+v\}
+$$
+above is a soft truth value computed directly on the continuous outputs $(u,v)$; by contrast, the $R_{lg}(x,y)$ and $r_{lg}(x,y)$ here are the grounding step and the state-level truth computation for a concrete discrete state $y$.</p>
+<hr>
+<h2 id="1-analysis-of-the-hu-et-al-2016-method">1. Analysis of the Hu et al. 2016 Method</h2>
+<h3 id="11-core-goal-of-the-paper">1.1 Core Goal of the Paper</h3>
+<h4 id="intuitive-understanding">Intuitive Understanding</h4>
+<p>The goal of this work is neither to build a symbolic reasoner from scratch nor to directly generate a special-purpose network architecture from the rules.</p>
+<p>The real question it answers is:</p>
+<blockquote>
+<p>How can explicit logic rules be injected stably into the training process without rewriting the generic neural-network backbone?</p>
+</blockquote>
+<p>The word “stably” is crucial here. The authors do not want rules to remain only at the post-processing stage; they want the rules to enter the learning process itself.</p>
+<h4 id="the-gap-it-tries-to-fill">The Gap It Tries to Fill</h4>
+<p>Using the notation from Section 0.5, if we classify methods by which interface the rule actually uses to enter the neural model, then early neural-symbolic methods can roughly be grouped into two main routes, while Hu 2016 clearly takes a third one:</p>
+<p><img alt="Two early neural-symbolic routes and the Hu 2016 alternative" src="../assets/knowledge/images/neural_symbolic_routes_en.svg"></p>
+<h5 id="route-a-directly-constructing-the-network-or-graph-model-from-rules">Route A: Directly Constructing the Network or Graph Model from Rules</h5>
+<p>The core idea of this route is to first write the rule set
+$$
+F=\{C_j\}_{j=1}^m
+$$
+as a structural object, and then let it directly determine the network topology, graph-model factorization, or inference graph.</p>
+<p>This idea can be abstractly written as
+$$
+G_F=\operatorname{Build}(F),
+$$
+where $G_F$ is the computation graph, factor graph, or structured model induced by the rule set $F$. One then defines a predictive distribution on top of that structure, for example
+$$
+p_F(y\mid x)
+\propto
+\prod_{j=1}^m \psi_j\bigl(S_j(x,y)\bigr),
+$$
+where $S_j(x,y)$ denotes a local structure, local state, or higher-order factor determined by clause $C_j$.</p>
+<p>The principle of such methods is that the rules do not merely provide an extra signal; rather, they directly decide how the model is decomposed, which variables must be connected, and which local consistencies must be explicitly modeled.</p>
+<p>The problem comes precisely from this point. Since
+$$
+G_F=\operatorname{Build}(F)
+$$
+itself depends on the syntactic form of the rules, once the form of the rules changes—for example:</p>
+<ul>
+<li>from simple implications to higher-order relations;</li>
+<li>from propositional rules to variable-bearing relational rules;</li>
+<li>from local constraints to quantified constraints requiring global consistency;</li>
+</ul>
+<p>then the model structure, factor order, and inference algorithm often all have to change accordingly. In other words, this route can be highly expressive, but the structure design becomes increasingly constrained by the form of the rules.</p>
+<h5 id="route-b-rewriting-rules-as-extra-features-or-heuristic-post-processing">Route B: Rewriting Rules as Extra Features or Heuristic Post-processing</h5>
+<p>The idea of this route is to first keep a generic predictor, and then treat the rules as extra inputs or as a repair module after prediction. Its training objective is usually still the standard task loss:
+$$
+\theta^\star
+=
+\arg\min_\theta \frac{1}{N}\sum_{n=1}^N \ell\bigl(y_n,p_\theta(\cdot\mid x_n)\bigr).
+$$</p>
+<p>After that, the rules are used in two common ways:</p>
+<ol>
+<li>
+<p>As extra rule features written into the scoring function:
+$$
+f_{\mathcal R}(x,y)=f_\theta(x,y)+\alpha^\top \phi_{\mathcal R}(x,y).
+$$</p>
+</li>
+<li>
+<p>As heuristic corrections or reranking after prediction:
+$$
+\tilde y=T_{\mathcal R}\bigl(p_\theta(\cdot\mid x)\bigr).
+$$</p>
+</li>
+</ol>
+<p>The advantage of such methods is implementation flexibility: one does not need to redesign a full structure for every rule. But the problem is that the rule usually does not directly become a constraint object that every optimization step must explicitly face.</p>
+<p>More specifically:</p>
+<ul>
+<li>if the rule is only an extra feature $\phi_{\mathcal R}(x,y)$, then within optimization it behaves more like a standard input signal than an explicit logical constraint rewriting the output distribution;</li>
+<li>if the rule appears only in a post-processing step such as $T_{\mathcal R}$, then it will not update $\theta$ through gradient backpropagation at all;</li>
+<li>in either case, the optimization core is still mostly label fitting rather than the systematic suppression of logically violating states over the whole output space.</li>
+</ul>
+<p>Therefore, the statement “the latter does not truly enter the optimization core” more precisely means that the rule does not enter each learning step as an online, explicit posterior-constraint object, but instead remains attached to the scoring function or stays at the post-prediction repair stage.</p>
+<h5 id="hu-2016-a-third-interface-route">Hu 2016: A Third Interface Route</h5>
+<p>The entry point of Hu 2016 can be summarized in one sentence: do not let the rules determine the network structure, and do not let the rules remain only at the feature or post-processing level; instead, let the rules first reshape the current predictive distribution, and then distill that distributional bias back into the parameters.</p>
+<p><img alt="Hu 2016 three-step injection mechanism" src="../assets/knowledge/images/hu2016_injection_mechanism_en.svg"></p>
+<p>Below we still use the notation from Section 0.5, and only unpack the three steps at the interface level.</p>
+<h5 id="1-preserve-the-parameterized-expressive-power-of-a-generic-neural-network">1. Preserve the Parameterized Expressive Power of a Generic Neural Network</h5>
+<p>First, use a parameterized student model in the usual way:
+$$
+p_{\theta_t}(y\mid x),
+$$
+and take the standard task loss as the base learning objective:
+$$
+L_{\mathrm{task}}(\theta)
+=
+\frac{1}{N}\sum_{n=1}^N \ell\bigl(y_n,p_\theta(\cdot\mid x_n)\bigr).
+$$</p>
+<p>Here the lowercase script $\ell$ denotes the loss function for a single sample, whereas $L_{\mathrm{task}}$ denotes the overall task loss obtained by averaging the per-sample losses over all training samples. In classification tasks, $\ell$ is often the cross-entropy or some other single-sample prediction error; the most common form is
+$$
+\ell\bigl(y_n,p_\theta(\cdot\mid x_n)\bigr)
+=
+-\log p_\theta(y_n\mid x_n).
+$$</p>
+<p>The key point here is that the rule does not determine the number of layers, the connectivity pattern, or the inference graph of the network. In other words, expressive power still comes from the generic neural network itself, rather than from a structure specifically assembled according to the rules.</p>
+<p>This is exactly what “preserving the parameterized expressive power of a generic neural network” means.</p>
+<h5 id="2-inject-rule-bias-at-the-predictive-distribution-level">2. Inject Rule Bias at the Predictive-Distribution Level</h5>
+<p>Next, instead of modifying the parameter $\theta_t$ directly, perform a posterior-regularization projection on the current student distribution $p_{\theta_t}$ to obtain a more rule-consistent teacher distribution:
+$$
+q_t^\star(\cdot\mid x)
+=
+\arg\min_{q\in\Delta(\mathcal Y)}
+\left[
+\mathrm{KL}\bigl(q(\cdot\mid x)\,\|\,p_{\theta_t}(\cdot\mid x)\bigr)
++
+C\sum_{l,g}\lambda_l\Bigl(1-\mathbb E_q[r_{lg}(x,Y)]\Bigr)
+\right].
+$$</p>
+<p>Its closed form is
+$$
+q_t^\star(y\mid x)
+\propto
+p_{\theta_t}(y\mid x)\exp\bigl(-E_{\mathcal R}(x,y)\bigr).
+$$</p>
+<p>Here the symbol $\propto$ means “proportional to.” In other words, the left-hand side is not literally equal to the right-hand side; rather, it differs only by a normalization constant. More explicitly, one first assigns unnormalized weights according to
+$$
+p_{\theta_t}(y\mid x)\exp\bigl(-E_{\mathcal R}(x,y)\bigr),
+$$
+and then divides by a normalization constant to obtain the actual probability distribution $q_t^\star(y\mid x)$.</p>
+<p>The principle of this step is:</p>
+<ul>
+<li>the first term $\mathrm{KL}(q\|p_{\theta_t})$ requires the teacher distribution not to drift too far away from the current student;</li>
+<li>the second term requires the teacher distribution to move probability mass toward output states that satisfy the rules better;</li>
+<li>so the rule does not directly change the network structure. Instead, it first changes what the predictive distribution for this sample should look like.</li>
+</ul>
+<p>This is exactly what “first injecting rule bias at the predictive-distribution level” means.</p>
+<h5 id="3-then-write-that-bias-back-into-the-parameters-through-distillation">3. Then Write that Bias Back into the Parameters through Distillation</h5>
+<p>If we stop at the previous step, then the rule still acts only as a current-distribution reshaper. The third step of Hu 2016 is to feed this online-generated teacher distribution back to the student, so that the parameters themselves gradually learn this rule bias. In unified notation:
+$$
+\theta_{t+1}
+=
+\arg\min_\theta \frac{1}{N}\sum_{n=1}^N
+\left[
+(1-\pi_t)\,\ell\bigl(y_n,p_\theta(\cdot\mid x_n)\bigr)
++
+\pi_t\,\mathrm{KL}\bigl(q_t^\star(\cdot\mid x_n)\,\|\,p_\theta(\cdot\mid x_n)\bigr)
+\right].
+$$</p>
+<p>Here:</p>
+<ul>
+<li>the first term keeps the student fitting the true labels;</li>
+<li>the second term lets the student imitate the teacher distribution produced by rule projection in the current round;</li>
+<li>$\pi_t$ controls the weight between listening to the true labels and listening to the rule teacher.</li>
+</ul>
+<p>Two quantities in particular should be distinguished:</p>
+<ul>
+<li>$\theta_{t+1}$ is not another independent hyperparameter. It is the next-round student parameter obtained after the update at round $t$. That is, the current student uses $\theta_t$, and after seeing the true labels and the teacher distribution in this round, its parameter is updated to $\theta_{t+1}$.</li>
+<li>$\pi_t\in[0,1]$ is the actual distillation-strength weight. The larger $\pi_t$ is, the more the $t$-th round emphasizes listening to the rule teacher; the smaller $\pi_t$ is, the more the round emphasizes listening to the true labels.</li>
+</ul>
+<p>If you want the phrase “how the teacher is fed back round by round” to be completely transparent, it is best to first look at a one-sample toy computation. Here we deliberately simplify the neural network into a student that directly outputs the probabilities of four states, so that one can explicitly compute what happens in each round.</p>
+<p>Fix one sample $x_n$, and let the true label be
+$$
+y_n=(1,1),
+$$
+while continuing to use the same unified example as before:
+$$
+\mathcal Y=\{(0,0),(0,1),(1,0),(1,1)\},\qquad
+\phi_{ba}: Y_b\Rightarrow Y_a,\qquad
+C=2,\ \lambda=1.
+$$</p>
+<p>Now let the initial student distribution be
+$$
+p_{\theta_0}(\cdot\mid x_n)
+=
+\bigl(0.1,\,0.1,\,0.4,\,0.4\bigr),
+$$
+where the four components correspond in order to
+$$
+(0,0),\ (0,1),\ (1,0),\ (1,1).
+$$
+The only violating state is $(1,0)$.</p>
+<p>To make the distillation-feedback mechanism stand out, temporarily choose a fixed distillation weight
+$$
+\pi_0=\pi_1=\pi_2=0.8.
+$$
+This means that in each round we use $80\%$ weight to listen to the rule teacher, while keeping $20\%$ of the true-label supervision.</p>
+<p>In this toy model, one can approximately regard the actual mixed target distribution that the student tries to match at round $t$ as
+$$
+\widetilde q_t(y\mid x_n)
+=(1-\pi_t)\,\delta_{(1,1)}(y)+\pi_t\,q_t^\star(y\mid x_n),
+$$
+where $\delta_{(1,1)}$ is the one-hot distribution at the true label $(1,1)$. This formula has a direct meaning:</p>
+<ul>
+<li>one part of the target comes from the true label;</li>
+<li>another part comes from the rule-projected teacher;</li>
+<li>the next-round student parameter $\theta_{t+1}$ is then pushed so that its output distribution moves toward this mixed target.</li>
+</ul>
+<p>In this toy example, to make the mechanism maximally transparent, we further adopt the most simplified assumption: after one update, the student distribution becomes directly equal to the mixed target, namely
+$$
+p_{\theta_{t+1}}(\cdot\mid x_n)\approx \widetilde q_t(\cdot\mid x_n).
+$$
+In a real neural network, one would of course only move toward this target through gradient descent rather than become exactly equal to it in one step; but this approximation is enough to clarify the distillation chain itself.</p>
+<p>The three-round feeding process is then as follows.</p>
+<p><strong>Round 0: generate the teacher from the current student</strong></p>
+<p>The current student is
+$$
+p_{\theta_0}(\cdot\mid x_n)=(0.1,\,0.1,\,0.4,\,0.4).
+$$
+The rule penalizes only the violating state $(1,0)$, so the unnormalized weights are
+$$
+w_0=(0.1,\,0.1,\,0.4e^{-2},\,0.4)\approx(0.1,\,0.1,\,0.054,\,0.4).
+$$
+After normalization, the teacher distribution becomes
+$$
+q_0^\star(\cdot\mid x_n)
+=
+\frac{w_0}{\sum w_0}
+\approx
+(0.153,\,0.153,\,0.083,\,0.612).
+$$</p>
+<p>Then mix the teacher with the true label to form the target for the next student:
+$$
+\widetilde q_0
+=
+0.2\,\delta_{(1,1)}+0.8\,q_0^\star
+\approx
+(0.122,\,0.122,\,0.066,\,0.690).
+$$
+Hence the toy student is updated to
+$$
+p_{\theta_1}(\cdot\mid x_n)\approx(0.122,\,0.122,\,0.066,\,0.690).
+$$</p>
+<p><strong>Round 1: regenerate the teacher from the updated student</strong></p>
+<p>Now the teacher no longer uses the old student, but the new student $p_{\theta_1}$:
+$$
+w_1
+=
+\bigl(0.122,\,0.122,\,0.066e^{-2},\,0.690\bigr)
+\approx
+(0.122,\,0.122,\,0.009,\,0.690).
+$$
+After normalization,
+$$
+q_1^\star(\cdot\mid x_n)\approx(0.130,\,0.130,\,0.010,\,0.731).
+$$
+Then mix it again with the true label:
+$$
+\widetilde q_1
+=
+0.2\,\delta_{(1,1)}+0.8\,q_1^\star
+\approx
+(0.104,\,0.104,\,0.008,\,0.785).
+$$
+Thus the toy student continues updating as
+$$
+p_{\theta_2}(\cdot\mid x_n)\approx(0.104,\,0.104,\,0.008,\,0.785).
+$$</p>
+<p><strong>Round 2: project again, distill again</strong></p>
+<p>Generate the teacher once more from $p_{\theta_2}$. The violating state is further suppressed:
+$$
+w_2
+=
+\bigl(0.104,\,0.104,\,0.008e^{-2},\,0.785\bigr)
+\approx
+(0.104,\,0.104,\,0.001,\,0.785).
+$$
+After normalization,
+$$
+q_2^\star(\cdot\mid x_n)\approx(0.105,\,0.105,\,0.001,\,0.790).
+$$
+Then mix again:
+$$
+\widetilde q_2
+=
+0.2\,\delta_{(1,1)}+0.8\,q_2^\star
+\approx
+(0.084,\,0.084,\,0.001,\,0.832),
+$$
+and therefore
+$$
+p_{\theta_3}(\cdot\mid x_n)\approx(0.084,\,0.084,\,0.001,\,0.832).
+$$</p>
+<p>If we line up the three rounds, the pattern becomes very clear:</p>
+<table>
+<thead>
+<tr>
+<th>Round</th>
+<th>Current student $p_{\theta_t}$</th>
+<th>Current teacher $q_t^\star$</th>
+<th>Next student $p_{\theta_{t+1}}$</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>$t=0$</td>
+<td>$(0.100,0.100,0.400,0.400)$</td>
+<td>$(0.153,0.153,0.083,0.612)$</td>
+<td>$(0.122,0.122,0.066,0.690)$</td>
+</tr>
+<tr>
+<td>$t=1$</td>
+<td>$(0.122,0.122,0.066,0.690)$</td>
+<td>$(0.130,0.130,0.010,0.731)$</td>
+<td>$(0.104,0.104,0.008,0.785)$</td>
+</tr>
+<tr>
+<td>$t=2$</td>
+<td>$(0.104,0.104,0.008,0.785)$</td>
+<td>$(0.105,0.105,0.001,0.790)$</td>
+<td>$(0.084,0.084,0.001,0.832)$</td>
+</tr>
+</tbody>
+</table>
+<p>The quantity worth tracking most closely in this table is the probability of the unique violating state $(1,0)$:
+$$
+0.400\ \longrightarrow\ 0.066\ \longrightarrow\ 0.008\ \longrightarrow\ 0.001.
+$$
+Meanwhile, the state $(1,1)$, which both matches the true label and satisfies the rule, increases round by round:
+$$
+0.400\ \longrightarrow\ 0.690\ \longrightarrow\ 0.785\ \longrightarrow\ 0.832.
+$$</p>
+<p>So feeding the teacher back through distillation does not mean directly inserting a logical rule into the parameter vector. Rather, it means:</p>
+<ol>
+<li>first use the current student $p_{\theta_t}$ to generate a rule teacher $q_t^\star$;</li>
+<li>then let the student imitate that teacher through a weighted loss;</li>
+<li>as a result, the updated parameter $\theta_{t+1}$ makes the new student distribution more rule-consistent than in the previous round;</li>
+<li>then use the new student to generate a new teacher again, and repeat.</li>
+</ol>
+<p>If $\pi_t=0$, the student does not listen to the teacher at all and the procedure reduces to ordinary supervised learning. If $\pi_t=1$, then in that round the student listens only to the teacher and not to the true labels. Hu 2016 works precisely by taking a balance between these two extremes.</p>
+<p>Therefore, the rule bias is no longer merely a test-time fix-up. It is gradually written into the next-round parameter $\theta_{t+1}$.</p>
+<p>This is exactly what is meant by writing that bias back into the parameters through distillation.</p>
+<h5 id="why-hu-2016-simultaneously-resolves-the-pain-points-of-the-first-two-routes">Why Hu 2016 Simultaneously Resolves the Pain Points of the First Two Routes</h5>
+<p>When the three steps above are put together, the uniqueness of Hu 2016 becomes much clearer:</p>
+<ul>
+<li>unlike Route A, it does not let the rules determine the network topology, so it preserves the parameterized expressive power of a generic neural network;</li>
+<li>unlike Route B, it does not treat the rules merely as extra features or post-prediction repair, because the rule first explicitly rewrites the current posterior distribution $q_t^\star$;</li>
+<li>and it does not stop at a distributional bias at the current time step, because it further writes that bias back into the parameters through distillation.</li>
+</ul>
+<p>Therefore, the true innovation of Hu 2016 is not simply that it uses logical rules, but that it introduces a new injection interface:
+$$
+\text{generic parameterized student}
+\Longrightarrow
+\text{rule-projected teacher distribution}
+\Longrightarrow
+\text{distill back into the parameters}.
+$$</p>
+<p>Section 1.2 below will further unpack the posterior regularization, soft truth values, rule energy, and closed-form teacher distribution that appear here into formal mathematical objects.</p>
+<h4 id="why-standard-neural-networks-cannot-naturally-enforce-hard-logic">Why Standard Neural Networks Cannot Naturally Enforce Hard Logic</h4>
+<p>Suppose the model output is $p_\theta(y\mid x)$. Ordinary empirical risk minimization optimizes only
+$$
+\min_\theta \frac{1}{N}\sum_{n=1}^N \ell\bigl(y_n, p_\theta(\cdot\mid x_n)\bigr).
+$$</p>
+<p>The key point is that this objective only requires the model to fit the training labels. It does not require the model to exclude some output combinations that are logically forbidden over the whole output space.</p>
+<p>From the optimization perspective, this means:</p>
+<ul>
+<li>cross-entropy constrains label fitting;</li>
+<li>it does not explicitly define a feasible output set;</li>
+<li>it also does not drive logic-violating states to zero probability.</li>
+</ul>
+<p>Therefore, even if the training error is low, one still cannot conclude that the model will strictly satisfy the rule on unseen samples.</p>
+<h4 id="the-simplest-possible-conclusion">The Simplest Possible Conclusion</h4>
+<p>If some logical constraint requires that certain output combinations never appear, then plain softmax + cross-entropy alone usually cannot remove those combinations from the support set.</p>
+<p>This is exactly why Hu 2016 needs posterior reshaping.</p>
+<hr>
+<h3 id="12-mathematical-level-analysis">1.2 Mathematical-Level Analysis</h3>
+<h4 id="121-what-object-the-rules-actually-are">1.2.1 What Object the Rules Actually Are</h4>
+<p>The modeling object in the original paper is not a single logical formula, but a rule set with confidence weights:
+$$
+\mathcal R=\{(R_l,\lambda_l)\}_{l=1}^L.
+$$</p>
+<p>The meanings are:</p>
+<ul>
+<li>$R_l$: the $l$-th rule;</li>
+<li>$\lambda_l$: the confidence of that rule;</li>
+<li>$\lambda_l=\infty$: a hard rule.</li>
+</ul>
+<p>For unified discussion, one may merge all groundings into a single global logical object:
+$$
+F(X,Y)=\bigwedge_{l=1}^L \bigwedge_{g=1}^{G_l} R_{lg}(X,Y).
+$$</p>
+<p>The key point here is that this is only an analytical shorthand. The original paper does not perform exact Boolean reasoning over $F$; instead, it handles the soft truth value of each grounding separately.</p>
+<h4 id="122-how-logic-is-relaxed-into-continuous-form">1.2.2 How Logic Is Relaxed into Continuous Form</h4>
+<p>The authors use soft logic to map Boolean logic into the interval $[0,1]$.</p>
+<h5 id="operation-table">Operation Table</h5>
+<table>
+<thead>
+<tr>
+<th>Logical object</th>
+<th>soft-logic form</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>conjunction</td>
+<td>$A \wedge_s B = \max\{A+B-1,0\}$</td>
+<td>approximate “both true”</td>
+</tr>
+<tr>
+<td>disjunction</td>
+<td>$A \vee_s B = \min\{A+B,1\}$</td>
+<td>approximate “at least one true”</td>
+</tr>
+<tr>
+<td>negation</td>
+<td>$\neg A = 1-A$</td>
+<td>continuous negation</td>
+</tr>
+<tr>
+<td>averaged conjunction</td>
+<td>$A_1 \,\bar\wedge\, \cdots \,\bar\wedge\, A_N = \frac{1}{N}\sum_i A_i$</td>
+<td>softly aggregates multiple clauses</td>
+</tr>
+</tbody>
+</table>
+<p>For each grounding, let its soft truth value be
+$$
+r_{lg}(X,Y)\in[0,1].
+$$</p>
+<p>The meaning of this formula is direct:</p>
+<ul>
+<li>$r_{lg}=1$: fully satisfied;</li>
+<li>$r_{lg}<1$: there is a violation;</li>
+<li>$1-r_{lg}$: can be viewed as the degree of violation.</li>
+</ul>
+<h5 id="intuitive-understanding_1">Intuitive Understanding</h5>
+<p>The key point here is that the authors do not directly optimize Boolean logic itself. Instead, they first convert logic into a numerical object, and then let this numerical object enter a distributional optimization problem.</p>
+<h5 id="optimization-meaning">Optimization Meaning</h5>
+<p>Once the logic has been written as $r_{lg}\in[0,1]$, one can later penalize low-truth outputs through a continuous cost function.</p>
+<p>This step changes the rule from a discrete constraint into an energy signal that can be coupled with a probability distribution.</p>
+<hr>
+<h4 id="123-how-constraint-satisfaction-enters-the-optimization">1.2.3 How Constraint Satisfaction Enters the Optimization</h4>
+<p>The key point of Hu 2016 is not “adding a logic penalty directly to the parameters,” but rather “first constructing a teacher distribution.”</p>
+<p>Given a student distribution $p_\theta(Y\mid X)$, the teacher distribution is obtained through a posterior-regularization projection:
+$$
+\min_{q,\ \xi\ge 0}\ \mathrm{KL}\bigl(q(Y\mid X)\,\|\,p_\theta(Y\mid X)\bigr)+C\sum_{l,g}\xi_{lg}
+$$
+$$
+\text{s.t.}\quad \lambda_l\Bigl(1-\mathbb E_q[r_{lg}(X,Y)]\Bigr)\le \xi_{lg},\quad \forall l,g.
+$$</p>
+<p>The key ideas are:</p>
+<ul>
+<li>$q$ is the teacher distribution that obeys the rules better;</li>
+<li>$\mathrm{KL}(q\|p_\theta)$ keeps the teacher from moving too far away from the student;</li>
+<li>the slack variables $\xi_{lg}$ allow controlled rule violation;</li>
+<li>$C$ controls the strength of the violation cost.</li>
+</ul>
+<p>If one eliminates the slack variables, the problem can be written as
+$$
+\mathrm{KL}(q\|p_\theta)+C\sum_{l,g}\lambda_l\Bigl(1-\mathbb E_q[r_{lg}]\Bigr).
+$$</p>
+<p>The plain-language reading of this expression is:</p>
+<ul>
+<li>first term: do not let the teacher distribution drift too far from the current model;</li>
+<li>second term: let the teacher distribution move probability mass toward outputs that satisfy the rules better.</li>
+</ul>
+<p>From the optimization perspective, the object of this step is not the parameter $\theta$, but the posterior distribution $q$.</p>
+<hr>
+<h4 id="124-the-closed-form-teacher-distribution-and-the-energy-interpretation">1.2.4 The Closed-Form Teacher Distribution and the Energy Interpretation</h4>
+<p>This projection problem has a closed-form solution. Define the rule energy
+$$
+E_{\mathcal R}(X,Y)=C\sum_{l,g}\lambda_l\bigl(1-r_{lg}(X,Y)\bigr).
+$$</p>
+<p>Its meaning is that the more rules are violated, the larger $E_{\mathcal R}$ becomes; and the more reliable the rule is, the more strongly that violation is amplified in the energy.</p>
+<p>The teacher distribution can then be written as
+$$
+q^\star(Y\mid X)=\frac{1}{Z(X)}\,p_\theta(Y\mid X)\exp\bigl(-E_{\mathcal R}(X,Y)\bigr),
+$$
+where
+$$
+Z(X)=\sum_Y p_\theta(Y\mid X)\exp\bigl(-E_{\mathcal R}(X,Y)\bigr).
+$$</p>
+<p>These two expressions should be understood separately:</p>
+<ul>
+<li>the first gives the reweighted form of the teacher distribution;</li>
+<li>the second is only a normalization constant that guarantees $q^\star$ remains a valid probability distribution.</li>
+</ul>
+<h5 id="intuitive-understanding_2">Intuitive Understanding</h5>
+<p>This step is not simply adding an extra logic loss.</p>
+<p>More accurately, it is doing the following:</p>
+<p>the original distribution $p_\theta(Y\mid X)$
+→ reweight it according to the rule violation degree
+→ obtain a more rule-consistent distribution $q^\star(Y\mid X)$.</p>
+<h5 id="mathematical-mechanism">Mathematical Mechanism</h5>
+<p>If some output $Y$ seriously violates the rules, then $E_{\mathcal R}(X,Y)$ is large. Therefore $\exp(-E_{\mathcal R}(X,Y))$ is small, and the weight of that output in the teacher distribution is suppressed.</p>
+<h5 id="optimization-meaning_1">Optimization Meaning</h5>
+<p>The key point here is that logic first changes the target distribution, and only then changes the parameters.</p>
+<p>Therefore, Hu 2016 is not a simple soft-penalty method. It is a posterior-regularization method that couples:</p>
+<ul>
+<li>soft-logic encoding,</li>
+<li>posterior-regularization projection,</li>
+<li>teacher-student distillation.</li>
+</ul>
+<h4 id="125-plugging-the-abstract-objects-back-into-our-running-example">1.2.5 Plugging the Abstract Objects Back into Our Running Example</h4>
+<p>Now plug the abstract objects above back into the single rule $bird \Rightarrow animal$.</p>
+<p>If the output is a discrete Boolean state $Y=(Y_b,Y_a)$, then the energy of this rule can be written as
+$$
+E_{\phi_{ba}}(Y)=C\lambda\,\mathbf 1[(Y_b,Y_a)=(1,0)].
+$$</p>
+<p>The plain-language reading is:</p>
+<ul>
+<li>the three satisfying states receive no penalty;</li>
+<li>the unique violating state $(1,0)$ is suppressed;</li>
+<li>so along the posterior route, we are essentially redistributing probability mass across the four candidate states.</li>
+</ul>
+<p>If the output has already been relaxed into the continuous pair $(u,v)$, then the corresponding soft truth value and violation degree are
+$$
+r_{\phi_{ba}}(u,v)=\min\{1,1-u+v\},
+$$
+$$
+1-r_{\phi_{ba}}(u,v)=\max\{u-v,0\}.
+$$</p>
+<p>Hence the continuous energy form of the rule can be written as
+$$
+E_{\phi_{ba}}(u,v)=C\lambda \max\{u-v,0\}.
+$$</p>
+<p>The key point here is that the semantic core of the rule itself has not changed across methods; what changes is the interface through which that rule enters the optimization system.</p>
+<h4 id="126-current-mechanism-map">1.2.6 Current Mechanism Map</h4>
+<table>
+<thead>
+<tr>
+<th>Stage</th>
+<th>Object</th>
+<th>Role in the current mechanism</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>current student distribution $p_\theta(y\mid x)$</td>
+<td>gives the base prediction before rule injection</td>
+</tr>
+<tr>
+<td>2</td>
+<td>logic rule $F$ and soft truth value $r_{lg}$</td>
+<td>turns discrete rules into computable continuous objects</td>
+</tr>
+<tr>
+<td>3</td>
+<td>posterior projection operator $\mathcal P_{\mathcal R}$</td>
+<td>rewrites probability mass according to rule violation</td>
+</tr>
+<tr>
+<td>4</td>
+<td>teacher distribution $q^\star(y\mid x)$</td>
+<td>forms an online rule teacher</td>
+</tr>
+<tr>
+<td>5</td>
+<td>distillation target and distillation loss</td>
+<td>sends teacher information back into parameter learning</td>
+</tr>
+<tr>
+<td>6</td>
+<td>updated $p_\theta(y\mid x)$</td>
+<td>gives the new student distribution</td>
+</tr>
+</tbody>
+</table>
+<p>What matters most in this picture is not merely that there is a teacher, but that the teacher is not externally given. It is generated online by projecting the current student distribution through the rules.</p>
+<hr>
+<h2 id="2-logic-net-icml-2019-placeholder-to-be-completed-if-the-paper-is-provided">2. Logic-Net (ICML 2019?) Placeholder (to be completed if the paper is provided)</h2>
+<p>This section remains only as a placeholder for now, with no technical content added.</p>
+<h3 id="21-information-that-is-still-unconfirmed">2.1 Information That Is Still Unconfirmed</h3>
+<ul>
+<li>the exact paper title</li>
+<li>the authors and conference information</li>
+<li>whether this repository already contains the corresponding PDF / TXT / code</li>
+</ul>
+<h3 id="22-current-writing-boundary">2.2 Current Writing Boundary</h3>
+<p>Before these pieces of information are verified, we should not mistake the mechanism of Hu et al. 2016 for “the ICML 2019 Logic-Net,” nor should we merge an unverified same-name work into the conclusions of this document.</p>
+<hr>
+<h2 id="3-mechanism-comparison-a-unified-perspective">3. Mechanism Comparison (A Unified Perspective)</h2>
+<h3 id="31-the-unified-question-where-does-the-constraint-actually-enter">3.1 The Unified Question: Where Does the Constraint Actually Enter?</h3>
+<p>If we place Hu 2016, Semantic Loss, and DL2 under the same analytical coordinate system, the most important thing to unify is not that “all of them use logic,” but rather:</p>
+<blockquote>
+<p>For the same constraint $\phi$, at which layer of the optimization system does it actually enter?</p>
+</blockquote>
+<p>In this document, we divide the interface into three types:</p>
+<ol>
+<li>entering the posterior</li>
+<li>entering the loss</li>
+<li>entering the feasible set</li>
+</ol>
+<h4 id="overall-structure-diagram">Overall Structure Diagram</h4>
+<table>
+<thead>
+<tr>
+<th>Where the constraint enters</th>
+<th>Representative method</th>
+<th>Direct effect of the constraint on optimization</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>posterior distribution</td>
+<td>Hu et al. 2016</td>
+<td>first rewrite the world distribution, then distill back into the parameters</td>
+</tr>
+<tr>
+<td>loss function</td>
+<td>Semantic Loss / DL2</td>
+<td>directly turn constraint violation into an optimization cost</td>
+</tr>
+<tr>
+<td>feasible set</td>
+<td>DL2</td>
+<td>first restrict the search set, then optimize inside the feasible region</td>
+</tr>
+</tbody>
+</table>
+<h3 id="32-a-unified-abstract-form">3.2 A Unified Abstract Form</h3>
+<p>Writing the three routes into a unified mathematical form gives:
+$$
+\text{posterior route:}\qquad q_\phi^\star=\arg\min_q D(q\|p_\theta)+\Omega_\phi(q),
+$$</p>
+<p>whose meaning is: the constraint first rewrites the distribution, and then the distribution influences learning.</p>
+<p>$$
+\text{loss route:}\qquad \min_\theta\ L_{\text{task}}(\theta)+\lambda\,\Psi_\phi(\theta),
+$$</p>
+<p>whose meaning is: the constraint is directly turned into an extra cost term.</p>
+<p>$$
+\text{feasible-set route:}\qquad \min_{u\in \mathcal C_\phi}\ \Psi(u,\theta).
+$$</p>
+<p>whose meaning is: the constraint first defines the searchable set, and only then do we optimize over that set.</p>
+<p>From the optimization perspective, the difference lies not in the notation but in the object on which the constraint acts:</p>
+<ul>
+<li>the posterior route acts on a distribution;</li>
+<li>the loss route acts on the objective function;</li>
+<li>the feasible-set route acts on the search domain.</li>
+</ul>
+<h4 id="running-example-what-the-same-rule-looks-like-in-the-three-routes">Running Example: What the Same Rule Looks Like in the Three Routes</h4>
+<p>Take the same rule as before:
+$$
+\phi_{ba}: Y_b\Rightarrow Y_a.
+$$</p>
+<p>At the posterior level, it becomes
+$$
+q^\star(y\mid x)\propto p_\theta(y\mid x)\exp\bigl(-E_{\phi_{ba}}(y)\bigr),
+$$
+meaning that probability mass is moved away from violating states.</p>
+<p>At the loss level, it becomes something like
+$$
+\Psi_{\phi_{ba}}(u,v)=\max\{u-v,0\}
+\quad\text{or}\quad
+-\log\Pr[\text{the rule is satisfied}],
+$$
+meaning that the violation is directly turned into a penalty term.</p>
+<p>At the feasible-set level, it becomes
+$$
+\mathcal C_{\phi_{ba}}=\{(u,v):u\le v\},
+$$
+meaning that the search itself is restricted to the region satisfying the rule.</p>
+<p>The key point here is that the semantic meaning of the rule is the same, while the interface at which it enters the optimization system is completely different.</p>
+<h3 id="33-constraint-entering-the-posterior-hu-et-al-2016">3.3 Constraint Entering the Posterior: Hu et al. 2016</h3>
+<h4 id="intuition">Intuition</h4>
+<p>The main interface in Hu 2016 is not the loss, but the posterior.</p>
+<p>It does not first ask, &ldquo;How much should a rule violation be penalized?&rdquo; Instead, it first asks:</p>
+<blockquote>
+<p>Among all candidate outputs currently proposed by the model, which outputs should be reweighted?</p>
+</blockquote>
+<h4 id="mathematical-mechanism_1">Mathematical Mechanism</h4>
+<p>The teacher distribution is given by
+$$
+q^\star(Y\mid X)\propto p_\theta(Y\mid X)\exp\big(-E_{\mathcal R}(X,Y)\big).
+$$</p>
+<p>The plain-language explanation is:</p>
+<ul>
+<li>states with stronger rule violation get their probability suppressed;</li>
+<li>when the rule is more trusted, this suppression becomes stronger;</li>
+<li>the teacher distribution is a &ldquo;rule-corrected belief.&rdquo;</li>
+</ul>
+<h4 id="optimization-meaning_2">Optimization Meaning</h4>
+<p>What is changed first in this step is the belief geometry, not a scalar objective.</p>
+<p>Therefore, logic knowledge enters training through the chain</p>
+<p>rule
+$\to$ rewrite the target distribution
+$\to$ distill it back into the parameters.</p>
+<p>This is a different interface design from ordinary penalty learning.</p>
+<hr>
+<h3 id="34-constraint-entering-the-loss-semantic-loss-and-dl2">3.4 Constraint Entering the Loss: Semantic Loss and DL2</h3>
+<p>What Semantic Loss and DL2 have in common is that they both translate the constraint into an optimizable scalar term; what differs is the object they translate it into.</p>
+<h4 id="341-semantic-loss-optimizing-the-total-probability-mass-of-valid-worlds">3.4.1 Semantic Loss: Optimizing the Total Probability Mass of Valid Worlds</h4>
+<p>If $\alpha$ is a propositional constraint and $p$ is the Bernoulli parameter vector of the output, then
+$$
+L_s(\alpha,p)= -\log \sum_{x\models \alpha}\prod_{i:x_i=1} p_i \prod_{i:x_i=0}(1-p_i).
+$$</p>
+<p>The key interpretation of this expression is:</p>
+<ul>
+<li>the sum ranges over all discrete worlds satisfying $\alpha$;</li>
+<li>the smaller the loss, the more total probability mass is assigned to valid worlds;</li>
+<li>this is not a soft-logic approximation, but an exact probability sum over satisfying assignments.</li>
+</ul>
+<h4 id="intuition_1">Intuition</h4>
+<p>Semantic Loss does not ask, &ldquo;How much is this rule violated?&rdquo; Instead, it asks:</p>
+<blockquote>
+<p>How much probability mass does the current output distribution assign to worlds that are logically allowed?</p>
+</blockquote>
+<h4 id="optimization-meaning_3">Optimization Meaning</h4>
+<p>Therefore, its gradient is naturally globally coupled. Changing any one output component may alter the total mass over the set of satisfying worlds.</p>
+<hr>
+<h4 id="342-dl2-optimizing-a-continuous-satisfiability-surrogate">3.4.2 DL2: Optimizing a Continuous Satisfiability Surrogate</h4>
+<p>DL2 recursively translates a logical formula into a nonnegative surrogate loss.</p>
+<p>For example, for an atomic comparison one may write
+$$
+L(t\le t')=\max(t-t',0),
+$$</p>
+<p>whose meaning is: as long as $t\le t'$ is satisfied, the loss is zero; once the constraint is violated, the loss equals the magnitude of that violation.</p>
+<p>Logical compositions are then built recursively:
+$$
+L(\phi\land\psi)=L(\phi)+L(\psi),\qquad
+L(\phi\lor\psi)=L(\phi)L(\psi).
+$$</p>
+<p>The key point here is:</p>
+<ul>
+<li>it preserves the correspondence &ldquo;zero iff satisfied&rdquo;;</li>
+<li>it does not preserve the exact probability semantics of Semantic Loss;</li>
+<li>it is better viewed as a continuous surrogate system for rule violation.</li>
+</ul>
+<h4 id="optimization-meaning_4">Optimization Meaning</h4>
+<p>Therefore, DL2 gradients are more local and more direct:</p>
+<ul>
+<li>atomic inequalities correspond to local violation magnitudes;</li>
+<li>composed logic propagates through addition or multiplication;</li>
+<li>the geometry depends on how the surrogate is constructed.</li>
+</ul>
+<hr>
+<h3 id="35-constraint-entering-the-feasible-set-dl2s-second-interface">3.5 Constraint Entering the Feasible Set: DL2&rsquo;s Second Interface</h3>
+<p>If DL2 is viewed only as &ldquo;yet another loss-based method,&rdquo; one misses its most distinctive component.</p>
+<h4 id="intuition_2">Intuition</h4>
+<p>DL2 not only writes constraints into the loss; it can also extract the convex input constraints suitable for projection and use them to define the search boundary directly.</p>
+<h4 id="mathematical-mechanism_2">Mathematical Mechanism</h4>
+<p>The inner problem can be written as
+$$
+\min_{z} L(\neg\phi)(x,z,\theta).
+$$</p>
+<p>But if part of the constraint can be written as an explicit set, it is further rewritten as
+$$
+z\in \mathcal C_\phi,
+$$
+and PGD or L-BFGS-B is used on that domain.</p>
+<h4 id="optimization-meaning_5">Optimization Meaning</h4>
+<p>This means:</p>
+<ul>
+<li>Hu 2016 changes the target distribution;</li>
+<li>Semantic Loss changes the objective function;</li>
+<li>DL2 can go one step further and change the search space itself.</li>
+</ul>
+<p>This is why DL2 is more general for both training and query-time use.</p>
+<hr>
+<h3 id="36-unified-comparison-table">3.6 Unified Comparison Table</h3>
+<table>
+<thead>
+<tr>
+<th>Dimension</th>
+<th>Hu et al. 2016</th>
+<th>Semantic Loss</th>
+<th>DL2</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>main entry point of the constraint</td>
+<td>posterior</td>
+<td>loss</td>
+<td>loss + feasible set</td>
+</tr>
+<tr>
+<td>core object</td>
+<td>$q^\star(Y\mid X)$</td>
+<td>total probability mass of valid worlds</td>
+<td>surrogate satisfaction loss</td>
+</tr>
+<tr>
+<td>representative form</td>
+<td>$q^\star \propto p_\theta e^{-E_{\mathcal R}}$</td>
+<td>$-\log \Pr[x\models\alpha]$</td>
+<td>$L(\phi)=0 \iff \phi$ is satisfied</td>
+</tr>
+<tr>
+<td>logic semantics</td>
+<td>soft-logic approximation</td>
+<td>exact propositional semantics</td>
+<td>surrogate semantics</td>
+</tr>
+<tr>
+<td>source of gradient</td>
+<td>distillation term</td>
+<td>global probability-mass redistribution</td>
+<td>local violation propagation</td>
+</tr>
+<tr>
+<td>suitable problems</td>
+<td>rule-biased distillation</td>
+<td>logical constraints on discrete outputs</td>
+<td>training + query + input-domain constraints</td>
+</tr>
+<tr>
+<td>main bottleneck</td>
+<td>teacher projection and approximate inference</td>
+<td>WMC / circuit compilation</td>
+<td>nested optimization / PGD</td>
+</tr>
+</tbody>
+</table>
+<p>From the unified perspective, the three methods are not &ldquo;different implementations of the same logic regularization idea,&rdquo; but three different interface designs.</p>
+<hr>
+<h2 id="4-unified-analysis-of-optimization-mechanisms">4. Unified Analysis of Optimization Mechanisms</h2>
+<h3 id="41-first-write-the-three-families-as-unified-optimization-programs">4.1 First Write the Three Families as Unified Optimization Programs</h3>
+<p>If one only says that &ldquo;all of them inject constraints into training,&rdquo; the analysis quickly becomes distorted. A more rigorous approach is to separate three issues first:</p>
+<ol>
+<li>What is the variable directly optimized?</li>
+<li>Which object is treated as a constant at each step?</li>
+<li>Does the gradient actually pass through the constraint transformation itself?</li>
+</ol>
+<p>From this viewpoint, the three families can be unified in the following table.</p>
+<table>
+<thead>
+<tr>
+<th>Route</th>
+<th>Representative method</th>
+<th>Direct optimization variable</th>
+<th>Quantity frozen during each outer update</th>
+<th>Where the real difficulty lies</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>constraint enters the posterior</td>
+<td>Hu et al. 2016</td>
+<td>first optimize $q$, then update $\theta$</td>
+<td>$q_t^\star$ is frozen in the student step</td>
+<td>online teacher drift and alternating coupling</td>
+</tr>
+<tr>
+<td>constraint enters the loss</td>
+<td>Semantic Loss / DL2</td>
+<td>directly update $\theta$</td>
+<td>ideally no extra frozen quantity</td>
+<td>gradient geometry and surrogate quality</td>
+</tr>
+<tr>
+<td>constraint enters the feasible set</td>
+<td>DL2 inner search</td>
+<td>optimize inner variable $z$, then update outer $\theta$</td>
+<td>the outer level often treats approximate $z^\star$ as given</td>
+<td>bilevel optimization and inner approximation error</td>
+</tr>
+</tbody>
+</table>
+<p>Let us state a boundary clearly:</p>
+<ul>
+<li>the equations below for Hu 2016 try to stay close to the training mechanism in the original paper;</li>
+<li>the equations below for Semantic Loss and DL2 are analytical abstractions adopted for unified comparison.</li>
+</ul>
+<p>In other words, the &ldquo;unified analysis&rdquo; and the &ldquo;original paper formulation&rdquo; will be distinguished explicitly rather than mixed.</p>
+<hr>
+<h3 id="42-hu-2016-training-is-essentially-a-projection-distillation-alternation">4.2 Hu 2016 Training Is Essentially a Projection-Distillation Alternation</h3>
+<h4 id="current-mechanism-map">Current Mechanism Map</h4>
+<table>
+<thead>
+<tr>
+<th>Stage</th>
+<th>Object</th>
+<th>Role in the training procedure</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>parameters $\theta_t$</td>
+<td>generate the current student prediction</td>
+</tr>
+<tr>
+<td>2</td>
+<td>student distribution $p_{\theta_t}(Y\mid X)$</td>
+<td>serves as the input to posterior projection</td>
+</tr>
+<tr>
+<td>3</td>
+<td>teacher distribution $q_t^\star(Y\mid X)$</td>
+<td>temporary target obtained by rule projection</td>
+</tr>
+<tr>
+<td>4</td>
+<td>student-step objective $J_t(\theta;q_t^\star)$</td>
+<td>teacher is fixed during this update</td>
+</tr>
+<tr>
+<td>5</td>
+<td>parameters $\theta_{t+1}$</td>
+<td>complete one distillation-driven parameter update</td>
+</tr>
+</tbody>
+</table>
+<h4 id="mathematical-mechanism_3">Mathematical Mechanism</h4>
+<p>If we isolate outer iteration $t$, the core of Hu 2016 can be written in two steps:
+$$
+q_t^\star
+=
+\arg\min_q
+\Big[
+\mathrm{KL}\big(q(Y\mid X)\,\|\,p_{\theta_t}(Y\mid X)\big)
+\,+\,\Omega_{\mathcal R}(q)
+\Big],
+$$
+$$
+J_t(\theta;q_t^\star)
+=
+(1-\pi_t)L_{\text{task}}(\theta)
+\,+\,
+\pi_t\,L_{\text{distill}}(\theta; q_t^\star),
+$$
+$$
+\theta_{t+1}\approx \arg\min_\theta J_t(\theta;q_t^\star).
+$$</p>
+<p>The variable in the first step is the posterior distribution $q$; only in the second step does the variable become the parameter $\theta$.</p>
+<p>The plain-language explanation of these three equations is:</p>
+<ul>
+<li>first project the current student $p_{\theta_t}$ into a more rule-consistent teacher $q_t^\star$;</li>
+<li>then treat that teacher as a fixed target and update the student parameters;</li>
+<li>during student updating, the teacher is not an independent model, but an online target formed by rule-correcting the current student.</li>
+</ul>
+<h4 id="why-this-is-not-an-ordinary-single-level-static-objective">Why This Is Not an Ordinary Single-Level Static Objective</h4>
+<p>If one insists on writing it as a &ldquo;single objective,&rdquo; the most natural analytical form is actually
+$$
+\widetilde J_t(\theta)
+=
+(1-\pi_t)L_{\text{task}}(\theta)
+\,+\,
+\pi_t\,L_{\text{distill}}\big(\theta; q^\star[p_\theta]\big),
+$$
+where $q^\star[p_\theta]=\mathcal P_{\mathcal R}(p_\theta)$.</p>
+<p>But the key point is that the actual training in the paper does not perform strict end-to-end differentiation through $\widetilde J_t(\theta)$. Instead, it uses:</p>
+<ol>
+<li>first solve for the teacher $q_t^\star$;</li>
+<li>freeze $q_t^\star$ in the student step;</li>
+<li>then update the parameter $\theta$.</li>
+</ol>
+<p>Therefore, from the viewpoint of the optimization program, it is closer to alternating optimization or fixed-point iteration than to standard SGD on a static smooth objective.</p>
+<h4 id="optimization-meaning_6">Optimization Meaning</h4>
+<p>This point must be made explicit because it determines the object of all later stability discussions.</p>
+<ul>
+<li>If the teacher is fixed, the student step is very close to ordinary distillation training.</li>
+<li>But the teacher is not fixed; it is generated online by the current student.</li>
+<li>Therefore, what truly evolves at the outer level is an operator $T:\theta_t\mapsto\theta_{t+1}$.</li>
+</ul>
+<p>From the optimization perspective, the problem in Hu 2016 is not just &ldquo;how should the loss be written,&rdquo; but &ldquo;is this operator stable?&rdquo;</p>
+<h4 id="running-example-why-the-posterior-route-is-fundamentally-rewriting-world-probabilities">Running Example: Why the Posterior Route Is Fundamentally Rewriting World Probabilities</h4>
+<p>In the $bird \Rightarrow animal$ example, write the four discrete states as
+$$
+(0,0),\ (0,1),\ (1,0),\ (1,1).
+$$
+Then the unique violating state is $(1,0)$. Therefore the teacher projection can be written directly as
+$$
+q_t^\star(1,0\mid x)
+=
+\frac{p_{\theta_t}(1,0\mid x)e^{-C\lambda}}{Z_t(x)},
+$$
+$$
+q_t^\star(y\mid x)
+=
+\frac{p_{\theta_t}(y\mid x)}{Z_t(x)},
+\qquad y\in\{(0,0),(0,1),(1,1)\}.
+$$</p>
+<p>The intuitive meaning of these two equations is:</p>
+<ul>
+<li>the posterior route does not penalize parameters first;</li>
+<li>it first lowers the probability of the unique violating state $(1,0)$;</li>
+<li>then uses this new distribution as the student&rsquo;s distillation target.</li>
+</ul>
+<p>Thus, in this minimal example, the action of Hu 2016 can be compressed into one sentence:</p>
+<blockquote>
+<p>First squeeze the violating world out of the high-probability set, then train the network to fit this rule-corrected world distribution.</p>
+</blockquote>
+<hr>
+<h3 id="43-student-step-gradient-which-terms-are-truly-optimized-and-which-are-not-backpropagated">4.3 Student-Step Gradient: Which Terms Are Truly Optimized, and Which Are Not Backpropagated</h3>
+<h4 id="mathematical-mechanism_4">Mathematical Mechanism</h4>
+<p>For a single sample $x_n$, if the supervision label is a one-hot vector $y_n$ and the teacher target is denoted by $q_n^{\star,t}$, then the student step can usually be written as
+$$
+\ell_n^{(t)}(\theta)
+=
+-(1-\pi_t)\sum_k y_{nk}\log p_{nk}
+\,-\,
+\pi_t\sum_k q_{nk}^{\star,t}\log p_{nk},
+$$
+where $p_{nk}=p_\theta(y=k\mid x_n)$.</p>
+<p>Taking derivatives with respect to the logit $z_{nk}$ gives
+$$
+\frac{\partial \ell_n^{(t)}}{\partial z_{nk}}
+=
+p_{nk}-\widetilde y_{nk}^{(t)},
+\qquad
+\widetilde y_{nk}^{(t)}=(1-\pi_t)y_{nk}+\pi_t q_{nk}^{\star,t}.
+$$</p>
+<p>The plain-language explanation is:</p>
+<ul>
+<li>the student is not fitting the hard label $y_n$ alone;</li>
+<li>the student is not fitting only the teacher $q_n^{\star,t}$ either;</li>
+<li>the student fits the convex-combination target $\widetilde y_n^{(t)}$.</li>
+</ul>
+<h4 id="what-extra-term-would-appear-if-we-really-differentiated-through-the-teacher">What Extra Term Would Appear If We Really Differentiated Through the Teacher</h4>
+<p>If the teacher is treated as a function of $\theta$, then the full chain rule should read
+$$
+\nabla_\theta \widetilde J_t(\theta)
+=
+\nabla_\theta J_t(\theta;q_t^\star\ \text{frozen})
+\,+\,
+\pi_t
+\frac{\partial L_{\text{distill}}(\theta;q)}{\partial q}\bigg|_{q=q^\star[p_\theta]}
+\frac{\partial q^\star[p_\theta]}{\partial \theta}.
+$$</p>
+<p>The second term here is exactly the gradient that passes through the projector. The Hu 2016 training procedure typically does not keep this term explicitly; instead, it treats $q_t^\star$ as a given target during each student step.</p>
+<p>This means:</p>
+<ul>
+<li>what is actually optimized is a local surrogate objective with the teacher frozen;</li>
+<li>it is not the true single-level objective obtained by full implicit differentiation through $q^\star[p_\theta]$.</li>
+</ul>
+<h4 id="gradient-magnitude-and-limit-cases">Gradient Magnitude and Limit Cases</h4>
+<p>At the output layer, $\widetilde y_{nk}^{(t)}\in[0,1]$ and $\sum_k\widetilde y_{nk}^{(t)}=1$, therefore
+$$
+\left|\frac{\partial \ell_n^{(t)}}{\partial z_{nk}}\right|\le 1.
+$$</p>
+<p>The meaning of this inequality is straightforward:</p>
+<ul>
+<li>at least at the output layer, the distillation mixture itself does not create gradient explosion;</li>
+<li>if numerical explosion occurs, it is more likely to come from deeper network Jacobians, the optimizer step size, or upstream activations, rather than from this convex-combination formula itself.</li>
+</ul>
+<p>What is more common instead are two kinds of weak-gradient phenomena:</p>
+<ol>
+<li>when $\pi_t\to 0$, the effect of the rule degenerates to nearly zero;</li>
+<li>when $q_t^\star$ is already very sharp and the network is close to saturation, the update direction is still clear, but the effective magnitude of change becomes small.</li>
+</ol>
+<h4 id="the-most-important-conclusion">The Most Important Conclusion</h4>
+<p>From the gradient viewpoint, the key point of Hu 2016 is not that it makes gradients &ldquo;larger&rdquo; or &ldquo;smaller,&rdquo; but that it changes the gradient target from a hard label to a soft target that evolves dynamically during training.</p>
+<hr>
+<h3 id="44-differentiability-of-the-posterior-projection-itself-nonsmooth-points-and-flat-regions">4.4 Differentiability of the Posterior Projection Itself, Nonsmooth Points, and Flat Regions</h3>
+<h4 id="mathematical-mechanism_5">Mathematical Mechanism</h4>
+<p>The teacher distribution is written as
+$$
+q^\star(Y\mid X)
+=
+\frac{1}{Z(X)}\,p_\theta(Y\mid X)\exp\big(-E_{\mathcal R}(X,Y)\big),
+$$
+where
+$$
+E_{\mathcal R}(X,Y)=C\sum_{l,g}\lambda_l\big(1-r_{lg}(X,Y)\big).
+$$</p>
+<p>If we temporarily fix which <code>max/min</code> branches are active in soft logic, then $r_{lg}$ is piecewise linear, $E_{\mathcal R}$ is also piecewise linear, and $q^\star$ is piecewise smooth with respect to both $p_\theta$ and $r_{lg}$.</p>
+<h4 id="where-nonsmooth-points-arise">Where Nonsmooth Points Arise</h4>
+<p>Nonsmoothness mainly comes from three sources:</p>
+<table>
+<thead>
+<tr>
+<th>source</th>
+<th>where it appears</th>
+<th>direct consequence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>max/min</code> in soft logic</td>
+<td>boundaries such as $A+B-1=0$, $A+B=1$, etc.</td>
+<td>the gradient is nondifferentiable on the boundary and only subgradient-style interpretation is possible</td>
+</tr>
+<tr>
+<td>hard-rule limit $\lambda_l\to\infty$</td>
+<td>some states are forced toward zero probability</td>
+<td>the projection becomes sharp and local geometry deteriorates</td>
+</tr>
+<tr>
+<td>approximate inference instead of exact projection</td>
+<td>when sampling or heuristic inference switches regime</td>
+<td>the teacher distribution itself acquires extra noise or jumps</td>
+</tr>
+</tbody>
+</table>
+<h4 id="do-flat-regions-exist">Do Flat Regions Exist?</h4>
+<p>Yes, and this is often overlooked in soft logic.</p>
+<p>For example, conjunction
+$$
+A\wedge_s B=\max\{A+B-1,0\}
+$$
+has zero derivative when $A+B<1$; disjunction
+$$
+A\vee_s B=\min\{A+B,1\}
+$$
+also saturates when $A+B>1$.</p>
+<p>This means:</p>
+<ul>
+<li>some rules stop giving extra gradient in the &ldquo;already satisfied&rdquo; region, which is reasonable;</li>
+<li>but some connectives may also enter a flat regime in the &ldquo;severely violated&rdquo; region, weakening the local correction signal.</li>
+</ul>
+<h4 id="optimization-meaning_7">Optimization Meaning</h4>
+<p>Two things must be distinguished precisely here:</p>
+<ol>
+<li>The student step in Hu 2016 does not backpropagate end-to-end through these nonsmooth points, so it avoids the most direct chain-rule difficulty.</li>
+<li>But these nonsmooth points still change the geometry of the teacher distribution, and therefore appear in the outer loop as target switching, rule effects that suddenly strengthen or weaken, or regions where the rule signal remains too weak for a long time.</li>
+</ol>
+<p>So what Hu 2016 avoids is only the difficulty of explicit end-to-end backpropagation through logic; it does not eliminate the difficulty of logic geometry itself.</p>
+<hr>
+<h3 id="45-constraint-entering-the-loss-the-single-level-objective-is-more-direct-but-the-gradient-geometry-is-completely-different">4.5 Constraint Entering the Loss: The Single-Level Objective Is More Direct, but the Gradient Geometry Is Completely Different</h3>
+<p>From a unified viewpoint, the loss route can be written as
+$$
+\min_\theta\ L_{\text{task}}(\theta)+\lambda\,\Psi_\phi(\theta).
+$$</p>
+<p>The key point of this expression is not merely that an extra term $\lambda\Psi_\phi$ is added, but what object $\Psi_\phi$ takes as the notion of &ldquo;violation.&rdquo;</p>
+<h4 id="451-semantic-loss-optimizing-the-total-probability-mass-of-satisfying-assignments">4.5.1 Semantic Loss: Optimizing the Total Probability Mass of Satisfying Assignments</h4>
+<p>In the standard propositional multilabel setting, if the output dimension is $m$ and the network produces an independent Bernoulli probability vector $p=(p_1,\dots,p_m)$, then Semantic Loss is commonly written as
+$$
+\Psi_\phi^{\text{SL}}(p)
+=
+-\log
+\sum_{y\models\phi}
+\prod_{i=1}^m p_i^{y_i}(1-p_i)^{1-y_i}.
+$$</p>
+<p>The plain-language explanation is:</p>
+<ul>
+<li>first enumerate all Boolean worlds satisfying $\phi$;</li>
+<li>sum their total probability mass under the current model;</li>
+<li>then take the negative logarithm of that mass as the violation cost.</li>
+</ul>
+<p>From the optimization perspective, it does not locally correct one rule; it redistributes total probability mass between valid worlds and invalid worlds.</p>
+<p>This yields two strict consequences:</p>
+<ol>
+<li>As soon as one constraint involves many Boolean variables, the gradient becomes globally coupled.</li>
+<li>The semantics are exact, but the computational burden is typically shifted to logical compilation, WMC, or equivalent counting structures.</li>
+</ol>
+<h4 id="452-dl2-optimizing-the-violation-defined-by-a-continuous-surrogate">4.5.2 DL2: Optimizing the Violation Defined by a Continuous Surrogate</h4>
+<p>The unified abstraction of DL2 can be written as
+$$
+\Psi_\phi^{\text{DL2}}(x,\theta)
+=
+\widetilde{\mathrm{viol}}_\phi\big(f_\theta(x)\big),
+$$
+where $\widetilde{\mathrm{viol}}_\phi$ is built recursively from atomic comparisons, logical connectives, and quantifier structure.</p>
+<p>The meaning of this expression is:</p>
+<ul>
+<li>the logical formula does not enter training as &ldquo;total probability mass of satisfying worlds&rdquo;;</li>
+<li>it is first translated into a continuous surrogate;</li>
+<li>what is finally optimized is the numerical geometry of the surrogate, not the original logical semantics itself.</li>
+</ul>
+<p>From the optimization perspective, it is closer to &ldquo;continuous violation regression.&rdquo;</p>
+<p>This brings three differences:</p>
+<ol>
+<li>the gradient is more local and is usually dominated by the atom with the strongest current violation;</li>
+<li>differentiability is easier to obtain, but only at the surrogate level;</li>
+<li>the shape of the surrogate directly determines flat regions, scale sensitivity, and gradient direction.</li>
+</ol>
+<h4 id="running-example-the-same-rule-produces-two-completely-different-gradient-geometries-along-the-loss-route">Running Example: The Same Rule Produces Two Completely Different Gradient Geometries Along the Loss Route</h4>
+<p>For the rule $\phi_{ba}: Y_b\Rightarrow Y_a$ used in this document, if we parameterize the two labels by independent Bernoulli variables $u,v$, then Semantic Loss becomes
+$$
+\Psi_{\phi_{ba}}^{\mathrm{SL}}(u,v)
+=
+-\log(1-u+uv).
+$$</p>
+<p>Differentiating gives
+$$
+\frac{\partial \Psi_{\phi_{ba}}^{\mathrm{SL}}}{\partial u}
+=
+\frac{1-v}{1-u+uv},
+\qquad
+\frac{\partial \Psi_{\phi_{ba}}^{\mathrm{SL}}}{\partial v}
+=
+-\frac{u}{1-u+uv}.
+$$</p>
+<p>The key point here is:</p>
+<ul>
+<li>increasing $u$ raises the potential mass of &ldquo;bird but not animal&rdquo;;</li>
+<li>increasing $v$ pulls mass back toward satisfying worlds;</li>
+<li>the two gradients are coupled because Semantic Loss optimizes satisfying mass.</li>
+</ul>
+<p>If we switch to the DL2 surrogate, then
+$$
+\Psi_{\phi_{ba}}^{\mathrm{DL2}}(u,v)=\max\{u-v,0\}.
+$$</p>
+<p>Its gradient is piecewise:
+$$
+\nabla \Psi_{\phi_{ba}}^{\mathrm{DL2}}(u,v)
+=
+\begin{cases}
+(1,-1), & u>v,\\
+(0,0), & u<v.
+\end{cases}
+$$</p>
+<p>Therefore, even within the loss route, the same rule splits into two completely different numerical objects:</p>
+<ul>
+<li>Semantic Loss adjusts the total probability mass of satisfying worlds;</li>
+<li>DL2 adjusts the current magnitude of violation.</li>
+</ul>
+<h4 id="a-strict-comparison-table">A Strict Comparison Table</h4>
+<table>
+<thead>
+<tr>
+<th>dimension</th>
+<th>Semantic Loss</th>
+<th>DL2</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>how the constraint enters</td>
+<td>exact semantic probability mass</td>
+<td>surrogate violation magnitude</td>
+</tr>
+<tr>
+<td>directly optimized object</td>
+<td>total probability of satisfying assignments</td>
+<td>continuous atomic comparisons and their compositions</td>
+</tr>
+<tr>
+<td>gradient structure</td>
+<td>globally coupled</td>
+<td>local, piecewise, design-dependent</td>
+</tr>
+<tr>
+<td>source of flat regions</td>
+<td>valid mass becomes extremely small or the compilation structure becomes too rigid</td>
+<td>saturation regimes of <code>max/min/hinge</code></td>
+</tr>
+<tr>
+<td>main cost</td>
+<td>logical compilation / WMC</td>
+<td>surrogate design and numerical scaling</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h3 id="46-constraint-entering-the-feasible-set-this-is-a-bilevel-problem-not-an-ordinary-penalty">4.6 Constraint Entering the Feasible Set: This Is a Bilevel Problem, Not an Ordinary Penalty</h3>
+<h4 id="intuition_3">Intuition</h4>
+<p>When the constraint describes not &ldquo;which output is better&rdquo; but &ldquo;which solutions are allowed to be searched at all,&rdquo; writing it only as a penalty misses the nature of the problem.</p>
+<h4 id="mathematical-mechanism_6">Mathematical Mechanism</h4>
+<p>In DL2-like methods, one often encounters an inner problem of the form
+$$
+z^\star(x,\theta)
+=
+\arg\min_{z\in\mathcal C_\phi(x,\theta)}
+L_{\text{viol}}(x,z,\theta),
+$$
+after which the outer level uses $z^\star$ to update $\theta$.</p>
+<p>The plain-language explanation is:</p>
+<ul>
+<li>$\mathcal C_\phi$ first defines the set within which search is allowed;</li>
+<li>the optimizer does not wander over the whole space, but searches inside the feasible set for the worst point, hardest point, or most relevant point;</li>
+<li>whether the outer training is correct depends on whether the inner search is sufficient.</li>
+</ul>
+<h4 id="optimization-meaning_8">Optimization Meaning</h4>
+<p>This is crucially different from Hu 2016:</p>
+<ul>
+<li>the inner variable in Hu 2016 is a posterior distribution $q$;</li>
+<li>in feasible-set methods, the inner variable is often an input perturbation, query variable, or auxiliary state $z$.</li>
+</ul>
+<p>Therefore, although both look like two-level procedures, their optimization meanings are completely different:</p>
+<ul>
+<li>in Hu 2016, the difficulty is the moving teacher;</li>
+<li>in feasible-set methods, the difficulty is the biased outer update caused by the approximate inner solution $z^\star$.</li>
+</ul>
+<p>If the inner problem is solved only approximately, then the outer level receives not an exact hypergradient, but a biased update that depends on solver quality.</p>
+<h4 id="running-example-the-feasible-set-route-directly-forbids-math_inline_416">Running Example: The Feasible-Set Route Directly Forbids $u>v$</h4>
+<p>For the same rule, the feasible-set version is written most directly as
+$$
+\mathcal C_{\phi_{ba}}=\{(u,v)\in[0,1]^2:\ u\le v\}.
+$$</p>
+<p>The meaning of this expression is very direct:</p>
+<ul>
+<li>the posterior route allows violating points to exist, but suppresses their probability;</li>
+<li>the loss route allows violating points to exist, but raises their cost;</li>
+<li>the feasible-set route directly excludes all points with $u>v$ from the search domain.</li>
+</ul>
+<p>In this example, the difference among the three routes can be compressed into:</p>
+<table>
+<thead>
+<tr>
+<th>route</th>
+<th>how violating worlds are handled</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>posterior route</td>
+<td>violating worlds may exist, but their probability is lowered</td>
+</tr>
+<tr>
+<td>loss route</td>
+<td>violating worlds may exist, but their loss is increased</td>
+</tr>
+<tr>
+<td>feasible-set route</td>
+<td>violating worlds are not allowed to be searched at all</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h3 id="47-unified-conclusion-what-are-these-three-families-actually-optimizing">4.7 Unified Conclusion: What Are These Three Families Actually Optimizing?</h3>
+<p>Compressing the previous subsections yields a stricter comparison table.</p>
+<table>
+<thead>
+<tr>
+<th>method family</th>
+<th>where the constraint enters</th>
+<th>what is actually optimized</th>
+<th>does it differentiate end-to-end through logic?</th>
+<th>main source of nonsmoothness</th>
+<th>dominant risk</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Hu et al. 2016</td>
+<td>posterior</td>
+<td>alternating optimization of $q$ and $\theta$</td>
+<td>usually no; the student step freezes $q_t^\star$</td>
+<td>soft-logic kinks, sharp projections, approximate inference</td>
+<td>online teacher drift, unstable fixed points</td>
+</tr>
+<tr>
+<td>Semantic Loss</td>
+<td>loss</td>
+<td>single-level $\theta$</td>
+<td>yes, but only when the semantic objective is computable</td>
+<td>logical compilation structure and concentration of probability mass</td>
+<td>global coupling, scalability</td>
+</tr>
+<tr>
+<td>DL2-loss</td>
+<td>loss</td>
+<td>single-level $\theta$</td>
+<td>yes, but only through the surrogate</td>
+<td>piecewise boundaries of the surrogate</td>
+<td>flat regions, scale dependence</td>
+</tr>
+<tr>
+<td>DL2-feasible-set</td>
+<td>feasible set</td>
+<td>inner $z$, outer $\theta$</td>
+<td>depends on the inner solver and approximation strategy</td>
+<td>switching of inner search and constraint boundaries</td>
+<td>bilevel bias, solver cost</td>
+</tr>
+</tbody>
+</table>
+<p>The most important compressed judgment here is:</p>
+<ul>
+<li>Hu 2016 does not &ldquo;turn the rule directly into a loss&rdquo;; it first turns it into a projector.</li>
+<li>Semantic Loss is not soft logic; it is exact semantics on satisfying mass.</li>
+<li>The core of DL2 lies not in the word &ldquo;logic,&rdquo; but in the numerical geometry of its surrogate or feasible set.</li>
+</ul>
+<hr>
+<h2 id="5-limitations-and-research-extensions">5. Limitations and Research Extensions</h2>
+<h3 id="51-first-write-the-failure-chain-as-an-operator-diagram">5.1 First Write the Failure Chain as an Operator Diagram</h3>
+<p>If one merely lists &ldquo;what the problems are,&rdquo; the analysis stays at the empirical level. A more rigorous approach is to write the Hu 2016 training process as a failure chain.</p>
+<h4 id="current-mechanism-map_1">Current Mechanism Map</h4>
+<table>
+<thead>
+<tr>
+<th>Stage</th>
+<th>Object</th>
+<th>Position in the failure analysis</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>rule set $\mathcal R$</td>
+<td>enters the numerical system after grounding and continuous relaxation</td>
+</tr>
+<tr>
+<td>2</td>
+<td>soft-truth scores $r_{lg}(X,Y)$</td>
+<td>turn rule satisfaction into a computable quantity</td>
+</tr>
+<tr>
+<td>3</td>
+<td>rule energy $E_{\mathcal R}(X,Y)$</td>
+<td>defines the cost scale of violating the constraint</td>
+</tr>
+<tr>
+<td>4</td>
+<td>teacher distribution $q_t^\star=\mathcal P_{\mathcal R}(p_{\theta_t})$</td>
+<td>forms the temporary supervision after rule projection</td>
+</tr>
+<tr>
+<td>5</td>
+<td>mixed target $\widetilde y_t=(1-\pi_t)y+\pi_t q_t^\star$</td>
+<td>injects the teacher signal into the student update</td>
+</tr>
+<tr>
+<td>6</td>
+<td>updated student distribution $p_{\theta_{t+1}}$</td>
+<td>becomes the input to the next projection step</td>
+</tr>
+</tbody>
+</table>
+<p>Failure interfaces:
+- A: whether the logic has been relaxed too hard or too flat;
+- B: whether the projector is too sensitive to its input distribution;
+- C: whether the distillation target lies outside the student&rsquo;s function class;
+- D: whether the rule strength matches the training stage.</p>
+<p>If one denotes one outer iteration by the operator $T$, then
+$$
+\theta_{t+1}=T(\theta_t;\mathcal D,\mathcal R).
+$$</p>
+<p>All the later limitations correspond, in essence, to some local property of this operator going wrong: instability, oversensitivity, excessive cost, non-expressibility, or non-approximability.</p>
+<h4 id="running-example-how-these-failures-appear-in-math_inline_432">Running Example: How These Failures Appear in $bird \Rightarrow animal$</h4>
+<p>If we plug the operator diagram back into the running example of this document, the landing points of the later problems in Section 5 become clearer:</p>
+<table>
+<thead>
+<tr>
+<th>mechanism problem</th>
+<th>direct manifestation in this example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>projector too weak</td>
+<td>the probability of $(1,0)$ stays too high, so the rule scarcely enters the teacher distribution</td>
+</tr>
+<tr>
+<td>projector too hard</td>
+<td>$q^\star(1,0\mid x)$ is almost cut to zero, so the student faces a low-entropy target too early</td>
+</tr>
+<tr>
+<td>$\lambda$ oversensitivity</td>
+<td>a tiny change in weight moves the mass of $(1,0)$ from &ldquo;clearly present&rdquo; to &ldquo;almost gone&rdquo;</td>
+</tr>
+<tr>
+<td>teacher-student gap</td>
+<td>the teacher almost never outputs $u>v$, but the student may still output $u>v$ at test time</td>
+</tr>
+<tr>
+<td>surrogate / feasible-set difference</td>
+<td>one penalizes the case $u>v$, while the other does not allow $u>v$ to be searched at all</td>
+</tr>
+</tbody>
+</table>
+<p>The point of this table is not to repeat later text, but to pin the abstract failure modes back onto the same rule first.</p>
+<hr>
+<h3 id="52-limitation-analysis-at-the-mechanism-level">5.2 Limitation Analysis at the Mechanism Level</h3>
+<p>Each limitation below is expanded at the same level of analysis:</p>
+<ol>
+<li>phenomenon: what one observes in experiments;</li>
+<li>mechanism chain: at which stage of the pipeline the problem is amplified;</li>
+<li>mathematical reason: why it happens;</li>
+<li>consequence: what it ultimately affects.</li>
+</ol>
+<h4 id="521-optimization-instability-the-problem-is-not-sgd-but-whether-the-outer-operator-is-contractive">5.2.1 Optimization Instability: The Problem Is Not SGD, but Whether the Outer Operator Is Contractive</h4>
+<h5 id="phenomenon">Phenomenon</h5>
+<p>Typical observations include:</p>
+<ul>
+<li>in early training, the rule effect swings between too strong and too weak;</li>
+<li>teacher quality fluctuates with the student;</li>
+<li>later the process may settle into a state that is locally self-consistent but not necessarily optimal.</li>
+</ul>
+<h5 id="mechanism-chain">Mechanism Chain</h5>
+<table>
+<thead>
+<tr>
+<th>stage of perturbation propagation</th>
+<th>changing object</th>
+<th>mechanism meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>$\delta\theta_t$</td>
+<td>parameter perturbation</td>
+</tr>
+<tr>
+<td>2</td>
+<td>$\delta p_{\theta_t}$</td>
+<td>the student distribution changes</td>
+</tr>
+<tr>
+<td>3</td>
+<td>$\delta q_t^\star$</td>
+<td>the projector amplifies or attenuates this change</td>
+</tr>
+<tr>
+<td>4</td>
+<td>$\delta\theta_{t+1}$</td>
+<td>after distillation updating, the perturbation returns to the parameter level</td>
+</tr>
+</tbody>
+</table>
+<h5 id="mathematical-reason">Mathematical Reason</h5>
+<p>If one views a training round as the operator $T$, then local stability typically requires at least
+$$
+\rho\!\left(J_T(\theta^\star)\right)<1,
+$$
+where $\rho(\cdot)$ is the spectral radius and $J_T$ is the Jacobian of the operator.</p>
+<p>The plain-language meaning is: one perturbation should not be amplified in the next round.</p>
+<p>Hu 2016 does not guarantee this automatically, because:</p>
+<ol>
+<li>the projector $P_{\mathcal R}$ reweights $p_{\theta_t}$ into a sharper $q_t^\star$;</li>
+<li>the student update then chases this sharper target in return;</li>
+<li>once the two steps are chained together, the outer operator need not be a contraction.</li>
+</ol>
+<p>Especially when the rules cause the entropy of $q_t^\star$ to fall rapidly, a small distribution perturbation may switch the set of optimal states and make the next-round target jump.</p>
+<h5 id="consequence">Consequence</h5>
+<ul>
+<li>lack of strong convergence guarantees;</li>
+<li>an erroneous teacher can be distilled repeatedly;</li>
+<li>when data and rules are mildly inconsistent, oscillation, premature convergence, or amplification of rule bias can easily occur.</li>
+</ul>
+<h5 id="one-sentence-judgment">One-Sentence Judgment</h5>
+<p>The instability here is operator-level instability, not ordinary mini-batch noise.</p>
+<hr>
+<h4 id="522-sensitivity-to-the-rule-weight-math_inline_452-it-changes-exponential-reweighting-not-a-linear-penalty">5.2.2 Sensitivity to the Rule Weight $\lambda$: It Changes Exponential Reweighting, Not a Linear Penalty</h4>
+<h5 id="phenomenon_1">Phenomenon</h5>
+<p>In practice, the two most typical failures are:</p>
+<ul>
+<li>the rule has almost no effect;</li>
+<li>the rule overwhelms the data, so the teacher becomes too hard and the student follows the bias.</li>
+</ul>
+<h5 id="mechanism-chain_1">Mechanism Chain</h5>
+<table>
+<thead>
+<tr>
+<th>point where the change starts</th>
+<th>intermediate effect</th>
+<th>final impact</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>changing $\lambda_l$ or $C$</td>
+<td>changes the relative scale of $E_{\mathcal R}(X,Y)$</td>
+<td>changes the entropy and mass allocation of $q^\star$</td>
+</tr>
+<tr>
+<td>changing the contrast of exponential reweighting</td>
+<td>changes the geometry of the teacher</td>
+<td>then changes the student target $\widetilde y_t$</td>
+</tr>
+</tbody>
+</table>
+<h5 id="mathematical-reason_1">Mathematical Reason</h5>
+<p>Because
+$$
+q^\star(Y\mid X)\propto p_\theta(Y\mid X)\exp\big(-E_{\mathcal R}(X,Y)\big),
+$$
+the rule weight enters the teacher distribution through exponential reweighting rather than linear addition.</p>
+<p>For a given rule $R_l$, one may write
+$$
+\frac{\partial \log q^\star(Y\mid X)}{\partial \lambda_l}
+=
+-C\sum_{g=1}^{G_l}\big(1-r_{lg}(X,Y)\big)
+\,+\,
+C\,\mathbb E_{q^\star}\!\left[\sum_{g=1}^{G_l}\big(1-r_{lg}(X,Y)\big)\right].
+$$</p>
+<p>The meaning of this expression is:</p>
+<ul>
+<li>if a state $Y$ violates rule $R_l$ more than the current teacher-average violation, then its log probability will be further pushed down;</li>
+<li>if it violates the rule less than the average, then its relative weight will be raised.</li>
+</ul>
+<p>Now recall the student target
+$$
+\widetilde y_t=(1-\pi_t)y+\pi_t q_t^\star,
+$$
+and we see that $\pi_t$ directly transmits this teacher-side sensitivity to the student.</p>
+<p>Therefore, &ldquo;how strong the rule is&rdquo; is actually a two-level coupling:</p>
+<p>$$
+\text{effective rule strength}
+=
+\text{teacher-side exponential reweighting}
+\times
+\text{student-side imitation weight}.
+$$</p>
+<h5 id="consequence_1">Consequence</h5>
+<ul>
+<li>hyperparameters are no longer smooth or easily transferable;</li>
+<li>with slightly noisy rules, the optimal weight may shift dramatically;</li>
+<li>the same $\lambda_l$ may behave completely differently at different entropy levels of the model.</li>
+</ul>
+<h5 id="one-sentence-judgment_1">One-Sentence Judgment</h5>
+<p>The essence of $\lambda$ sensitivity is not &ldquo;one more hyperparameter,&rdquo; but that the weight changes the posterior geometry through an exponential mechanism.</p>
+<hr>
+<h4 id="523-scalability-limitation-what-really-explodes-is-the-state-space-and-dependency-structure">5.2.3 Scalability Limitation: What Really Explodes Is the State Space and Dependency Structure</h4>
+<h5 id="phenomenon_2">Phenomenon</h5>
+<p>As soon as the rules become complex, training cost deteriorates significantly, especially in:</p>
+<ul>
+<li>multilabel outputs;</li>
+<li>sequence or structured prediction;</li>
+<li>higher-order rules;</li>
+<li>cross-sample or cross-time dependency rules.</li>
+</ul>
+<h5 id="mechanism-chain_2">Mechanism Chain</h5>
+<table>
+<thead>
+<tr>
+<th>source of complexity</th>
+<th>intermediate consequence</th>
+<th>final result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>more rules / more groundings / stronger coupling</td>
+<td>evaluating $E_{\mathcal R}(X,Y)$ becomes more expensive</td>
+<td>exact computation of $Z(X)$ becomes harder</td>
+</tr>
+<tr>
+<td>normalization becomes harder</td>
+<td>$q^\star$ depends more on approximate inference</td>
+<td>both training cost and bias increase</td>
+</tr>
+</tbody>
+</table>
+<h5 id="mathematical-reason_2">Mathematical Reason</h5>
+<p>The normalization term of exact projection is
+$$
+Z(X)=\sum_{Y\in\mathcal Y} p_\theta(Y\mid X)\exp\big(-E_{\mathcal R}(X,Y)\big).
+$$</p>
+<p>If the total number of groundings is
+$$
+G=\sum_{l=1}^L G_l,
+$$
+then under the most naive exact enumeration, the projection cost per input $X$ is at least
+$$
+\mathcal O(|\mathcal Y|\,G).
+$$</p>
+<p>The key point of this complexity estimate is not the constant factor, but the two exponential sources:</p>
+<ol>
+<li>under structured outputs, $|\mathcal Y|$ itself may already be exponential;</li>
+<li>once the rules couple output variables that were previously decomposable, the factorization structure of $q^\star$ is destroyed.</li>
+</ol>
+<p>That is, even if the original network $p_\theta$ is label-wise independent, after multiplication by $\exp(-E_{\mathcal R})$, the new teacher distribution may no longer preserve this independence structure.</p>
+<h5 id="consequence_2">Consequence</h5>
+<ul>
+<li>training is upgraded from &ldquo;adding a rule bias&rdquo; into &ldquo;solving a structured inference problem&rdquo;;</li>
+<li>one must rely on sampling, approximate search, or heuristic decompositions;</li>
+<li>final performance starts being significantly affected by inference error, not merely estimation error.</li>
+</ul>
+<h5 id="one-sentence-judgment_2">One-Sentence Judgment</h5>
+<p>The scalability bottleneck of LogicNet is not network size itself, but whether the rules destroy the decomposable structure of the output distribution.</p>
+<hr>
+<h4 id="524-limitation-of-expressivity-what-can-enter-optimization-is-logic-that-has-passed-through-both-relaxation-and-inference-filters">5.2.4 Limitation of Expressivity: What Can Enter Optimization Is Logic That Has Passed Through Both Relaxation and Inference Filters</h4>
+<h5 id="phenomenon_3">Phenomenon</h5>
+<p>The method seems, in wording, to support first-order logic rules, but in practice the rules that are stably usable are often only:</p>
+<ul>
+<li>templated and enumerable rules;</li>
+<li>rules that can be easily grounded;</li>
+<li>rules that can be mapped into soft truth while still allowing inference.</li>
+</ul>
+<h5 id="mechanism-chain_3">Mechanism Chain</h5>
+<table>
+<thead>
+<tr>
+<th>stage</th>
+<th>object</th>
+<th>explanation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>original logical formula $\phi$</td>
+<td>the starting point is the logic expression itself</td>
+</tr>
+<tr>
+<td>2</td>
+<td>grounded instantiated formulas</td>
+<td>the rule is first expanded into computable objects</td>
+</tr>
+<tr>
+<td>3</td>
+<td>$r_\phi(X,Y)$</td>
+<td>then a soft relaxation is applied</td>
+</tr>
+<tr>
+<td>4</td>
+<td>$E_\phi(X,Y)$</td>
+<td>rule energy is constructed</td>
+</tr>
+<tr>
+<td>5</td>
+<td>$q_\phi^\star$</td>
+<td>it finally enters posterior projection or approximate inference</td>
+</tr>
+</tbody>
+</table>
+<h5 id="mathematical-reason_3">Mathematical Reason</h5>
+<p>We may write the truly admissible family of rules as
+$$
+\Phi_{\text{adm}}
+=
+\Big\{
+\phi:
+\text{finite grounding},
+\ r_\phi \text{ constructible},
+\ q_\phi^\star \text{ inferable or approximable}
+\Big\}.
+$$</p>
+<p>This definition expresses three thresholds:</p>
+<ol>
+<li>it must be groundable syntactically;</li>
+<li>it must be relaxable semantically;</li>
+<li>it must be inferable computationally.</li>
+</ol>
+<p>More importantly, semantic equivalence in classical logic is generally not preserved after continuous relaxation. That is, even if
+$$
+\phi \equiv \psi
+$$
+holds under Boolean semantics, it does not imply
+$$
+r_\phi(X,Y)=r_\psi(X,Y)
+\quad\text{or}\quad
+E_\phi(X,Y)=E_\psi(X,Y).
+$$</p>
+<p>This reveals an important but often overlooked fact:</p>
+<ul>
+<li>once we enter soft logic, optimization results depend on the surface form of the formula;</li>
+<li>the &ldquo;syntactic form&rdquo; of logic may no longer be just a matter of writing style, but may change the training geometry itself.</li>
+</ul>
+<h5 id="consequence_3">Consequence</h5>
+<ul>
+<li>complex quantifiers, counting logic, and combinational constraints are difficult to express naturally;</li>
+<li>formula rewrites from classical logic are no longer guaranteed to remain equivalent;</li>
+<li>aggregate operations such as mean-style conjunction can further weaken the hard semantics of &ldquo;must all hold simultaneously.&rdquo;</li>
+</ul>
+<h5 id="one-sentence-judgment_3">One-Sentence Judgment</h5>
+<p>LogicNet is not handling &ldquo;general logic&rdquo;; it is handling a class of logical templates that are enumerable, relaxable, and inferable.</p>
+<hr>
+<h4 id="525-the-teacher-student-gap-the-root-of-distillation-failure-is-often-function-class-non-containment">5.2.5 The Teacher-Student Gap: The Root of Distillation Failure Is Often Function-Class Non-Containment</h4>
+<h5 id="phenomenon_4">Phenomenon</h5>
+<p>Typical manifestations include:</p>
+<ul>
+<li>the teacher $q^\star$ satisfies rules much more strongly than the student $p_\theta$;</li>
+<li>during training the teacher looks good, but if only the student is kept at test time, the gain shrinks;</li>
+<li>the more complex the rules, the more distillation resembles a softened approximation rather than structural preservation.</li>
+</ul>
+<h5 id="mechanism-chain_4">Mechanism Chain</h5>
+<table>
+<thead>
+<tr>
+<th>stage</th>
+<th>object</th>
+<th>meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>$p_\theta$</td>
+<td>original student distribution</td>
+</tr>
+<tr>
+<td>2</td>
+<td>projection operator $P_{\mathcal R}$</td>
+<td>injects rule-corrected structure</td>
+</tr>
+<tr>
+<td>3</td>
+<td>$q^\star$</td>
+<td>yields the rule teacher</td>
+</tr>
+<tr>
+<td>4</td>
+<td>best student in model class $\mathcal P$</td>
+<td>the best student reachable after distillation</td>
+</tr>
+</tbody>
+</table>
+<h5 id="mathematical-reason_4">Mathematical Reason</h5>
+<p>Let the student function class be
+$$
+\mathcal P=\{p_\theta:\theta\in\Theta\}.
+$$</p>
+<p>Because $q^\star=\mathcal P_{\mathcal R}(p_\theta)$ contains explicit rule-projection structure, in general one cannot guarantee $q^\star\in\mathcal P$. Therefore there exists an approximation lower bound
+$$
+\varepsilon_{\text{app}}(x)
+=
+\inf_{p\in\mathcal P}
+\mathrm{KL}\big(q^\star(\cdot\mid x)\,\|\,p(\cdot\mid x)\big).
+$$</p>
+<p>If $\varepsilon_{\text{app}}(x)>0$, then no matter how thoroughly distillation is performed, the student cannot fully learn the teacher back.</p>
+<p>The plain-language meaning is:</p>
+<ul>
+<li>teacher capability = original network expressivity + structure introduced by the projector;</li>
+<li>student capability = original network expressivity alone;</li>
+<li>when the projector introduces structure outside the student&rsquo;s function class, distillation contains irreducible approximation error.</li>
+</ul>
+<h5 id="consequence_4">Consequence</h5>
+<ul>
+<li>if the teacher is used only during training, part of the rule gain remains in the training phase and cannot be fully transferred into deployment;</li>
+<li>the more higher-order and global the rules are, the larger this gap tends to be;</li>
+<li>in the end, what the student learns resembles the projected shadow of the rule influence rather than the rule structure itself.</li>
+</ul>
+<h5 id="one-sentence-judgment_4">One-Sentence Judgment</h5>
+<p>The essence of the teacher-student gap is not &ldquo;insufficient distillation,&rdquo; but that the distribution generated by the projector typically does not belong to the student&rsquo;s function class.</p>
+<hr>
+<h3 id="53-summary-table-of-limitations-at-which-interface-does-the-problem-get-stuck">5.3 Summary Table of Limitations: At Which Interface Does the Problem Get Stuck?</h3>
+<table>
+<thead>
+<tr>
+<th>limitation</th>
+<th>failure interface</th>
+<th>formal symptom</th>
+<th>direct consequence</th>
+<th>primary direction of improvement</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>optimization instability</td>
+<td>projector + distillation</td>
+<td>outer operator $T$ is non-contractive</td>
+<td>oscillation, prematurity, self-consistent bias</td>
+<td>geometric projection, stabilized outer loop</td>
+</tr>
+<tr>
+<td>sensitivity to $\lambda$</td>
+<td>energy scaling</td>
+<td>posterior exponential reweighting is oversensitive</td>
+<td>hard tuning, weak transferability</td>
+<td>adaptive $\lambda$, local confidence</td>
+</tr>
+<tr>
+<td>scalability limitation</td>
+<td>inference</td>
+<td>computation of $Z(X)$ is difficult and structural coupling increases</td>
+<td>slower training and larger approximation bias</td>
+<td>amortized projector, decomposable approximation</td>
+</tr>
+<tr>
+<td>expressivity limitation</td>
+<td>grounding + relaxation</td>
+<td>$\phi$ must be simultaneously enumerable, relaxable, and inferable</td>
+<td>general logic is difficult to realize</td>
+<td>granular rule objects, alternative representations</td>
+</tr>
+<tr>
+<td>teacher-student gap</td>
+<td>model-class mismatch</td>
+<td>$\varepsilon_{\text{app}}>0$</td>
+<td>deployment gains shrink</td>
+<td>feature-level rules, retaining the projector</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h3 id="54-research-extensions-not-generic-future-work-but-specific-operator-level-modifications">5.4 Research Extensions: Not Generic Future Work, but Specific Operator-Level Modifications</h3>
+<p>The extensions here are not phrased as &ldquo;things that may be improved later,&rdquo; but answer three concrete questions:</p>
+<ol>
+<li>Which operator or interface is being modified?</li>
+<li>Why is that position worth modifying?</li>
+<li>After the modification, which failure chain is specifically alleviated?</li>
+</ol>
+<h4 id="541-from-kl-projection-to-geometric-projection-make-the-projector-a-more-stable-constraint-map">5.4.1 From KL Projection to Geometric Projection: Make the Projector a More Stable Constraint Map</h4>
+<h5 id="motivation">Motivation</h5>
+<p>The current projector has the basic form
+$$
+q^\star
+=
+\arg\min_q
+\mathrm{KL}(q\|p_\theta)+\Omega_\phi(q).
+$$</p>
+<p>It emphasizes &ldquo;do not move too far away from the original distribution,&rdquo; but it does not explicitly control the local geometry of the projector, so its stability is difficult to analyze directly.</p>
+<h5 id="mechanism-idea">Mechanism Idea</h5>
+<p>Write the rule-feasible set as $\mathcal M_\phi$, and consider a more explicit geometric projection:
+$$
+q^\star
+=
+\arg\min_q
+D(q,p_\theta)+\tau\,d(q,\mathcal M_\phi)^2,
+$$
+where $D$ may be KL, a Bregman distance, or a Wasserstein distance, and $d(q,\mathcal M_\phi)$ explicitly measures the distance to the rule manifold.</p>
+<p>The key point is not merely changing the name of the distance, but that:</p>
+<ul>
+<li>rule satisfaction is viewed as a geometric set rather than a pure penalty term;</li>
+<li>the normal and tangential behavior of the projector can be analyzed separately;</li>
+<li>one may have a chance to design an outer operator that is smoother and closer to a contraction.</li>
+</ul>
+<h5 id="expected-benefit">Expected Benefit</h5>
+<ul>
+<li>directly alleviate the outer instability in 5.2.1;</li>
+<li>make it easier to explain posterior collapse or over-sharp teachers;</li>
+<li>provide a geometric explanation of which changes are allowed by the rules and which are prohibited.</li>
+</ul>
+<h5 id="the-new-problem-it-solves">The New Problem It Solves</h5>
+<p>It mainly addresses the fact that the current KL projection only says &ldquo;how far from the original distribution,&rdquo; but not &ldquo;along which geometric direction to approach the rule-feasible set.&rdquo;</p>
+<hr>
+<h4 id="542-replace-global-uniform-rules-with-granular-rough-set-objects-localize-rule-confidence">5.4.2 Replace Global Uniform Rules with Granular / Rough-Set Objects: Localize Rule Confidence</h4>
+<h5 id="motivation_1">Motivation</h5>
+<p>The common problem behind 5.2.2 and 5.2.4 is that the original method assumes one rule holds in the same way for all samples and all local regions.</p>
+<p>But real knowledge is often local, boundary-dependent, and uncertain.</p>
+<h5 id="mechanism-idea_1">Mechanism Idea</h5>
+<p>Replace the global constant weight by a local granular object, for example
+$$
+\lambda_{lg}(x)\in[\underline\lambda_{lg}(x),\overline\lambda_{lg}(x)],
+$$
+and rewrite the soft truth into lower and upper approximations:
+$$
+\underline r_{lg}(X,Y)\le r_{lg}(X,Y)\le \overline r_{lg}(X,Y).
+$$</p>
+<p>Accordingly, the energy term is no longer a single number, but can be driven by a local confidence interval:
+$$
+E_{\mathcal R}(X,Y)
+=
+C\sum_{l,g}\lambda_{lg}(x)\big(1-r_{lg}(X,Y)\big).
+$$</p>
+<p>The key point here is:</p>
+<ul>
+<li>rules are no longer globally equally hard objects;</li>
+<li>the same rule may be strong in some regions, weak in others, or only preserved through upper/lower approximations;</li>
+<li>incorrect knowledge will not contaminate the entire training set with the same strength.</li>
+</ul>
+<h5 id="expected-benefit_1">Expected Benefit</h5>
+<ul>
+<li>alleviate sensitivity to a global $\lambda$;</li>
+<li>improve robustness on heterogeneous data;</li>
+<li>enlarge the class of expressible knowledge, from deterministic rules to fuzzy-boundary, locally valid knowledge granules.</li>
+</ul>
+<h5 id="the-new-problem-it-solves_1">The New Problem It Solves</h5>
+<p>It mainly addresses the fact that the original method treats knowledge as globally consistent truth, whereas in research scenarios knowledge is often more like a locally valid approximate structure.</p>
+<hr>
+<h4 id="543-push-rules-down-to-the-feature-level-directly-shrink-the-teacher-student-function-class-gap">5.4.3 Push Rules Down to the Feature Level: Directly Shrink the Teacher-Student Function-Class Gap</h4>
+<h5 id="motivation_2">Motivation</h5>
+<p>The core problem in 5.2.5 is not insufficient distillation, but that the student&rsquo;s function class does not contain the structure generated by the projector.</p>
+<p>If rules act only at the output end, this gap is hard to eliminate.</p>
+<h5 id="mechanism-idea_2">Mechanism Idea</h5>
+<p>Let the intermediate representation of the network be $h_\theta(x)$. In addition to output-level rules, introduce a representation-level constraint:
+$$
+L_{\text{feat-logic}}
+=
+\sum_l \rho_l\big(h_\theta(x),R_l\big),
+$$
+and optimize it jointly with the output-level rule term:
+$$
+\min_\theta
+L_{\text{task}}
+\,+\,
+\lambda_{\text{out}}L_{\text{out-logic}}
+\,+\,
+\lambda_{\text{feat}}L_{\text{feat-logic}}.
+$$</p>
+<p>The core meaning of this expression is:</p>
+<ul>
+<li>it does not require only that &ldquo;the final output is more rule-consistent&rdquo;;</li>
+<li>it also requires that the intermediate representation itself move toward a rule-friendly subspace;</li>
+<li>thus part of the structure introduced by the projector is absorbed into the student&rsquo;s own function class.</li>
+</ul>
+<h5 id="expected-benefit_2">Expected Benefit</h5>
+<ul>
+<li>directly alleviate the teacher-student gap;</li>
+<li>let rules influence representation learning instead of merely correcting the final output;</li>
+<li>connect naturally with feature selection, interpretable representations, and granular feature grouping.</li>
+</ul>
+<h5 id="the-new-problem-it-solves_2">The New Problem It Solves</h5>
+<p>It mainly addresses the fact that the current method applies rules too late, making it difficult to internalize rule structure into the student&rsquo;s own representation.</p>
+<hr>
+<h4 id="544-replace-fixed-rule-weights-by-adaptive-math_inline_496-dual-style-updates">5.4.4 Replace Fixed Rule Weights by Adaptive $\lambda$ / Dual-Style Updates</h4>
+<h5 id="motivation_3">Motivation</h5>
+<p>The problem in 5.2.2 shows that fixed $\lambda_l$, $C$, and $\pi_t$ implicitly assume that rule reliability and teacher quality remain unchanged throughout training, which is too strong from the optimization viewpoint.</p>
+<h5 id="mechanism-idea_3">Mechanism Idea</h5>
+<p>Instead of vaguely saying &ldquo;dynamic reweighting,&rdquo; a more concrete approach is to treat rule violation as a controlled constraint slack. Let the average violation of rule $l$ at outer iteration $t$ be
+$$
+v_{l,t}
+=
+1-\frac{1}{G_l}\sum_{g=1}^{G_l}\mathbb E_{q_t^\star}\big[r_{lg}(X,Y)\big].
+$$</p>
+<p>Then use a dual-ascent-style update:
+$$
+\lambda_{l,t+1}
+=
+\Big[\lambda_{l,t}+\eta_\lambda\big(v_{l,t}-\varepsilon_l\big)\Big]_+,
+$$
+where $\varepsilon_l$ is the allowed violation budget of that rule.</p>
+<p>The plain-language explanation is:</p>
+<ul>
+<li>if a rule is currently violated too much, automatically increase its constraint strength;</li>
+<li>if the rule is already stably satisfied or is clearly in conflict with data, do not mechanically keep its weight high.</li>
+</ul>
+<p>The same idea can also be applied to $\pi_t$: increase the imitation weight only when the teacher entropy is low enough and the teacher is stable enough.</p>
+<h5 id="expected-benefit_3">Expected Benefit</h5>
+<ul>
+<li>alleviate over-hard or over-soft behavior caused by globally fixed weights;</li>
+<li>reduce contamination of the student by early-stage noise;</li>
+<li>match the pace of rule injection to the stage of training.</li>
+</ul>
+<h5 id="the-new-problem-it-solves_3">The New Problem It Solves</h5>
+<p>It mainly addresses the fact that the rule strength in the original method is static, whereas the training process itself is dynamic.</p>
+<hr>
+<h4 id="545-amortized-teacher-inference-turn-the-expensive-projector-into-a-learnable-module">5.4.5 Amortized Teacher Inference: Turn the Expensive Projector into a Learnable Module</h4>
+<h5 id="motivation_4">Motivation</h5>
+<p>The bottleneck in 5.2.3 shows that once rules become complicated or the output space grows, explicitly constructing $q_t^\star$ at each iteration quickly becomes the dominant cost.</p>
+<h5 id="mechanism-idea_4">Mechanism Idea</h5>
+<p>Introduce an approximate projector $\hat q_\varphi$ that learns the mapping
+$$
+\hat q_\varphi(\cdot\mid x, p_\theta)
+\approx
+\mathcal P_{\mathcal R}\big(p_\theta(\cdot\mid x)\big),
+$$
+and train this approximation module using
+$$
+\min_\varphi
+\mathbb E_x\,
+\mathrm{KL}\Big(
+\mathcal P_{\mathcal R}(p_\theta(\cdot\mid x))
+\;\Big\|\;
+\hat q_\varphi(\cdot\mid x,p_\theta)
+\Big).
+$$</p>
+<p>This is not merely &ldquo;adding another network.&rdquo; It changes</p>
+<p>&ldquo;perform an online projection at every step&rdquo;</p>
+<p>into</p>
+<p>&ldquo;first learn the mapping behavior of the projector, then call it quickly through amortized approximation.&rdquo;</p>
+<h5 id="expected-benefit_4">Expected Benefit</h5>
+<ul>
+<li>reduce the cost of explicit projection;</li>
+<li>make it easier to inject complex rules into large-model training;</li>
+<li>if $\hat q_\varphi$ is retained at deployment time, it can also partly alleviate the teacher-student gap.</li>
+</ul>
+<h5 id="the-new-problem-it-solves_4">The New Problem It Solves</h5>
+<p>It mainly addresses the fact that once the method leaves the small-scale or decomposable-rule regime, it degrades from &ldquo;a regularization trick&rdquo; into &ldquo;an expensive structured inference system.&rdquo;</p>
+<hr>
+<h3 id="55-map-of-possible-improvement-directions">5.5 Map of Possible Improvement Directions</h3>
+<table>
+<thead>
+<tr>
+<th>current bottleneck</th>
+<th>corresponding improvement direction</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>logic relaxation too hard / too flat</td>
+<td>geometric projection, stable projection operators</td>
+</tr>
+<tr>
+<td>rule weights globally fixed</td>
+<td>adaptive $\lambda$ / dual-style updates</td>
+</tr>
+<tr>
+<td>rules act only on the output end</td>
+<td>feature-level regularization</td>
+</tr>
+<tr>
+<td>rule objects are overly treated as &ldquo;global truths&rdquo;</td>
+<td>granular / rough-set rule objects</td>
+</tr>
+<tr>
+<td>the projector is too expensive at every step</td>
+<td>amortized projector / learned correction layer</td>
+</tr>
+</tbody>
+</table>
+<p>The research route suggested by this map can be read as:</p>
+<ol>
+<li>first make the projector more stable;</li>
+<li>then make rule strength more adaptive;</li>
+<li>then push rules down from the output end to the representation layer;</li>
+<li>finally handle the computational scale under complex rules.</li>
+</ol>
+<hr>
+<h3 id="56-connection-to-my-own-research">5.6 Connection to My Own Research</h3>
+<h4 id="intuition_4">Intuition</h4>
+<p>For informed machine learning, the value of LogicNet is not that it reports an empirical gain on a text task, but that it turns the question of &ldquo;how prior knowledge enters a learning system&rdquo; into a clear optimization chain.</p>
+<h4 id="structural-understanding">Structural Understanding</h4>
+<p>This chain can be compressed as:</p>
+<p>external knowledge source
+$\to$ rule formalization
+$\to$ posterior projection
+$\to$ distill back into parameters.</p>
+<p>This corresponds exactly to the informed-ML taxonomy:</p>
+<p><code>knowledge source -&gt; representation -&gt; integration location</code></p>
+<p>where the integration location mainly lies in the learning algorithm, rather than in the model structure itself.</p>
+<h4 id="what-it-suggests-for-knowledge-guided-regularization">What It Suggests for Knowledge-Guided Regularization</h4>
+<p>The most valuable perspective to preserve from LogicNet is:</p>
+<blockquote>
+<p>Knowledge does not have to appear only as an $\Omega(\theta)$ term acting directly on parameters; it may also first appear as a geometric reshaping of the posterior.</p>
+</blockquote>
+<p>The key point is that knowledge-guided regularization may happen in:</p>
+<ul>
+<li>parameter space</li>
+<li>posterior space</li>
+<li>feature space</li>
+</ul>
+<p>and LogicNet emphasizes the posterior space.</p>
+<h4 id="relation-to-feature-selection">Relation to Feature Selection</h4>
+<p>If this idea is extended to feature selection, the most natural connection point is:</p>
+<ul>
+<li>which feature subspaces support a given rule;</li>
+<li>which features consistently lead to rule violations.</li>
+</ul>
+<p>This suggests a research direction of the form:</p>
+<p>feature subset
+$\to$ rule activation / violation
+$\to$ feature-importance reweighting.</p>
+<p>This makes it natural that:</p>
+<ul>
+<li>rough sets / granular computing can first perform local feature-granule partitioning;</li>
+<li>rule distillation can then provide an external bias for feature-retention priority.</li>
+</ul>
+<h4 id="a-final-judgment">A Final Judgment</h4>
+<p>Therefore, for my own research direction, LogicNet is more like an intermediate bridge.</p>
+<p>It still has not solved:</p>
+<ul>
+<li>precision of knowledge representation;</li>
+<li>rule uncertainty;</li>
+<li>large-scale structured inference.</li>
+</ul>
+<p>But it clearly demonstrates one point:</p>
+<blockquote>
+<p>Knowledge guidance does not have to rely on manually changing structure; it may also enter optimization through &ldquo;posterior shaping + distillation.&rdquo;</p>
+</blockquote>
+<p>This is mathematically compatible, rather than only superficially associated, with later interests such as:</p>
+<ul>
+<li>knowledge-guided regularization</li>
+<li>granular confidence</li>
+<li>feature selection</li>
+</ul>
+          </article>
+        </section>
+      </main>
+
+      <footer class="site-footer">
+        <p>Generated from <code>Knowledge/logic_net_notes_en.md</code>. Publish from main /docs.</p>
+      </footer>
+    </div>
+  </body>
+</html>

@@ -68,6 +68,10 @@
 <li class="toc-level-3"><a href="#03">0.3 仍未确认的同名条目</a></li>
 <li class="toc-level-3"><a href="#04">0.4 本文的默认约定</a></li>
 <li class="toc-level-3"><a href="#05">0.5 最小问题设定与记号</a></li>
+<li class="toc-level-3"><a href="#051">0.5.1 从训练集到闭式教师分布的总流程</a></li>
+<li class="toc-level-3"><a href="#052-running-example">0.5.2 一个统一的 running example</a></li>
+<li class="toc-level-3"><a href="#053">0.5.3 教师分布的数学定义与闭式解</a></li>
+<li class="toc-level-3"><a href="#054-bird-animal">0.5.4 对 bird =&gt; animal 的状态级特化与完整计算</a></li>
 <li class="toc-level-3"><a href="#06-running-example">0.6 贯穿全文的 running example</a></li>
 <li class="toc-level-2"><a href="#1-hu-et-al-2016">1. Hu et al. 2016 方法解析</a></li>
 <li class="toc-level-3"><a href="#11">1.1 论文核心目标</a></li>
@@ -75,7 +79,7 @@
 <li class="toc-level-2"><a href="#2-logic-net-icml-2019">2. Logic-Net (ICML 2019?) 占位（若提供论文再补充）</a></li>
 <li class="toc-level-3"><a href="#21">2.1 目前未确认的信息</a></li>
 <li class="toc-level-3"><a href="#22">2.2 当前写作边界</a></li>
-<li class="toc-level-2"><a href="#3">3. 机制对比（统一视角）</a></li>
+<li class="toc-level-2"><a href="#3_1">3. 机制对比（统一视角）</a></li>
 <li class="toc-level-3"><a href="#31">3.1 统一问题：约束究竟进入哪里</a></li>
 <li class="toc-level-3"><a href="#32">3.2 统一抽象形式</a></li>
 <li class="toc-level-3"><a href="#33-hu-et-al-2016">3.3 约束进入后验：Hu et al. 2016</a></li>
@@ -152,14 +156,293 @@ $$
 E_{\mathcal R}(X,Y)=C\sum_{l=1}^L\sum_{g=1}^{G_l}\lambda_l\big(1-r_{lg}(X,Y)\big),
 $$
 其中 $C>0$ 是规则违反的整体强度系数。</p>
+<h3 id="051">0.5.1 从训练集到闭式教师分布的总流程</h3>
+<p>这一小节只做一件事：把“从拿到训练集到算出闭式教师分布 $q^\star$”的主线整理成一条不回跳的链。后面所有公式和例子都按这条顺序展开。</p>
+<p>如果更偏好“像图一样”的展示，可以直接看下面这张图；下角标和上标已经直接画进图片里，不再依赖代码块渲染：</p>
+<p><img alt="从训练集到闭式教师分布的总流程图" src="../assets/knowledge/images/train_to_teacher_flow.png"></p>
+<p>如果只想记一句话，那么整条主线就是：
+$$
+(x_n,y_n)\in\mathcal D
+\Longrightarrow
+x:=x_n,\ y\in\mathcal Y,\ \mathcal R,\ C,\{\lambda_l\}
+\Longrightarrow
+p_\theta(y\mid x)
+\Longrightarrow
+r_{lg}(x,y)
+\Longrightarrow
+E_{\mathcal R}(x,y)
+\Longrightarrow
+w(y)
+\Longrightarrow
+Z(x)
+\Longrightarrow
+q^\star(y\mid x).
+$$</p>
+<p>这条主线里有三个最容易混淆、但其实最关键的点：</p>
+<ul>
+<li>闭式教师分布 $q^\star(\cdot\mid x)$ 是对固定输入 $x$ 定义的，不是一次性对整个训练集 $\mathcal D$ 直接求出来的。</li>
+<li>监督标签 $y_n$ 不直接进入闭式投影公式；它主要通过监督损失更新学生网络 $p_\theta$，再间接影响后续每一步生成的 $q^\star$。</li>
+<li>规则和学生分布真正汇合在
+$$
+w(y)=p_\theta(y\mid x)\exp\bigl(-E_{\mathcal R}(x,y)\bigr),
+$$
+也就是说：学生分布先给出“原始倾向”，规则能量再决定每个输出状态应被压低多少。</li>
+</ul>
+<h3 id="052-running-example">0.5.2 一个统一的 running example</h3>
+<p>为了避免后面反复切换不同数字，这里先固定一个贯穿本节的最小例子，后面的概念解释、状态级公式和闭式计算都统一使用它。</p>
+<ul>
+<li>任务：二标签 <code>bird/animal</code></li>
+<li>规则：<code>bird =&gt; animal</code></li>
+<li>输入：固定某个样本 $x$</li>
+<li>学生边缘输出：
+$$
+u=p_\theta(Y_b=1\mid x)=0.8,\qquad v=p_\theta(Y_a=1\mid x)=0.5
+$$</li>
+<li>与之对应的一组可选 logit：
+$$
+z_{\text{bird}}(x)=\operatorname{logit}(0.8)=\ln 4\approx 1.386,\qquad
+z_{\text{animal}}(x)=\operatorname{logit}(0.5)=0
+$$</li>
+<li>规则强度：暂取
+$$
+C=2,\qquad \lambda=1
+$$</li>
+</ul>
+<p>先只在“连续输出层面”看这几个局部概念：</p>
+<table>
+<thead>
+<tr>
+<th>概念</th>
+<th>公式</th>
+<th>数值</th>
+<th>解释</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>logit</td>
+<td>$z_{\text{bird}}(x),z_{\text{animal}}(x)$</td>
+<td>$\ln 4,0$</td>
+<td>网络输出的原始分数，还不是概率</td>
+</tr>
+<tr>
+<td>grounding</td>
+<td><code>bird(x) =&gt; animal(x)</code></td>
+<td>1 个 grounding</td>
+<td>抽象规则落到当前样本上的实例化</td>
+</tr>
+<tr>
+<td>软真值</td>
+<td>$r_{\phi_{ba}}(u,v)=\min\{1,1-u+v\}$</td>
+<td>$\min\{1,1-0.8+0.5\}=0.7$</td>
+<td>当前连续输出对规则的满足程度</td>
+</tr>
+<tr>
+<td>连续输出层面的局部规则能量</td>
+<td>$C\lambda(1-r_{\phi_{ba}}(u,v))$</td>
+<td>$2\times 1\times (1-0.7)=0.6$</td>
+<td>如果直接在连续输出上看，这条规则的违反代价</td>
+</tr>
+</tbody>
+</table>
+<p>这里要特别强调：上表里的 $r_{\phi_{ba}}(u,v)$ 和 $C\lambda(1-r_{\phi_{ba}}(u,v))$ 是直接在连续输出 $(u,v)$ 上定义的局部量；而后面教师分布里的 $E_{\mathcal R}(x,y)$ 是对每个具体候选输出状态 $y\in\mathcal Y$ 分别计算的状态级能量。这两者相关，但不是同一个层面的对象。</p>
+<h3 id="053">0.5.3 教师分布的数学定义与闭式解</h3>
 <p>Hu 2016 中由规则投影得到的教师分布统一记为
 $$
 q^\star(\cdot\mid X)=\mathcal P_{\mathcal R}\big(p_\theta(\cdot\mid X)\big).
 $$</p>
 <p>若讨论第 $t$ 轮训练，则写成 $q_t^\star$ 与 $p_{\theta_t}$。学生模仿教师的权重记为 $\pi_t\in[0,1]$。</p>
+<p>对固定输入 $x$，可以把教师分布看成输出空间 $\mathcal Y$ 上的一个概率分布
+$$
+q^\star(\cdot\mid x)\in \Delta(\mathcal Y)
+:=
+\left\{q:\mathcal Y\to[0,1]\ \middle|\ \sum_{y\in\mathcal Y}q(y)=1\right\}.
+$$</p>
+<p>它首先由下面的优化问题定义：
+$$
+q^\star(\cdot\mid x)
+=
+\arg\min_{q\in\Delta(\mathcal Y)}
+\left[
+\mathrm{KL}\bigl(q(\cdot\mid x)\,\|\,p_\theta(\cdot\mid x)\bigr)
++
+C\sum_{l,g}\lambda_l\Bigl(1-\mathbb E_q[r_{lg}(x,Y)]\Bigr)
+\right].
+$$</p>
+<p>其中两项各自代表：</p>
+<ol>
+<li>
+<p>贴近原始学生分布：
+$$
+\mathrm{KL}\bigl(q(\cdot\mid x)\,\|\,p_\theta(\cdot\mid x)\bigr)
+=
+\sum_{y\in\mathcal Y}q(y\mid x)\log\frac{q(y\mid x)}{p_\theta(y\mid x)}.
+$$
+它越小，表示教师分布 $q$ 越不偏离当前学生分布 $p_\theta$。</p>
+</li>
+<li>
+<p>提高规则平均满足度：
+$$
+\mathbb E_q[r_{lg}(x,Y)]
+=
+\sum_{y\in\mathcal Y}q(y\mid x)\,r_{lg}(x,y).
+$$
+因此
+$$
+1-\mathbb E_q[r_{lg}(x,Y)]
+$$
+就是该规则在分布 $q$ 下的平均违反度，而
+$$
+C\sum_{l,g}\lambda_l\Bigl(1-\mathbb E_q[r_{lg}(x,Y)]\Bigr)
+$$
+就是所有规则平均违反程度的加权总代价。</p>
+</li>
+</ol>
+<p>于是整个目标就是在两件事之间做折中：</p>
+<ul>
+<li>让 $q$ 不要离原始学生分布 $p_\theta$ 太远；</li>
+<li>同时让 $q$ 尽量把概率质量移向更满足规则的输出状态。</li>
+</ul>
+<p>该优化问题的闭式解为
+$$
+q^\star(y\mid x)
+=
+\frac{p_\theta(y\mid x)\exp\bigl(-E_{\mathcal R}(x,y)\bigr)}
+{Z(x)},
+\qquad y\in\mathcal Y,
+$$
+其中
+$$
+Z(x)=\sum_{y'\in\mathcal Y}p_\theta(y'\mid x)\exp\bigl(-E_{\mathcal R}(x,y')\bigr),
+$$
+以及
+$$
+E_{\mathcal R}(x,y)=C\sum_{l,g}\lambda_l\bigl(1-r_{lg}(x,y)\bigr).
+$$</p>
+<p>也就是说，$q^\star(\cdot\mid x)$ 不是一个单独的数，而是对每个 $y\in\mathcal Y$ 都按上式求出一个分量，再拼成整条分布。</p>
+<p>把目标中的期望项展开后，还可以更直接看出为什么会得到指数重加权形式。原目标等价于最小化
+$$
+\sum_{y\in\mathcal Y} q(y\mid x)\log\frac{q(y\mid x)}{p_\theta(y\mid x)}
+-\sum_{y\in\mathcal Y}q(y\mid x)\Bigl(C\sum_{l,g}\lambda_l r_{lg}(x,y)\Bigr),
+$$
+再加上归一化约束 $\sum_{y}q(y\mid x)=1$ 做拉格朗日优化，就会得到
+$$
+q^\star(y\mid x)\propto
+p_\theta(y\mid x)\exp\!\Bigl(C\sum_{l,g}\lambda_l r_{lg}(x,y)\Bigr),
+$$
+再利用
+$$
+E_{\mathcal R}(x,y)=C\sum_{l,g}\lambda_l(1-r_{lg}(x,y))
+$$
+便可等价改写为
+$$
+q^\star(y\mid x)\propto p_\theta(y\mid x)e^{-E_{\mathcal R}(x,y)}.
+$$</p>
+<h3 id="054-bird-animal">0.5.4 对 bird =&gt; animal 的状态级特化与完整计算</h3>
+<p>现在把 0.5.2 里固定的同一组数字真正代入闭式教师分布，得到一条 self-contained 的完整计算链。</p>
+<p>先固定输出空间
+$$
+\mathcal Y=\{(0,0),(0,1),(1,0),(1,1)\}.
+$$</p>
+<p>由于这里只有一条规则 <code>bird =&gt; animal</code>，而且只有一个 grounding，所以唯一的违例状态是 $(1,0)$。因此状态级规则能量可以写成
+$$
+E_{\mathcal R}(x,y_b,y_a)=C\lambda\,\mathbf 1_{\{y_b=1,\ y_a=0\}}.
+$$</p>
+<p>在当前统一例子里，$u=0.8,v=0.5$，并采用标签条件独立近似，于是学生分布四个分量为
+$$
+\begin{aligned}
+p_\theta(0,0\mid x)&=(1-u)(1-v)=0.2\times 0.5=0.1,\\
+p_\theta(0,1\mid x)&=(1-u)v=0.2\times 0.5=0.1,\\
+p_\theta(1,0\mid x)&=u(1-v)=0.8\times 0.5=0.4,\\
+p_\theta(1,1\mid x)&=uv=0.8\times 0.5=0.4.
+\end{aligned}
+$$</p>
+<p>再对四个具体输出状态分别计算规则能量。因为只有 $(1,0)$ 违反规则，而这里取 $C=2,\lambda=1$，所以
+$$
+\begin{aligned}
+E_{\mathcal R}(x,(0,0))&=0,\\
+E_{\mathcal R}(x,(0,1))&=0,\\
+E_{\mathcal R}(x,(1,0))&=2,\\
+E_{\mathcal R}(x,(1,1))&=0.
+\end{aligned}
+$$</p>
+<p>于是未归一化权重为
+$$
+\begin{aligned}
+w(0,0)&=0.1e^0=0.1,\\
+w(0,1)&=0.1e^0=0.1,\\
+w(1,0)&=0.4e^{-2}\approx 0.054,\\
+w(1,1)&=0.4e^0=0.4.
+\end{aligned}
+$$</p>
+<p>归一化常数为
+$$
+Z(x)=0.1+0.1+0.4e^{-2}+0.4\approx 0.654.
+$$</p>
+<p>因此闭式教师分布为
+$$
+\begin{aligned}
+q^\star(0,0\mid x)&=\frac{0.1}{0.654}\approx 0.153,\\
+q^\star(0,1\mid x)&=\frac{0.1}{0.654}\approx 0.153,\\
+q^\star(1,0\mid x)&=\frac{0.4e^{-2}}{0.654}\approx 0.083,\\
+q^\star(1,1\mid x)&=\frac{0.4}{0.654}\approx 0.612.
+\end{aligned}
+$$</p>
+<p>把上面的中间量压缩到一张表里，就是：</p>
+<table>
+<thead>
+<tr>
+<th>状态 $y=(Y_b,Y_a)$</th>
+<th>是否满足 <code>bird =&gt; animal</code></th>
+<th>学生概率 $p_\theta(y\mid x)$</th>
+<th>状态级规则能量 $E_{\mathcal R}(x,y)$</th>
+<th>未归一化权重 $w(y)$</th>
+<th>教师概率 $q^\star(y\mid x)$</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>$(0,0)$</td>
+<td>满足</td>
+<td>0.10</td>
+<td>0</td>
+<td>0.10</td>
+<td>$\approx 0.153$</td>
+</tr>
+<tr>
+<td>$(0,1)$</td>
+<td>满足</td>
+<td>0.10</td>
+<td>0</td>
+<td>0.10</td>
+<td>$\approx 0.153$</td>
+</tr>
+<tr>
+<td>$(1,0)$</td>
+<td>违反</td>
+<td>0.40</td>
+<td>2</td>
+<td>$0.40e^{-2}\approx 0.054$</td>
+<td>$\approx 0.083$</td>
+</tr>
+<tr>
+<td>$(1,1)$</td>
+<td>满足</td>
+<td>0.40</td>
+<td>0</td>
+<td>0.40</td>
+<td>$\approx 0.612$</td>
+</tr>
+</tbody>
+</table>
+<p>这个完整演算里最容易混淆的地方只有两处：</p>
+<ul>
+<li>$u,v$ 不是直接代进 $q^\star(y\mid x)$ 的；它们先用来构造四个学生分量 $p_\theta(y\mid x)$。</li>
+<li>前面连续输出层面的局部量 $r_{\phi_{ba}}(u,v)$ 与 $C\lambda(1-r_{\phi_{ba}}(u,v))$，不等同于这里对每个具体状态 $y$ 分别定义的状态级能量 $E_{\mathcal R}(x,y)$。</li>
+</ul>
 <p>当本文讨论 Semantic Loss 与 DL2 时，用 $\phi$ 表示一般约束公式，用 $\Psi_\phi$ 表示约束转化后的损失或 surrogate。这里的 $\phi$ 是统一分析记号，不是 Hu 2016 原文专用符号。</p>
 <h3 id="06-running-example">0.6 贯穿全文的 running example</h3>
-<p>为避免后文只在抽象层打转，全文固定使用一个最小但足够有代表性的二标签例子：</p>
+<p>前文已经短暂借用过 <code>bird =&gt; animal</code> 做直观说明；这里把它正式固定为贯穿全文的一个最小但足够有代表性的二标签 running example：</p>
 <ul>
 <li>$Y_b\in\{0,1\}$：是否为 <code>bird</code></li>
 <li>$Y_a\in\{0,1\}$：是否为 <code>animal</code></li>
@@ -190,14 +473,14 @@ $$</p>
 <td>不是鸟，但可以是动物</td>
 </tr>
 <tr>
-<td>$(1,1)$</td>
-<td>满足</td>
-<td>是鸟，因此也应是动物</td>
-</tr>
-<tr>
 <td>$(1,0)$</td>
 <td>违反</td>
 <td>是鸟但不是动物</td>
+</tr>
+<tr>
+<td>$(1,1)$</td>
+<td>满足</td>
+<td>是鸟，因此也应是动物</td>
 </tr>
 </tbody>
 </table>
@@ -219,6 +502,63 @@ $$</p>
 <li>一旦 $u>v$，违反度正比于二者差值；</li>
 <li>因此同一条规则既能进入 soft logic 能量，也能进入 surrogate loss，还能直接定义可行域。</li>
 </ul>
+<p>如果回到前面流程图里的状态级记号，那么图中的
+$$
+R_l \longrightarrow R_{lg}(x,y)
+$$
+严格说不是一个数值公式，而是一次 grounding，也就是把第 $l$ 条抽象规则 $R_l$ 对当前样本 $x$ 和某个具体输出状态 $y$ 实例化，得到第 $g$ 个具体规则实例 $R_{lg}(x,y)$。</p>
+<p>如果第 $l$ 条规则含有变量
+$$
+\xi=(\xi_1,\dots,\xi_m),
+$$
+并且第 $g$ 个 grounding 对应一个代换
+$$
+\sigma_{lg}:\ \xi_i\mapsto a_{gi}(x),
+$$
+那么 grounding 后的规则可写为
+$$
+R_{lg}(x,y):=R_l[\sigma_{lg},\,Y:=y].
+$$
+也可以展开写成
+$$
+R_{lg}(x,y)=R_l\!\bigl[a_{g1}(x)/\xi_1,\dots,a_{gm}(x)/\xi_m,\ y/Y\bigr].
+$$</p>
+<p>这一步的含义是：先把规则里的对象变量替换成当前样本中的具体对象，再把输出变量 $Y$ 固定成某个候选输出状态 $y$，于是得到一条可以直接检查真值或软真值的具体规则实例。</p>
+<p>图里的下一步
+$$
+r_{lg}(x,y)
+$$
+才是把刚才的 grounded rule 变成一个数值；一般写成
+$$
+r_{lg}(x,y)=\operatorname{Truth}\bigl(R_{lg}(x,y)\bigr)\in[0,1].
+$$
+因此，$R_{lg}(x,y)$ 是“具体规则实例”，而 $r_{lg}(x,y)$ 是“这个实例对应的真值或软真值”。</p>
+<p>对当前这条 <code>bird =&gt; animal</code> 规则，若写成
+$$
+R_l:\ Y_b\Rightarrow Y_a,
+$$
+则通常只有一个 grounding，
+$$
+G_l=1,\qquad R_{l1}(x,y)=\bigl(y_b\Rightarrow y_a\bigr),
+$$
+其中
+$$
+y=(y_b,y_a)\in\{0,1\}^2.
+$$
+于是离散真值可写成
+$$
+r_{l1}(x,y)=\mathbf 1\{y_b=0\ \text{or}\ y_a=1\}
+=
+\begin{cases}
+1, & y\in\{(0,0),(0,1),(1,1)\},\\
+0, & y=(1,0).
+\end{cases}
+$$</p>
+<p>这里要区分两个层面：上面的
+$$
+r_{\phi_{ba}}(u,v)=\min\{1,1-u+v\}
+$$
+是直接对连续输出 $(u,v)$ 计算的软真值；而这里的 $R_{lg}(x,y)$ 与 $r_{lg}(x,y)$ 则是对某个具体离散状态 $y$ 做 grounding 和状态级真值计算。</p>
 <hr>
 <h2 id="1-hu-et-al-2016">1. Hu et al. 2016 方法解析</h2>
 <h3 id="11">1.1 论文核心目标</h3>
@@ -230,18 +570,331 @@ $$</p>
 </blockquote>
 <p>这里的“稳定”很关键。作者不是想让规则只停留在后处理阶段，而是要让规则进入学习过程本身。</p>
 <h4 id="_2">它试图填补的缺口</h4>
-<p>早期 neural-symbolic 方法大体有两条路线：</p>
-<ol>
-<li>从规则直接构造网络或图模型。</li>
-<li>把规则改写成额外特征或启发式后处理。</li>
-</ol>
-<p>前者的问题是结构太受规则形式约束，后者的问题是规则没有真正进入优化核心。</p>
-<p>Hu 2016 的切入点更具体：</p>
+<p>沿用前面 <code>0.5</code> 的记号，如果按“规则究竟通过哪个接口进入神经模型”来分，早期 neural-symbolic 方法大体可归成两条主路线，而 Hu 2016 则明确走了第三条路：</p>
+<p><img alt="早期 neural-symbolic 两条路线与 Hu 2016 的对比图" src="../assets/knowledge/images/neural_symbolic_routes.png"></p>
+<h5 id="a">路线 A：从规则直接构造网络或图模型</h5>
+<p>这条路线的核心思想是：先把规则集
+$$
+F=\{C_j\}_{j=1}^m
+$$
+写成一个结构对象，再由它直接决定网络拓扑、图模型因子分解或推理图。</p>
+<p>可以把这种思路抽象写成
+$$
+G_F=\operatorname{Build}(F),
+$$
+其中 $G_F$ 是由规则集 $F$ 诱导出来的计算图、因子图或结构化模型。随后在这个结构上定义预测分布，例如
+$$
+p_F(y\mid x)
+\propto
+\prod_{j=1}^m \psi_j\bigl(S_j(x,y)\bigr),
+$$
+其中 $S_j(x,y)$ 表示由子句 $C_j$ 决定的局部结构、局部状态或高阶因子。</p>
+<p>这类方法的原理是：规则不只是“提供一个附加信号”，而是直接决定模型如何分解、哪些变量必须相连、哪些局部一致性必须被显式建模。</p>
+<p>它的问题也正来自这里。因为
+$$
+G_F=\operatorname{Build}(F)
+$$
+本身依赖于规则的语法形式，所以一旦规则的形式变化，例如：</p>
 <ul>
-<li>保留通用神经网络的参数化表达能力。</li>
-<li>先在预测分布层面引入规则偏置。</li>
-<li>再通过蒸馏把这种偏置写回参数。</li>
+<li>从简单蕴含变成高阶关系；</li>
+<li>从命题规则变成带变量的关系规则；</li>
+<li>从局部约束变成需要全局一致性的量化约束；</li>
 </ul>
+<p>那么模型结构、因子阶数、推理算法，往往都要跟着改。也就是说，这条路线的表达能力很强，但结构设计会越来越受规则形式约束。</p>
+<h5 id="b">路线 B：把规则改写成额外特征或启发式（即经验性的、并非由统一严格优化目标直接推出的）后处理</h5>
+<p>这条路线的思路是先保留一个通用预测器，再把规则当作“额外输入”或“预测后的修补器”。其训练主目标通常仍是标准任务损失：
+$$
+\theta^\star
+=
+\arg\min_\theta \frac{1}{N}\sum_{n=1}^N \ell\bigl(y_n,p_\theta(\cdot\mid x_n)\bigr).
+$$</p>
+<p>之后再通过两种常见方式使用规则：</p>
+<ol>
+<li>
+<p>作为额外规则特征，写进打分函数：
+$$
+f_{\mathcal R}(x,y)=f_\theta(x,y)+\alpha^\top \phi_{\mathcal R}(x,y).
+$$</p>
+</li>
+<li>
+<p>作为预测后的启发式修正或重排：
+$$
+\tilde y=T_{\mathcal R}\bigl(p_\theta(\cdot\mid x)\bigr).
+$$</p>
+</li>
+</ol>
+<p>这类方法的优点是实现灵活，不需要为每条规则重做一套结构；但问题在于，规则通常没有直接成为“每一步优化都必须面对的约束对象”。</p>
+<p>更具体地说：</p>
+<ul>
+<li>如果规则只是额外特征 $\phi_{\mathcal R}(x,y)$，那它在优化里更像一个普通输入信号，而不是显式改写输出分布的逻辑约束；</li>
+<li>如果规则只出现在 $T_{\mathcal R}$ 这样的后处理步骤里，那么它根本不会通过梯度回流去更新 $\theta$；</li>
+<li>无论是哪一种，优化核心大多仍然是标签拟合，而不是“在整个输出空间上系统地压低逻辑违例状态”。</li>
+</ul>
+<p>因此，“后者的问题是规则没有真正进入优化核心”这句话，更准确的意思是：规则没有作为一个在线的、显式的后验约束对象进入每一步学习，而更多是附着在打分函数边上，或者停留在预测后的修补阶段。</p>
+<h5 id="hu-2016">Hu 2016：第三条接口路径</h5>
+<p>Hu 2016 的切入点可以概括成一句话：不让规则决定网络结构，也不让规则只停留在特征或后处理层，而是让规则先改“当前预测分布”，再把这种分布偏置蒸馏回参数。</p>
+<p><img alt="Hu 2016 的三步注入机制图" src="../assets/knowledge/images/hu2016_injection_mechanism.png"></p>
+<p>下面仍沿用 <code>0.5</code> 的记号，只在“接口级”上把这三步拆开。</p>
+<h5 id="1">1. 保留通用神经网络的参数化表达能力</h5>
+<p>先照常使用一个参数化学生模型
+$$
+p_{\theta_t}(y\mid x),
+$$
+并以普通任务损失作为基础学习目标：
+$$
+L_{\mathrm{task}}(\theta)
+=
+\frac{1}{N}\sum_{n=1}^N \ell\bigl(y_n,p_\theta(\cdot\mid x_n)\bigr).
+$$</p>
+<p>这里的小写花体 $\ell$ 表示“单个样本的损失函数”，而 $L_{\mathrm{task}}$ 表示把所有样本的单样本损失平均后得到的整体任务损失。在分类任务里，$\ell$ 常常就是交叉熵一类的单样本误差；最常见的写法就是
+$$
+\ell\bigl(y_n,p_\theta(\cdot\mid x_n)\bigr)
+=
+-\log p_\theta(y_n\mid x_n).
+$$</p>
+<p>这里的关键是：规则并不决定网络的层数、连接方式或推理图。换句话说，参数化表达能力仍然来自通用神经网络本身，而不是来自某个专门按规则拼装出来的结构。</p>
+<p>这正对应“保留通用神经网络的参数化表达能力”这句话。</p>
+<h5 id="2">2. 先在预测分布层面引入规则偏置</h5>
+<p>接着，不直接修改参数 $\theta_t$，而是对当前学生分布 $p_{\theta_t}$ 做一次 posterior regularization 投影，得到更守规则的教师分布：
+$$
+q_t^\star(\cdot\mid x)
+=
+\arg\min_{q\in\Delta(\mathcal Y)}
+\left[
+\mathrm{KL}\bigl(q(\cdot\mid x)\,\|\,p_{\theta_t}(\cdot\mid x)\bigr)
++
+C\sum_{l,g}\lambda_l\Bigl(1-\mathbb E_q[r_{lg}(x,Y)]\Bigr)
+\right].
+$$</p>
+<p>它的闭式形式是
+$$
+q_t^\star(y\mid x)
+\propto
+p_{\theta_t}(y\mid x)\exp\bigl(-E_{\mathcal R}(x,y)\bigr).
+$$</p>
+<p>这里的 $\propto$ 表示“成正比”，意思是左边并不是直接等于右边，而是与右边只差一个归一化常数。更完整地说，就是先按
+$$
+p_{\theta_t}(y\mid x)\exp\bigl(-E_{\mathcal R}(x,y)\bigr)
+$$
+给每个候选输出状态分配未归一化权重，再除以归一化常数，得到真正的概率分布 $q_t^\star(y\mid x)$。</p>
+<p>这一步的原理是：</p>
+<ul>
+<li>第一项 $\mathrm{KL}(q\|p_{\theta_t})$ 要求教师分布不要离当前学生太远；</li>
+<li>第二项要求教师分布把概率质量移向更满足规则的输出状态；</li>
+<li>所以规则不是直接改“网络结构”，而是先改“此刻这个样本对应的预测分布应该长什么样”。</li>
+</ul>
+<p>这正对应“先在预测分布层面引入规则偏置”这句话。</p>
+<h5 id="3">3. 再通过蒸馏把这种偏置写回参数</h5>
+<p>如果停在上一步，那么规则仍然只是“当前分布整形器”。Hu 2016 的第三步是把这个在线生成的教师分布再喂回学生，使参数本身逐步学会这种规则偏置。用统一记号可写成
+$$
+\theta_{t+1}
+=
+\arg\min_\theta \frac{1}{N}\sum_{n=1}^N
+\left[
+(1-\pi_t)\,\ell\bigl(y_n,p_\theta(\cdot\mid x_n)\bigr)
++
+\pi_t\,\mathrm{KL}\bigl(q_t^\star(\cdot\mid x_n)\,\|\,p_\theta(\cdot\mid x_n)\bigr)
+\right].
+$$</p>
+<p>这里：</p>
+<ul>
+<li>第一项让学生继续拟合真实标签；</li>
+<li>第二项让学生模仿当前这一轮由规则投影出来的教师分布；</li>
+<li>$\pi_t$ 控制“听真实标签”与“听规则教师”之间的权重。</li>
+</ul>
+<p>这里还要特别区分两个量：</p>
+<ul>
+<li>$\theta_{t+1}$ 不是另一个独立超参数，而是“第 $t$ 轮更新之后得到的下一轮学生参数”。也就是说，当前学生用的是 $\theta_t$，看完这一轮的真实标签和教师分布之后，参数被更新成 $\theta_{t+1}$。</li>
+<li>$\pi_t\in[0,1]$ 才是真正控制蒸馏强度的权重。$\pi_t$ 越大，第 $t$ 轮越强调“听规则教师”；$\pi_t$ 越小，第 $t$ 轮越强调“听真实标签”。</li>
+</ul>
+<p>如果想把“蒸馏到底是怎么一轮一轮喂回去的”看得最清楚，可以先看一个单样本 toy 演算。这里故意把神经网络简化成“直接输出四个状态概率”的学生，这样每一轮到底发生了什么就能直接算出来。</p>
+<p>设固定一个样本 $x_n$，真实标签为
+$$
+y_n=(1,1),
+$$
+并继续使用前文统一例子：
+$$
+\mathcal Y=\{(0,0),(0,1),(1,0),(1,1)\},\qquad
+\phi_{ba}: Y_b\Rightarrow Y_a,\qquad
+C=2,\ \lambda=1.
+$$</p>
+<p>再设初始学生分布为
+$$
+p_{\theta_0}(\cdot\mid x_n)
+=
+\bigl(0.1,\,0.1,\,0.4,\,0.4\bigr),
+$$
+这里四个分量依次对应
+$$
+(0,0),\ (0,1),\ (1,0),\ (1,1).
+$$
+其中唯一违例状态是 $(1,0)$。</p>
+<p>为突出“蒸馏喂回去”的机制，先取一个固定蒸馏权重
+$$
+\pi_0=\pi_1=\pi_2=0.8.
+$$
+这表示每一轮都用 $80\%$ 的权重去听规则教师，同时保留 $20\%$ 的真实标签监督。</p>
+<p>在这个 toy 模型里，可以把第 $t$ 轮学生真正要追的“混合目标分布”近似看成
+$$
+\widetilde q_t(y\mid x_n)
+=(1-\pi_t)\,\delta_{(1,1)}(y)+\pi_t\,q_t^\star(y\mid x_n),
+$$
+其中 $\delta_{(1,1)}$ 是在真实标签 $(1,1)$ 上的 one-hot 分布。这个式子的意思很直接：</p>
+<ul>
+<li>一部分目标来自真实标签；</li>
+<li>另一部分目标来自规则投影后的教师；</li>
+<li>新一轮学生参数 $\theta_{t+1}$ 会把自己的输出分布往这个混合目标上推。</li>
+</ul>
+<p>在这个 toy 例子里，为了把机制算清楚，我们进一步做一个最简化假设：一轮更新后，学生分布就直接等于这个混合目标，即
+$$
+p_{\theta_{t+1}}(\cdot\mid x_n)\approx \widetilde q_t(\cdot\mid x_n).
+$$
+真实神经网络里当然是通过梯度下降“朝这个目标靠近”，不会一步精确等于它；但这个近似足够把蒸馏链条本身说明白。</p>
+<p>于是三轮投喂过程如下。</p>
+<p><strong>第 0 轮：先由当前学生生成教师</strong></p>
+<p>当前学生为
+$$
+p_{\theta_0}(\cdot\mid x_n)=(0.1,\,0.1,\,0.4,\,0.4).
+$$
+规则只惩罚违例状态 $(1,0)$，因此未归一化权重为
+$$
+w_0=(0.1,\,0.1,\,0.4e^{-2},\,0.4)\approx(0.1,\,0.1,\,0.054,\,0.4).
+$$
+归一化后得到教师分布
+$$
+q_0^\star(\cdot\mid x_n)
+=
+\frac{w_0}{\sum w_0}
+\approx
+(0.153,\,0.153,\,0.083,\,0.612).
+$$</p>
+<p>然后把教师和真实标签混合，形成下一轮学生要追的目标：
+$$
+\widetilde q_0
+=
+0.2\,\delta_{(1,1)}+0.8\,q_0^\star
+\approx
+(0.122,\,0.122,\,0.066,\,0.690).
+$$
+于是 toy 学生更新为
+$$
+p_{\theta_1}(\cdot\mid x_n)\approx(0.122,\,0.122,\,0.066,\,0.690).
+$$</p>
+<p><strong>第 1 轮：用更新后的学生重新生成教师</strong></p>
+<p>现在教师不再用旧学生，而是用新学生 $p_{\theta_1}$ 重新投影。先惩罚违例状态：
+$$
+w_1
+=
+\bigl(0.122,\,0.122,\,0.066e^{-2},\,0.690\bigr)
+\approx
+(0.122,\,0.122,\,0.009,\,0.690).
+$$
+归一化后
+$$
+q_1^\star(\cdot\mid x_n)\approx(0.130,\,0.130,\,0.010,\,0.731).
+$$
+再与真实标签混合：
+$$
+\widetilde q_1
+=
+0.2\,\delta_{(1,1)}+0.8\,q_1^\star
+\approx
+(0.104,\,0.104,\,0.008,\,0.785).
+$$
+于是 toy 学生继续更新为
+$$
+p_{\theta_2}(\cdot\mid x_n)\approx(0.104,\,0.104,\,0.008,\,0.785).
+$$</p>
+<p><strong>第 2 轮：再投影、再蒸馏</strong></p>
+<p>再用 $p_{\theta_2}$ 生成教师。违例状态进一步被压低：
+$$
+w_2
+=
+\bigl(0.104,\,0.104,\,0.008e^{-2},\,0.785\bigr)
+\approx
+(0.104,\,0.104,\,0.001,\,0.785).
+$$
+归一化后
+$$
+q_2^\star(\cdot\mid x_n)\approx(0.105,\,0.105,\,0.001,\,0.790).
+$$
+再混合得到
+$$
+\widetilde q_2
+=
+0.2\,\delta_{(1,1)}+0.8\,q_2^\star
+\approx
+(0.084,\,0.084,\,0.001,\,0.832),
+$$
+于是
+$$
+p_{\theta_3}(\cdot\mid x_n)\approx(0.084,\,0.084,\,0.001,\,0.832).
+$$</p>
+<p>把三轮结果并排看，变化就很清楚了：</p>
+<table>
+<thead>
+<tr>
+<th>轮次</th>
+<th>当前学生 $p_{\theta_t}$</th>
+<th>当前教师 $q_t^\star$</th>
+<th>下一轮学生 $p_{\theta_{t+1}}$</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>$t=0$</td>
+<td>$(0.100,0.100,0.400,0.400)$</td>
+<td>$(0.153,0.153,0.083,0.612)$</td>
+<td>$(0.122,0.122,0.066,0.690)$</td>
+</tr>
+<tr>
+<td>$t=1$</td>
+<td>$(0.122,0.122,0.066,0.690)$</td>
+<td>$(0.130,0.130,0.010,0.731)$</td>
+<td>$(0.104,0.104,0.008,0.785)$</td>
+</tr>
+<tr>
+<td>$t=2$</td>
+<td>$(0.104,0.104,0.008,0.785)$</td>
+<td>$(0.105,0.105,0.001,0.790)$</td>
+<td>$(0.084,0.084,0.001,0.832)$</td>
+</tr>
+</tbody>
+</table>
+<p>这张表里最值得盯住的是唯一违例状态 $(1,0)$ 的概率：
+$$
+0.400\ \longrightarrow\ 0.066\ \longrightarrow\ 0.008\ \longrightarrow\ 0.001.
+$$
+而满足真实标签且满足规则的状态 $(1,1)$ 则逐轮升高：
+$$
+0.400\ \longrightarrow\ 0.690\ \longrightarrow\ 0.785\ \longrightarrow\ 0.832.
+$$</p>
+<p>因此，“蒸馏喂回去”并不是说把一条逻辑规则直接塞进参数里，而是：</p>
+<ol>
+<li>先用当前学生 $p_{\theta_t}$ 生成规则教师 $q_t^\star$；</li>
+<li>再让学生通过带权损失去模仿这个教师；</li>
+<li>于是更新后的参数 $\theta_{t+1}$ 会让新的学生分布比上一轮更守规则；</li>
+<li>再用新的学生重新生成新的教师，如此循环。</li>
+</ol>
+<p>如果 $\pi_t=0$，那就完全不听教师，只剩普通监督学习；如果 $\pi_t=1$，那这一轮就只听教师，不看真实标签。Hu 2016 的做法正是在这两者之间取折中。</p>
+<p>因此，规则偏置不再只是一种测试时修补，而会逐步写进下一轮参数 $\theta_{t+1}$ 中。</p>
+<p>这正对应“再通过蒸馏把这种偏置写回参数”这句话。</p>
+<h5 id="hu-2016_1">为什么 Hu 2016 同时解决了前两条路线的痛点</h5>
+<p>把这三步连起来看，就能更清楚地理解 Hu 2016 的独特之处：</p>
+<ul>
+<li>它不像路线 A 那样让规则决定网络拓扑，所以保留了通用神经网络的参数化表达能力；</li>
+<li>它不像路线 B 那样只把规则当额外特征或预测后修补，因为规则先显式改写了当前后验分布 $q_t^\star$；</li>
+<li>它也没有把规则停留在“当前时刻的分布偏置”上，而是再通过蒸馏把这种偏置回写到参数里。</li>
+</ul>
+<p>所以，Hu 2016 的真正创新点不是“用了逻辑规则”这件事本身，而是给出了一条新的注入接口：
+$$
+\text{通用参数化学生}
+\Longrightarrow
+\text{规则投影后的教师分布}
+\Longrightarrow
+\text{蒸馏回参数}.
+$$</p>
+<p>后面的 <code>1.2</code> 会把这里出现的 posterior regularization、软真值、规则能量和闭式教师分布，进一步展开成正式的数学对象。</p>
 <h4 id="enforcing">为什么标准神经网络无法自然 enforcing 硬逻辑</h4>
 <p>设模型输出为 $p_\theta(y\mid x)$，普通经验风险最小化只优化
 $$
@@ -469,7 +1122,7 @@ $$</p>
 <h3 id="22">2.2 当前写作边界</h3>
 <p>在这些信息未核实之前，不应把 Hu et al. 2016 的机制误当作 “ICML 2019 的 Logic-Net”，也不应把一个尚未确认来源的同名工作并入本文结论。</p>
 <hr>
-<h2 id="3">3. 机制对比（统一视角）</h2>
+<h2 id="3_1">3. 机制对比（统一视角）</h2>
 <h3 id="31">3.1 统一问题：约束究竟进入哪里</h3>
 <p>如果把 Hu 2016、Semantic Loss、DL2 放到同一分析坐标系里，最应该统一的不是“它们都用了逻辑”，而是：</p>
 <blockquote>
@@ -1171,7 +1824,7 @@ $$
 <li>可行域方法的难点是近似内层解 $z^\star$ 带来的 biased outer update。</li>
 </ul>
 <p>若内层只近似求解，则外层拿到的并不是精确超梯度，而是依赖求解器质量的偏置更新。</p>
-<h4 id="running-examplefeasible-set-math_inline_239">Running example：feasible-set 路径直接禁止 $u>v$</h4>
+<h4 id="running-examplefeasible-set-math_inline_444">Running example：feasible-set 路径直接禁止 $u>v$</h4>
 <p>对同一条规则，feasible-set 版本最直接的写法就是
 $$
 \mathcal C_{\phi_{ba}}=\{(u,v)\in[0,1]^2:\ u\le v\}.
@@ -1316,7 +1969,7 @@ $$
 \theta_{t+1}=T(\theta_t;\mathcal D,\mathcal R).
 $$</p>
 <p>后面所有局限，本质上都对应这个算子的某个局部性质出了问题：不稳定、过敏、过贵、不可表达，或者不可逼近。</p>
-<h4 id="running-example-math_inline_255">Running example：在 $bird \Rightarrow animal$ 里，这些失效会怎样出现</h4>
+<h4 id="running-example-math_inline_460">Running example：在 $bird \Rightarrow animal$ 里，这些失效会怎样出现</h4>
 <p>把算子图代回本文固定例子，可以更直观看到第 5 节后面几类问题的落点：</p>
 <table>
 <thead>
@@ -1421,7 +2074,7 @@ $$
 <h5 id="_41">一句话判断</h5>
 <p>这里的不稳定性是算子级不稳定，不是普通 mini-batch 噪声。</p>
 <hr>
-<h4 id="522-math_inline_275">5.2.2 $\lambda$ 权重敏感性：它影响的是指数重加权，不是线性罚项</h4>
+<h4 id="522-math_inline_480">5.2.2 $\lambda$ 权重敏感性：它影响的是指数重加权，不是线性罚项</h4>
 <h5 id="_42">现象</h5>
 <p>实践里最典型的两种失败是：</p>
 <ul>
@@ -1866,7 +2519,7 @@ $$</p>
 <h5 id="_73">它解决的新问题</h5>
 <p>它主要解决的是：当前方法把规则作用点放得过后，导致规则结构难以内化到 student 自身表示里。</p>
 <hr>
-<h4 id="544-adaptive-math_inline_319-dual-style">5.4.4 用 adaptive $\lambda$ / dual-style 更新代替固定规则权重</h4>
+<h4 id="544-adaptive-math_inline_524-dual-style">5.4.4 用 adaptive $\lambda$ / dual-style 更新代替固定规则权重</h4>
 <h5 id="_74">动机</h5>
 <p>5.2.2 的问题说明：固定 $\lambda_l$、$C$、$\pi_t$ 本质上是假设规则可靠度和 teacher 质量在训练全过程中不变，这在优化上过强。</p>
 <h5 id="_75">机制思路</h5>
@@ -2034,7 +2687,7 @@ $$
       </main>
 
       <footer class="site-footer">
-        <p>Generated from <code>Knowledge/logic_net_notes_zh.md</code>. Publish from <code>main /docs</code>.</p>
+        <p>Generated from <code>Knowledge/logic_net_notes_zh.md</code>. Publish from main /docs.</p>
       </footer>
     </div>
   </body>
