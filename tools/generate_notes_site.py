@@ -1,4 +1,4 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 from dataclasses import dataclass
 from html import escape, unescape
@@ -24,20 +24,10 @@ class NoteConfig:
     eyebrow: str
     summary: str
     source_label: str
-    ui_lang: str = "zh"
     legacy_paths: tuple[str, ...] = ()
 
 
 NOTES = [
-    NoteConfig(
-        source=ROOT / "Knowledge" / "logic_net_notes_zh.md",
-        slug="logic-net-zh",
-        title="Logic-Net 深度结构解析",
-        eyebrow="Logic Rules / Chinese Notes",
-        summary="围绕 Logic-Net-type methods 的 posterior、loss、feasible set 三条约束进入路径，补齐优化严格性、局限机制和研究延展。",
-        source_label="Knowledge/logic_net_notes_zh.md",
-        legacy_paths=("Knowledge/logic_net_notes_zh.html",),
-    ),
     NoteConfig(
         source=ROOT / "Knowledge" / "logic_net_notes_en.md",
         slug="logic-net-en",
@@ -45,17 +35,11 @@ NOTES = [
         eyebrow="Logic Rules / English Notes",
         summary="A structured English note on Logic-Net-type methods, organized around the posterior, loss, and feasible-set routes by which logic constraints enter optimization, together with optimization-level analysis, limitations, and research extensions.",
         source_label="Knowledge/logic_net_notes_en.md",
-        ui_lang="en",
-        legacy_paths=("Knowledge/logic_net_notes_en.html",),
-    ),
-    NoteConfig(
-        source=ROOT / "Knowledge" / "survey_notes_zh.md",
-        slug="survey-zh",
-        title="Informed ML Survey 结构化中文笔记",
-        eyebrow="Survey / Chinese Notes",
-        summary="把 informed machine learning taxonomy 拆成 knowledge source、representation、integration 三层接口，并沿主线展开逻辑规则、知识图谱与约束学习。",
-        source_label="Knowledge/survey_notes_zh.md",
-        legacy_paths=("Knowledge/survey_notes_zh.html",),
+        legacy_paths=(
+            "Knowledge/logic_net_notes_en.html",
+            "Knowledge/logic_net_notes_zh.html",
+            "notes/logic-net-zh.html",
+        ),
     ),
     NoteConfig(
         source=ROOT / "Knowledge" / "survey_notes_en.md",
@@ -64,8 +48,11 @@ NOTES = [
         eyebrow="Survey / English Notes",
         summary="A structured English note on the informed machine learning survey, centered on the taxonomy of knowledge source, representation, and integration location, together with close reading of the figures and method families.",
         source_label="Knowledge/survey_notes_en.md",
-        ui_lang="en",
-        legacy_paths=("Knowledge/survey_notes_en.html",),
+        legacy_paths=(
+            "Knowledge/survey_notes_en.html",
+            "Knowledge/survey_notes_zh.html",
+            "notes/survey-zh.html",
+        ),
     ),
 ]
 
@@ -148,17 +135,8 @@ def rewrite_markdown_links(text: str, source_path: Path, slug_map: dict[str, str
 def convert_markdown_to_html(text: str) -> str:
     protected, placeholders = protect_math(text)
     md = markdown.Markdown(
-        extensions=[
-            "extra",
-            "toc",
-            "sane_lists",
-            "smarty",
-        ],
-        extension_configs={
-            "toc": {
-                "permalink": False,
-            }
-        },
+        extensions=["extra", "toc", "sane_lists", "smarty"],
+        extension_configs={"toc": {"permalink": False}},
         output_format="html5",
     )
     html = md.convert(protected)
@@ -182,13 +160,11 @@ def build_toc(article_html: str) -> str:
         items.append((depth, heading_id, strip_tags(inner_html).strip()))
 
     if not items:
-        return "<p class=\"note-toc-empty\">本文未生成目录。</p>"
+        return '<p class="note-toc-empty">No table of contents was generated.</p>'
 
-    parts = ["<ul class=\"note-toc-list\">"]
+    parts = ['<ul class="note-toc-list">']
     for depth, heading_id, title in items:
-        parts.append(
-            f'<li class="toc-level-{depth}"><a href="#{escape(heading_id)}">{escape(title)}</a></li>'
-        )
+        parts.append(f'<li class="toc-level-{depth}"><a href="#{escape(heading_id)}">{escape(title)}</a></li>')
     parts.append("</ul>")
     return "\n".join(parts)
 
@@ -197,14 +173,14 @@ def render_note_page(note: NoteConfig, article_html: str, toc_html: str) -> str:
     source_rel = note.source.relative_to(ROOT).as_posix()
     source_url = repo_blob_url(note.source)
     return f"""<!doctype html>
-<html lang="zh-CN">
+<html lang=\"en\">
   <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset=\"utf-8\">
+    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">
     <title>{escape(note.title)} | Informed Machine Learning</title>
-    <meta name="description" content="{escape(note.summary)}">
-    <link rel="stylesheet" href="../assets/site.css">
-    <script defer src="../assets/site.js"></script>
+    <meta name=\"description\" content=\"{escape(note.summary)}\">
+    <link rel=\"stylesheet\" href=\"../assets/site.css\">
+    <script defer src=\"../assets/site.js\"></script>
     <script>
       window.MathJax = {{
         tex: {{
@@ -216,60 +192,60 @@ def render_note_page(note: NoteConfig, article_html: str, toc_html: str) -> str:
         }}
       }};
     </script>
-    <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+    <script defer src=\"https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js\"></script>
   </head>
-  <body data-page="notes">
-    <div class="page-shell">
-      <header class="site-header">
-        <a class="brand" href="../index.html">
-          <span class="brand-mark">IML</span>
-          <span class="brand-text">Informed Machine Learning</span>
+  <body data-page=\"notes\">
+    <div class=\"page-shell\">
+      <header class=\"site-header\">
+        <a class=\"brand\" href=\"../index.html\">
+          <span class=\"brand-mark\">IML</span>
+          <span class=\"brand-text\">Informed Machine Learning</span>
         </a>
-        <button class="nav-toggle" type="button" aria-expanded="false" aria-label="切换导航">
+        <button class=\"nav-toggle\" type=\"button\" aria-expanded=\"false\" aria-label=\"Toggle navigation\">
           <span></span>
           <span></span>
         </button>
-        <nav class="site-nav">
-          <a href="../index.html">首页</a>
-          <a href="../reading-map.html">阅读路线</a>
-          <a href="../notes.html">研究笔记</a>
-          <a href="../toys.html">Toy 项目</a>
-          <a href="../deploy.html">部署说明</a>
+        <nav class=\"site-nav\">
+          <a href=\"../index.html\">Home</a>
+          <a href=\"../reading-map.html\">Reading Map</a>
+          <a href=\"../notes.html\">Notes</a>
+          <a href=\"../toys.html\">Reproductions</a>
+          <a href=\"../deploy.html\">Site Setup</a>
         </nav>
       </header>
 
-      <main class="content-page note-page">
-        <section class="page-intro note-intro">
-          <p class="eyebrow">{escape(note.eyebrow)}</p>
+      <main class=\"content-page note-page\">
+        <section class=\"page-intro note-intro\">
+          <p class=\"eyebrow\">{escape(note.eyebrow)}</p>
           <h1>{escape(note.title)}</h1>
           <p>{escape(note.summary)}</p>
         </section>
 
-        <section class="note-layout">
-          <aside class="note-sidebar">
-            <article class="note-block">
-              <h2>笔记信息</h2>
-              <p>源文件：<code>{escape(source_rel)}</code></p>
-              <p>发布方式：由本地 Markdown 自动生成站内 HTML。</p>
-              <div class="link-list">
-                <a href="../notes.html">返回笔记入口</a>
-                <a href="{escape(source_url)}">在 GitHub 看源文件</a>
+        <section class=\"note-layout\">
+          <aside class=\"note-sidebar\">
+            <article class=\"note-block\">
+              <h2>Note Info</h2>
+              <p>Source file: <code>{escape(source_rel)}</code></p>
+              <p>Published as: Generated from local Markdown into in-site HTML.</p>
+              <div class=\"link-list\">
+                <a href=\"../notes.html\">Back to notes</a>
+                <a href=\"{escape(source_url)}\">View source on GitHub</a>
               </div>
             </article>
 
-            <article class="note-block">
-              <h2>目录</h2>
+            <article class=\"note-block\">
+              <h2>Contents</h2>
               {toc_html}
             </article>
           </aside>
 
-          <article class="note-article">
+          <article class=\"note-article\">
             {article_html}
           </article>
         </section>
       </main>
 
-      <footer class="site-footer">
+      <footer class=\"site-footer\">
         <p>Generated from <code>{escape(note.source_label)}</code>. Publish from <code>main /docs</code>.</p>
       </footer>
     </div>
@@ -280,168 +256,18 @@ def render_note_page(note: NoteConfig, article_html: str, toc_html: str) -> str:
 
 def render_redirect_page(target_href: str, title: str) -> str:
     return f"""<!doctype html>
-<html lang="zh-CN">
+<html lang=\"en\">
   <head>
-    <meta charset="utf-8">
-    <meta http-equiv="refresh" content="0; url={escape(target_href)}">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset=\"utf-8\">
+    <meta http-equiv=\"refresh\" content=\"0; url={escape(target_href)}\">
+    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">
     <title>{escape(title)} | Redirect</title>
     <script>
       window.location.replace({target_href!r});
     </script>
   </head>
   <body>
-    <p>正在跳转到新页面：<a href="{escape(target_href)}">{escape(target_href)}</a></p>
-  </body>
-</html>
-"""
-
-
-def note_ui_strings(ui_lang: str) -> dict[str, str]:
-    if ui_lang == "en":
-        return {
-            "html_lang": "en",
-            "nav_toggle_label": "Toggle navigation",
-            "nav_home": "Home",
-            "nav_reading_map": "Reading Map",
-            "nav_notes": "Research Notes",
-            "nav_toys": "Toy Projects",
-            "nav_deploy": "Deployment",
-            "sidebar_info": "Note Info",
-            "source_file": "Source file:",
-            "publish_mode": "Published as:",
-            "publish_mode_value": "Generated from local Markdown into in-site HTML.",
-            "back_to_notes": "Back to notes",
-            "view_source": "View source on GitHub",
-            "toc": "Contents",
-            "footer_prefix": "Generated from",
-            "footer_suffix": "Publish from main /docs.",
-            "redirect_title_suffix": "Redirect",
-            "redirect_message": "Redirecting to the new page:",
-        }
-    return {
-        "html_lang": "zh-CN",
-        "nav_toggle_label": "切换导航",
-        "nav_home": "首页",
-        "nav_reading_map": "阅读路线",
-        "nav_notes": "研究笔记",
-        "nav_toys": "Toy 项目",
-        "nav_deploy": "部署说明",
-        "sidebar_info": "笔记信息",
-        "source_file": "源文件：",
-        "publish_mode": "发布方式：",
-        "publish_mode_value": "由本地 Markdown 自动生成站内 HTML。",
-        "back_to_notes": "返回笔记入口",
-        "view_source": "在 GitHub 看源文件",
-        "toc": "目录",
-        "footer_prefix": "Generated from",
-        "footer_suffix": "Publish from main /docs.",
-        "redirect_title_suffix": "Redirect",
-        "redirect_message": "正在跳转到新页面：",
-    }
-
-
-def render_note_page_localized(note: NoteConfig, article_html: str, toc_html: str) -> str:
-    source_rel = note.source.relative_to(ROOT).as_posix()
-    source_url = repo_blob_url(note.source)
-    ui = note_ui_strings(note.ui_lang)
-    return f"""<!doctype html>
-<html lang="{escape(ui["html_lang"])}">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{escape(note.title)} | Informed Machine Learning</title>
-    <meta name="description" content="{escape(note.summary)}">
-    <link rel="stylesheet" href="../assets/site.css">
-    <script defer src="../assets/site.js"></script>
-    <script>
-      window.MathJax = {{
-        tex: {{
-          inlineMath: [['$', '$'], ['\\\\(', '\\\\)']],
-          displayMath: [['$$', '$$'], ['\\\\[', '\\\\]']]
-        }},
-        options: {{
-          skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
-        }}
-      }};
-    </script>
-    <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
-  </head>
-  <body data-page="notes">
-    <div class="page-shell">
-      <header class="site-header">
-        <a class="brand" href="../index.html">
-          <span class="brand-mark">IML</span>
-          <span class="brand-text">Informed Machine Learning</span>
-        </a>
-        <button class="nav-toggle" type="button" aria-expanded="false" aria-label="{escape(ui["nav_toggle_label"])}">
-          <span></span>
-          <span></span>
-        </button>
-        <nav class="site-nav">
-          <a href="../index.html">{escape(ui["nav_home"])}</a>
-          <a href="../reading-map.html">{escape(ui["nav_reading_map"])}</a>
-          <a href="../notes.html">{escape(ui["nav_notes"])}</a>
-          <a href="../toys.html">{escape(ui["nav_toys"])}</a>
-          <a href="../deploy.html">{escape(ui["nav_deploy"])}</a>
-        </nav>
-      </header>
-
-      <main class="content-page note-page">
-        <section class="page-intro note-intro">
-          <p class="eyebrow">{escape(note.eyebrow)}</p>
-          <h1>{escape(note.title)}</h1>
-          <p>{escape(note.summary)}</p>
-        </section>
-
-        <section class="note-layout">
-          <aside class="note-sidebar">
-            <article class="note-block">
-              <h2>{escape(ui["sidebar_info"])}</h2>
-              <p>{escape(ui["source_file"])}<code>{escape(source_rel)}</code></p>
-              <p>{escape(ui["publish_mode"])}{escape(ui["publish_mode_value"])}</p>
-              <div class="link-list">
-                <a href="../notes.html">{escape(ui["back_to_notes"])}</a>
-                <a href="{escape(source_url)}">{escape(ui["view_source"])}</a>
-              </div>
-            </article>
-
-            <article class="note-block">
-              <h2>{escape(ui["toc"])}</h2>
-              {toc_html}
-            </article>
-          </aside>
-
-          <article class="note-article">
-            {article_html}
-          </article>
-        </section>
-      </main>
-
-      <footer class="site-footer">
-        <p>{escape(ui["footer_prefix"])} <code>{escape(note.source_label)}</code>. {escape(ui["footer_suffix"])}</p>
-      </footer>
-    </div>
-  </body>
-</html>
-"""
-
-
-def render_redirect_page_localized(target_href: str, title: str, ui_lang: str) -> str:
-    ui = note_ui_strings(ui_lang)
-    return f"""<!doctype html>
-<html lang="{escape(ui["html_lang"])}">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="refresh" content="0; url={escape(target_href)}">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{escape(title)} | {escape(ui["redirect_title_suffix"])}</title>
-    <script>
-      window.location.replace({target_href!r});
-    </script>
-  </head>
-  <body>
-    <p>{escape(ui["redirect_message"])} <a href="{escape(target_href)}">{escape(target_href)}</a></p>
+    <p>Redirecting to the new page: <a href=\"{escape(target_href)}\">{escape(target_href)}</a></p>
   </body>
 </html>
 """
@@ -449,10 +275,7 @@ def render_redirect_page_localized(target_href: str, title: str, ui_lang: str) -
 
 def generate_note_pages() -> None:
     NOTES_DIR.mkdir(parents=True, exist_ok=True)
-    slug_map = {
-        note.source.relative_to(ROOT).as_posix(): note.slug
-        for note in NOTES
-    }
+    slug_map = {note.source.relative_to(ROOT).as_posix(): note.slug for note in NOTES}
 
     for note in NOTES:
         text = note.source.read_text(encoding="utf-8").lstrip("\ufeff")
@@ -460,7 +283,7 @@ def generate_note_pages() -> None:
         article_html = convert_markdown_to_html(text)
         article_html = drop_leading_h1(article_html)
         toc_html = build_toc(article_html)
-        page_html = render_note_page_localized(note, article_html, toc_html)
+        page_html = render_note_page(note, article_html, toc_html)
         output_path = NOTES_DIR / f"{note.slug}.html"
         output_path.write_text(page_html, encoding="utf-8")
 
@@ -468,9 +291,12 @@ def generate_note_pages() -> None:
             legacy_path = DOCS_DIR / legacy_rel
             legacy_path.parent.mkdir(parents=True, exist_ok=True)
             target_href = "../notes/" + f"{note.slug}.html"
-            redirect_html = render_redirect_page_localized(target_href, note.title, note.ui_lang)
+            redirect_html = render_redirect_page(target_href, note.title)
             legacy_path.write_text(redirect_html, encoding="utf-8")
 
 
 if __name__ == "__main__":
     generate_note_pages()
+
+
+

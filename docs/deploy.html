@@ -1,9 +1,13 @@
-<!doctype html>
-<html lang="zh-CN">
+﻿<!doctype html>
+<html lang="en">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>部署说明 | Informed Machine Learning</title>
+    <title>Site Setup | Informed Machine Learning</title>
+    <meta
+      name="description"
+      content="Site setup notes for publishing the informed machine learning research homepage and note pages on GitHub Pages."
+    >
     <link rel="stylesheet" href="./assets/site.css">
     <script defer src="./assets/site.js"></script>
   </head>
@@ -14,85 +18,64 @@
           <span class="brand-mark">IML</span>
           <span class="brand-text">Informed Machine Learning</span>
         </a>
-        <button class="nav-toggle" type="button" aria-expanded="false" aria-label="切换导航">
-          <span></span>
-          <span></span>
-        </button>
-        <nav class="site-nav">
-          <a href="./index.html">首页</a>
-          <a href="./reading-map.html">阅读路线</a>
-          <a href="./notes.html">研究笔记</a>
-          <a href="./toys.html">Toy 项目</a>
-          <a href="./deploy.html">部署说明</a>
-        </nav>
+
+        <div class="header-controls">
+          <nav class="site-nav">
+            <a href="./index.html">Home</a>
+            <a href="./reading-map.html">Reading Map</a>
+            <a href="./notes.html">Notes</a>
+            <a href="./toys.html">Reproductions</a>
+            <a href="./deploy.html">Site Setup</a>
+          </nav>
+
+          <button class="nav-toggle" type="button" aria-expanded="false" aria-label="Toggle navigation">
+            <span></span>
+            <span></span>
+          </button>
+        </div>
       </header>
 
       <main class="content-page">
         <section class="page-intro">
-          <p class="eyebrow">Deploy</p>
-          <h1>把这套骨架发布到 GitHub Pages</h1>
+          <p class="eyebrow">Site Setup</p>
+          <h1>How this research site is published</h1>
           <p>
-            当前推荐方案是 `GitHub Actions` 发布：源文件继续放在仓库里，Actions 负责生成笔记页面并把 `docs/`
-            目录作为 Pages artifact 部署出去。
+            This page records the lightweight publication workflow behind the site.
+            It is kept separate from the research content so that deployment details do not interrupt the reading pages.
           </p>
         </section>
 
         <section class="steps-block">
-          <h2>基础发布步骤</h2>
+          <h2>Basic deployment path</h2>
           <ol class="ordered-list">
-            <li>把当前仓库推到 GitHub。</li>
-            <li>进入仓库 `Settings -> Pages`。</li>
-            <li>在 `Build and deployment` 里把 `Source` 切到 `GitHub Actions`。</li>
-            <li>确认仓库里已经存在 `.github/workflows/deploy-pages.yml`。</li>
-            <li>推送到 `main` 后，等待 `Actions -> Deploy GitHub Pages` 首次跑完。</li>
-            <li>部署完成后，再访问 `research.bozhanli.com/notes/...` 之类的新页面路径。</li>
+            <li>Push the repository to GitHub.</li>
+            <li>In Settings → Pages, choose GitHub Actions as the publishing source.</li>
+            <li>Keep the note-generation script and site files in the repository.</li>
+            <li>Let the workflow publish the docs directory as the final site output.</li>
           </ol>
         </section>
 
         <section class="steps-block">
-          <h2>这条流水线具体做了什么</h2>
+          <h2>What the workflow does</h2>
           <ol class="ordered-list">
-            <li>Checkout 当前仓库。</li>
-            <li>安装 Python 和 Markdown 转换依赖。</li>
-            <li>运行 `python tools/generate_notes_site.py` 生成站内笔记 HTML。</li>
-            <li>把 `docs/` 目录上传为 Pages artifact。</li>
-            <li>由 `actions/deploy-pages` 正式部署到 GitHub Pages。</li>
+            <li>Check out the repository.</li>
+            <li>Run the local note-generation step where needed.</li>
+            <li>Collect the docs directory as a deployable artifact.</li>
+            <li>Publish the resulting artifact to GitHub Pages.</li>
           </ol>
-        </section>
-
-        <section class="steps-block">
-          <h2>自定义域名</h2>
-          <ol class="ordered-list">
-            <li>在 GitHub Pages 设置里填入 `research.bozhanli.com`。</li>
-            <li>在你的 DNS 提供商处添加一条 `CNAME`：`research -> ahaxxxx.github.io`。</li>
-            <li>等待 DNS 生效后，打开 `Enforce HTTPS`。</li>
-          </ol>
-          <p>
-            GitHub 官方文档支持自定义域名和子域名；`research.bozhanli.com`
-            这种子域名就是典型用法。
-          </p>
         </section>
 
         <section class="warning-block">
-          <h2>要提前知道的限制</h2>
+          <h2>Why this page remains in the site</h2>
           <p>
-            如果你之前用的是仓库根目录或 `main /docs` 的 branch 发布，请先把 Pages source 改成 `GitHub Actions`。
-            不改这个设置，线上就还会继续显示旧页面，而不是新的 `notes/` 页面。
+            This is mainly a technical note for maintaining a research-facing site.
+            It keeps the publication path explicit without mixing deployment details into the research pages themselves.
           </p>
-        </section>
-
-        <section class="link-panel">
-          <h2>官方文档</h2>
-          <div class="link-list">
-            <a href="https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site">Publishing source</a>
-            <a href="https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages">Using custom workflows</a>
-            <a href="https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site">Custom domain</a>
-          </div>
         </section>
       </main>
 
       <footer class="site-footer">
-        <p>Current recommendation: publish with `GitHub Actions`, deploy artifact path `docs/`.</p>
+        <p>Current default: GitHub Pages with docs as the publishable site output.</p>
       </footer>
     </div>
   </body>

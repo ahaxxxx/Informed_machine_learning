@@ -1,9 +1,13 @@
-<!doctype html>
-<html lang="zh-CN">
+﻿<!doctype html>
+<html lang="en">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>knowledge_landmarks_toy | Informed Machine Learning</title>
+    <meta
+      name="description"
+      content="Project page for the knowledge landmarks toy reproduction."
+    >
     <link rel="stylesheet" href="../assets/site.css">
     <script defer src="../assets/site.js"></script>
   </head>
@@ -14,55 +18,61 @@
           <span class="brand-mark">IML</span>
           <span class="brand-text">Informed Machine Learning</span>
         </a>
-        <button class="nav-toggle" type="button" aria-expanded="false" aria-label="切换导航">
-          <span></span>
-          <span></span>
-        </button>
-        <nav class="site-nav">
-          <a href="../index.html">首页</a>
-          <a href="../reading-map.html">阅读路线</a>
-          <a href="../notes.html">研究笔记</a>
-          <a href="../toys.html">Toy 项目</a>
-          <a href="../deploy.html">部署说明</a>
-        </nav>
+
+        <div class="header-controls">
+          <nav class="site-nav">
+            <a href="../index.html">Home</a>
+            <a href="../reading-map.html">Reading Map</a>
+            <a href="../notes.html">Notes</a>
+            <a href="../toys.html">Reproductions</a>
+            <a href="../deploy.html">Site Setup</a>
+          </nav>
+
+          <button class="nav-toggle" type="button" aria-expanded="false" aria-label="Toggle navigation">
+            <span></span>
+            <span></span>
+          </button>
+        </div>
       </header>
 
       <main class="content-page">
         <section class="page-intro">
           <p class="eyebrow">Project 03</p>
           <h1>knowledge_landmarks_toy</h1>
-          <p>这条线更接近一个能继续长成研究原型的项目：局部数据很少，但全局有结构化知识 landmarks。</p>
+          <p>
+            A small-scale implementation used to examine a softer form of structural prior, in which global knowledge landmarks may regularize sparse local observations.
+          </p>
         </section>
 
         <section class="detail-grid">
           <article class="detail-card">
-            <h2>核心问题</h2>
-            <p>当数值数据只覆盖局部区域时，全局知识 landmarks 能否帮助模型在全域更稳定地泛化。</p>
+            <h2>Core question</h2>
+            <p>When numerical observations cover only local regions, can global knowledge landmarks support more stable generalization across the full space?</p>
           </article>
           <article class="detail-card">
-            <h2>适合先看的文件</h2>
-            <p>`README -> run.py -> experiment.py -> landmarks.py -> trainer.py`</p>
+            <h2>Suggested code order</h2>
+            <p>Read the trainer first, then inspect the landmark construction, and finally trace how the regularization term interacts with the model update.</p>
           </article>
           <article class="detail-card">
-            <h2>你应该抓住的点</h2>
-            <p>它不是在做精确逻辑约束，而是在做“全局模糊但结构化的知识 regularization”。</p>
+            <h2>Mechanism to watch</h2>
+            <p>This setting is not about exact logical satisfaction. It can be viewed instead as a softer regularization mechanism driven by global structural knowledge.</p>
           </article>
         </section>
 
         <section class="link-panel">
-          <h2>源码入口</h2>
+          <h2>Source entry points</h2>
           <div class="link-list">
             <a href="https://github.com/ahaxxxx/Informed_machine_learning/blob/main/repro/02_knowledge_landmarks_toy/README.md">README</a>
             <a href="https://github.com/ahaxxxx/Informed_machine_learning/blob/main/repro/02_knowledge_landmarks_toy/run.py">run.py</a>
             <a href="https://github.com/ahaxxxx/Informed_machine_learning/blob/main/repro/02_knowledge_landmarks_toy/landmarks.py">landmarks.py</a>
             <a href="https://github.com/ahaxxxx/Informed_machine_learning/blob/main/repro/02_knowledge_landmarks_toy/trainer.py">trainer.py</a>
-            <a href="https://github.com/ahaxxxx/Informed_machine_learning/blob/main/repro/02_knowledge_landmarks_toy/knowledge_landmarks_toy_%E4%BB%A3%E7%A0%81%E9%80%90%E8%A1%8C%E8%A7%A3%E6%9E%90.md">代码逐行解析</a>
+            <a href="https://github.com/ahaxxxx/Informed_machine_learning/blob/main/repro/02_knowledge_landmarks_toy/knowledge_landmarks_toy_%E4%BB%A3%E7%A0%81%E9%80%90%E8%A1%8C%E8%A7%A3%E6%9E%90.md">Line-by-line analysis</a>
           </div>
         </section>
       </main>
 
       <footer class="site-footer">
-        <p><a href="../toys.html">返回 Toy 导航</a></p>
+        <p><a href="../toys.html">Back to reproductions</a></p>
       </footer>
     </div>
   </body>

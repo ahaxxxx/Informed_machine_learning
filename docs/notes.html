@@ -1,12 +1,12 @@
-<!doctype html>
-<html lang="zh-CN">
+﻿<!doctype html>
+<html lang="en">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>研究笔记 | Informed Machine Learning</title>
+    <title>Reading Notes | Informed Machine Learning</title>
     <meta
       name="description"
-      content="把 Knowledge 目录里的研究笔记发布成站内可读页面，支持公式、表格和长文阅读。"
+      content="Structured reading notes on informed machine learning, including published English notes for the survey and Logic-Net."
     >
     <link rel="stylesheet" href="./assets/site.css">
     <script defer src="./assets/site.js"></script>
@@ -18,98 +18,76 @@
           <span class="brand-mark">IML</span>
           <span class="brand-text">Informed Machine Learning</span>
         </a>
-        <button class="nav-toggle" type="button" aria-expanded="false" aria-label="切换导航">
-          <span></span>
-          <span></span>
-        </button>
-        <nav class="site-nav">
-          <a href="./index.html">首页</a>
-          <a href="./reading-map.html">阅读路线</a>
-          <a href="./notes.html">研究笔记</a>
-          <a href="./toys.html">Toy 项目</a>
-          <a href="./deploy.html">部署说明</a>
-        </nav>
+
+        <div class="header-controls">
+          <nav class="site-nav">
+            <a href="./index.html">Home</a>
+            <a href="./reading-map.html">Reading Map</a>
+            <a href="./notes.html">Notes</a>
+            <a href="./toys.html">Reproductions</a>
+            <a href="./deploy.html">Site Setup</a>
+          </nav>
+
+          <button class="nav-toggle" type="button" aria-expanded="false" aria-label="Toggle navigation">
+            <span></span>
+            <span></span>
+          </button>
+        </div>
       </header>
 
       <main class="content-page">
         <section class="page-intro">
-          <p class="eyebrow">Research Notes</p>
-          <h1>站内笔记入口</h1>
+          <p class="eyebrow">Reading Notes</p>
+          <h1>Published notes with equations, figures, and implementation hooks preserved</h1>
           <p>
-            这些页面不是 GitHub 原文链接，而是由 `Knowledge/*.md` 自动生成的站内 HTML。
-            公式、表格、目录和长文排版都会在这里直接显示。
+            These pages are generated from the Markdown notes in the repository. They document my ongoing reading and current understanding,
+            with emphasis on mechanism, notation, and code-facing questions rather than final claims.
           </p>
         </section>
 
-        <section class="detail-grid">
-          <article class="detail-card">
-            <p class="card-tag">Logic Rules</p>
-            <h2>Logic-Net 深度结构解析</h2>
-            <p>
-              以 Hu et al. 2016 为主轴，把 Logic-Net-type methods 统一到 posterior / loss /
-              feasible set 三类约束接口，并展开优化机制和失效链条。
-            </p>
-            <div class="link-list">
-              <a href="./notes/logic-net-zh.html">站内阅读</a>
-              <a href="https://github.com/ahaxxxx/Informed_machine_learning/blob/main/Knowledge/logic_net_notes_zh.md">源 Markdown</a>
-            </div>
-          </article>
-
-          <article class="detail-card">
-            <p class="card-tag">Logic Rules / EN</p>
-            <h2>Logic-Net Structured Analysis</h2>
-            <p>
-              A complete English version of the Logic-Net note, keeping the same structure as the Chinese note:
-              minimal setup, posterior projection, distillation mechanism, optimization analysis, limitations, and extensions.
-            </p>
-            <div class="link-list">
-              <a href="./notes/logic-net-en.html">Read in site</a>
-              <a href="https://github.com/ahaxxxx/Informed_machine_learning/blob/main/Knowledge/logic_net_notes_en.md">Source Markdown</a>
-            </div>
-          </article>
-
-          <article class="detail-card">
+        <section class="cards-grid notes-grid">
+          <article class="note-card">
             <p class="card-tag">Survey</p>
-            <h2>Informed ML Survey 中文笔记</h2>
+            <h3>Informed ML Survey</h3>
             <p>
-              以 taxonomy 为主线，拆解 knowledge source、representation、integration 三层接口，
-              并展开 logic rules 与 knowledge graphs 两条关键路径。
+              This paper presents the broad taxonomy of informed machine learning. My note focuses on knowledge source,
+              representation, and integration location, together with the distinctions that remain useful for later comparison.
             </p>
-            <div class="link-list">
-              <a href="./notes/survey-zh.html">站内阅读</a>
-              <a href="https://github.com/ahaxxxx/Informed_machine_learning/blob/main/Knowledge/survey_notes_zh.md">源 Markdown</a>
+            <div class="card-actions">
+              <a href="./notes/survey-en.html">Open note</a>
+              <a href="https://github.com/ahaxxxx/Informed_machine_learning/blob/main/Knowledge/survey_notes_en.md">Source</a>
             </div>
           </article>
 
-          <article class="detail-card">
-            <p class="card-tag">Survey / EN</p>
-            <h2>Informed ML Survey Structured Notes</h2>
+          <article class="note-card">
+            <p class="card-tag">Logic Rules</p>
+            <h3>Logic-Net</h3>
             <p>
-              An English version of the survey note, organized around the informed-ML taxonomy of
-              knowledge source, representation, and integration location, together with figure-level reading notes.
+              A key mechanism is the construction of a rule-regularized teacher distribution followed by distillation back into student parameters.
+              One interpretation is that prior knowledge is introduced through posterior bias rather than direct architectural encoding.
             </p>
-            <div class="link-list">
-              <a href="./notes/survey-en.html">Read in site</a>
-              <a href="https://github.com/ahaxxxx/Informed_machine_learning/blob/main/Knowledge/survey_notes_en.md">Source Markdown</a>
+            <div class="card-actions">
+              <a href="./notes/logic-net-en.html">Open note</a>
+              <a href="https://github.com/ahaxxxx/Informed_machine_learning/blob/main/Knowledge/logic_net_notes_en.md">Source</a>
             </div>
           </article>
+        </section>
 
-          <article class="detail-card">
-            <p class="card-tag">Workflow</p>
-            <h2>如何更新站内笔记</h2>
-            <p>
-              继续在 `Knowledge/` 写作，然后运行一次 `python tools/generate_notes_site.py`，
-              再把生成结果推到 GitHub Pages 即可。
-            </p>
-            <div class="link-list">
-              <a href="https://github.com/ahaxxxx/Informed_machine_learning/blob/main/tools/generate_notes_site.py">生成脚本</a>
-            </div>
-          </article>
+        <section class="resource-block">
+          <h2>How these note pages are maintained</h2>
+          <p>
+            The writing stays in the Knowledge directory as Markdown. A local generation script publishes the notes into site pages,
+            so the repository preserves both raw source and readable HTML while keeping a clear distinction between working notes and validated results.
+          </p>
+          <div class="link-list">
+            <a href="https://github.com/ahaxxxx/Informed_machine_learning/blob/main/tools/generate_notes_site.py">Site generator</a>
+            <a href="./reading-map.html">Reading map</a>
+          </div>
         </section>
       </main>
 
       <footer class="site-footer">
-        <p>Pages 发布目录仍然是 <code>main /docs</code>，笔记源文件保留在 <code>Knowledge/</code>。</p>
+        <p>The note pages are meant to be readable first and repository-traceable second.</p>
       </footer>
     </div>
   </body>

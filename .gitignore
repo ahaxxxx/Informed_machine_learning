@@ -1,22 +1,27 @@
-__pycache__/
-*.pyc
-*.pyo
-*.pdf
-!papers/**/*.pdf
-*.zip
+
+# 临时markdown
+_markdown_*/
+*.markdown.err
+
+# codex / email
+docs/codex_*.md
+docs/email_*.md
+
+# LaTeX
 *.aux
 *.log
 *.out
 *.synctex.gz
 
-tmp/
-output/
-参考资料/
-papers/internal/
-docs/git_workflow_guide.md
-十年发展战略说明书（家庭安心版+学术规划版）.md
+# Python
+__pycache__/
 
-repro/*/results/**
-!repro/*/results/
-!repro/*/results/.gitkeep
-!repro/*/results/README.md
+# 实验输出
+output/
+repro/**/results/
+
+# 可选
+docs/git_workflow_guide.md
+
+tmp/
+*.zip

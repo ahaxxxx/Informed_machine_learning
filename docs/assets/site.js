@@ -1,4 +1,4 @@
-const currentPage = document.body.dataset.page;
+﻿const currentPage = document.body.dataset.page;
 const navLinks = document.querySelectorAll(".site-nav a");
 const navToggle = document.querySelector(".nav-toggle");
 const siteNav = document.querySelector(".site-nav");

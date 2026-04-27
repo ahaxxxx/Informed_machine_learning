@@ -1,9 +1,13 @@
-<!doctype html>
-<html lang="zh-CN">
+﻿<!doctype html>
+<html lang="en">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>semantic_loss_toy | Informed Machine Learning</title>
+    <meta
+      name="description"
+      content="Project page for the Semantic Loss toy reproduction."
+    >
     <link rel="stylesheet" href="../assets/site.css">
     <script defer src="../assets/site.js"></script>
   </head>
@@ -14,55 +18,61 @@
           <span class="brand-mark">IML</span>
           <span class="brand-text">Informed Machine Learning</span>
         </a>
-        <button class="nav-toggle" type="button" aria-expanded="false" aria-label="切换导航">
-          <span></span>
-          <span></span>
-        </button>
-        <nav class="site-nav">
-          <a href="../index.html">首页</a>
-          <a href="../reading-map.html">阅读路线</a>
-          <a href="../notes.html">研究笔记</a>
-          <a href="../toys.html">Toy 项目</a>
-          <a href="../deploy.html">部署说明</a>
-        </nav>
+
+        <div class="header-controls">
+          <nav class="site-nav">
+            <a href="../index.html">Home</a>
+            <a href="../reading-map.html">Reading Map</a>
+            <a href="../notes.html">Notes</a>
+            <a href="../toys.html">Reproductions</a>
+            <a href="../deploy.html">Site Setup</a>
+          </nav>
+
+          <button class="nav-toggle" type="button" aria-expanded="false" aria-label="Toggle navigation">
+            <span></span>
+            <span></span>
+          </button>
+        </div>
       </header>
 
       <main class="content-page">
         <section class="page-intro">
           <p class="eyebrow">Project 02</p>
           <h1>semantic_loss_toy</h1>
-          <p>这一版最关键的是：知识不再经过 teacher，而是直接变成输出分布上的约束损失。</p>
+          <p>
+            A small-scale implementation used to examine how logical validity can be expressed directly as probability mass over satisfying worlds.
+          </p>
         </section>
 
         <section class="detail-grid">
           <article class="detail-card">
-            <h2>核心问题</h2>
-            <p>怎样把“合法输出结构”变成一个可微的 probability-mass objective。</p>
+            <h2>Core question</h2>
+            <p>How can a valid output structure become a differentiable objective without introducing a teacher model?</p>
           </article>
           <article class="detail-card">
-            <h2>适合先看的文件</h2>
-            <p>`README -> run.py -> experiment.py -> constraints.py -> trainer.py`</p>
+            <h2>Suggested code order</h2>
+            <p>Begin with the constraint definition, then inspect the loss computation, and finally trace how the loss enters the trainer.</p>
           </article>
           <article class="detail-card">
-            <h2>你应该抓住的点</h2>
-            <p>`log_satisfaction_mass` 在算的不是最大类，而是模型把多少概率质量放到了合法赋值集合上。</p>
+            <h2>Mechanism to watch</h2>
+            <p>A key mechanism is that optimization is not over the most likely class alone; it is over the total probability mass assigned to worlds that satisfy the logical constraint.</p>
           </article>
         </section>
 
         <section class="link-panel">
-          <h2>源码入口</h2>
+          <h2>Source entry points</h2>
           <div class="link-list">
             <a href="https://github.com/ahaxxxx/Informed_machine_learning/blob/main/repro/03_semantic_loss_toy/README.md">README</a>
             <a href="https://github.com/ahaxxxx/Informed_machine_learning/blob/main/repro/03_semantic_loss_toy/run.py">run.py</a>
             <a href="https://github.com/ahaxxxx/Informed_machine_learning/blob/main/repro/03_semantic_loss_toy/constraints.py">constraints.py</a>
             <a href="https://github.com/ahaxxxx/Informed_machine_learning/blob/main/repro/03_semantic_loss_toy/trainer.py">trainer.py</a>
-            <a href="https://github.com/ahaxxxx/Informed_machine_learning/blob/main/repro/03_semantic_loss_toy/semantic_loss_toy_%E4%BB%A3%E7%A0%81%E9%80%90%E8%A1%8C%E8%A7%A3%E6%9E%90.md">代码逐行解析</a>
+            <a href="https://github.com/ahaxxxx/Informed_machine_learning/blob/main/repro/03_semantic_loss_toy/semantic_loss_toy_%E4%BB%A3%E7%A0%81%E9%80%90%E8%A1%8C%E8%A7%A3%E6%9E%90.md">Line-by-line analysis</a>
           </div>
         </section>
       </main>
 
       <footer class="site-footer">
-        <p><a href="../toys.html">返回 Toy 导航</a></p>
+        <p><a href="../toys.html">Back to reproductions</a></p>
       </footer>
     </div>
   </body>

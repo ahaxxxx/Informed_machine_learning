@@ -1,9 +1,13 @@
-<!doctype html>
-<html lang="zh-CN">
+﻿<!doctype html>
+<html lang="en">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>阅读路线 | Informed Machine Learning</title>
+    <title>Reading Map | Informed Machine Learning</title>
+    <meta
+      name="description"
+      content="A concise reading order for the informed machine learning papers and toy reproductions in this repository."
+    >
     <link rel="stylesheet" href="./assets/site.css">
     <script defer src="./assets/site.js"></script>
   </head>
@@ -14,26 +18,30 @@
           <span class="brand-mark">IML</span>
           <span class="brand-text">Informed Machine Learning</span>
         </a>
-        <button class="nav-toggle" type="button" aria-expanded="false" aria-label="切换导航">
-          <span></span>
-          <span></span>
-        </button>
-        <nav class="site-nav">
-          <a href="./index.html">首页</a>
-          <a href="./reading-map.html">阅读路线</a>
-          <a href="./notes.html">研究笔记</a>
-          <a href="./toys.html">Toy 项目</a>
-          <a href="./deploy.html">部署说明</a>
-        </nav>
+
+        <div class="header-controls">
+          <nav class="site-nav">
+            <a href="./index.html">Home</a>
+            <a href="./reading-map.html">Reading Map</a>
+            <a href="./notes.html">Notes</a>
+            <a href="./toys.html">Reproductions</a>
+            <a href="./deploy.html">Site Setup</a>
+          </nav>
+
+          <button class="nav-toggle" type="button" aria-expanded="false" aria-label="Toggle navigation">
+            <span></span>
+            <span></span>
+          </button>
+        </div>
       </header>
 
       <main class="content-page">
         <section class="page-intro">
           <p class="eyebrow">Reading Map</p>
-          <h1>先按逻辑看，再按项目看。</h1>
+          <h1>Read the methods in terms of optimization interface, then move to code</h1>
           <p>
-            这一页不是把所有论文再复述一遍，而是把“先看什么、为什么这样排、看完应该进哪个 toy”
-            压成一个手机上也能快速扫完的版本。
+            This page gives a compact reading order. It is meant to clarify what to read first,
+            why that order may be useful, and which toy reproduction becomes more interpretable after each step.
           </p>
         </section>
 
@@ -41,51 +49,58 @@
           <article class="flow-card">
             <span class="flow-step">01</span>
             <h2>Survey</h2>
-            <p>先建立 informed ML 的地图，知道后面几篇分别在解决哪一类问题。</p>
+            <p>Begin with the taxonomy so that later methods can be compared as different interfaces for the integration of prior knowledge.</p>
           </article>
           <article class="flow-card">
             <span class="flow-step">02</span>
-            <h2>Logic-net</h2>
-            <p>看清规则如何经过 teacher-student 机制进入训练。</p>
+            <h2>Logic-Net</h2>
+            <p>Then examine how logic rules are converted into a teacher distribution and later written back into parameters through distillation.</p>
           </article>
           <article class="flow-card">
             <span class="flow-step">03</span>
             <h2>Semantic Loss</h2>
-            <p>从规则蒸馏过渡到“输出分布满足约束的概率质量”。</p>
+            <p>Next move from rule distillation to a direct view in which logical validity is expressed as probability mass over satisfying worlds.</p>
           </article>
           <article class="flow-card">
             <span class="flow-step">04</span>
             <h2>DL2</h2>
-            <p>把单个技巧上升到统一约束接口和系统视角。</p>
+            <p>After that, examine a broader declarative-constraint interface in which logical structure is linked to differentiable training objectives.</p>
           </article>
           <article class="flow-card">
             <span class="flow-step">05</span>
             <h2>Granular / Landmarks</h2>
-            <p>从精确逻辑扩展到模糊知识、区间知识和全局知识 regularizer。</p>
+            <p>Finally extend the view from exact logical rules toward softer, more global forms of knowledge regularization.</p>
           </article>
         </section>
 
-        <section class="note-block">
-          <h2>已经落地的推荐代码顺序</h2>
+        <section class="steps-block">
+          <h2>Suggested reproduction order</h2>
           <ol class="ordered-list">
             <li><a href="./projects/logic-net-toy.html">logic_net_toy</a></li>
             <li><a href="./projects/semantic-loss-toy.html">semantic_loss_toy</a></li>
             <li><a href="./projects/knowledge-landmarks-toy.html">knowledge_landmarks_toy</a></li>
           </ol>
           <p>
-            这样排是为了先看清最基础的规则注入，再看更纯粹的 semantic loss，最后再看更像研究原型的知识 landmarks。
+            This order begins with the clearest rule-injection mechanism, then moves to direct constraints on output distributions,
+            and finally to a softer global regularization setting.
           </p>
         </section>
 
         <section class="resource-block">
-          <h2>原始总文档</h2>
-          <p>完整版本仍然在仓库里，包含论文截图、详细解读、toy 路线和读代码导航。</p>
-          <a class="button button-primary" href="https://github.com/ahaxxxx/Informed_machine_learning/blob/main/Knowledge/informed_ml_%E8%AE%BA%E6%96%87%E8%A7%A3%E8%AF%BB%E4%B8%8E%E5%A4%8D%E7%8E%B0%E8%B7%AF%E7%BA%BF.md">在 GitHub 查看总文档</a>
+          <h2>Long-form roadmap document</h2>
+          <p>
+            The full roadmap remains in the repository and includes screenshots, note relationships,
+            and code-reading guidance that go beyond the short overview on this page.
+          </p>
+          <div class="link-list">
+            <a href="https://github.com/ahaxxxx/Informed_machine_learning/blob/main/Knowledge/informed_ml_%E8%AE%BA%E6%96%87%E8%A7%A3%E8%AF%BB%E4%B8%8E%E5%A4%8D%E7%8E%B0%E8%B7%AF%E7%BA%BF.md">GitHub roadmap</a>
+            <a href="./notes.html">Published notes</a>
+          </div>
         </section>
       </main>
 
       <footer class="site-footer">
-        <p>Use this page as the quick map. Use the repository documents for the full notes.</p>
+        <p>Use this page as the quick map and the note pages as the full record.</p>
       </footer>
     </div>
   </body>

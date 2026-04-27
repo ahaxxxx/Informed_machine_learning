@@ -1,12 +1,12 @@
-<!doctype html>
-<html lang="zh-CN">
+﻿<!doctype html>
+<html lang="en">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Informed Machine Learning</title>
+    <title>Bozhan Li | Informed Machine Learning</title>
     <meta
       name="description"
-      content="Informed Machine Learning 的论文路线、toy reproduction 和代码阅读入口。"
+      content="Research homepage for Bozhan Li, focused on informed machine learning through structured reading notes, small-scale reproductions, and optimization-level comparisons."
     >
     <link rel="stylesheet" href="./assets/site.css">
     <script defer src="./assets/site.js"></script>
@@ -18,135 +18,233 @@
           <span class="brand-mark">IML</span>
           <span class="brand-text">Informed Machine Learning</span>
         </a>
-        <button class="nav-toggle" type="button" aria-expanded="false" aria-label="切换导航">
-          <span></span>
-          <span></span>
-        </button>
-        <nav class="site-nav">
-          <a href="./index.html">首页</a>
-          <a href="./reading-map.html">阅读路线</a>
-          <a href="./notes.html">研究笔记</a>
-          <a href="./toys.html">Toy 项目</a>
-          <a href="./deploy.html">部署说明</a>
-        </nav>
+
+        <div class="header-controls">
+          <nav class="site-nav">
+            <a href="./index.html">Home</a>
+            <a href="./reading-map.html">Reading Map</a>
+            <a href="./notes.html">Notes</a>
+            <a href="./toys.html">Reproductions</a>
+            <a href="./deploy.html">Site Setup</a>
+          </nav>
+
+          <button class="nav-toggle" type="button" aria-expanded="false" aria-label="Toggle navigation">
+            <span></span>
+            <span></span>
+          </button>
+        </div>
       </header>
 
-      <main>
-        <section class="hero">
-          <div class="hero-copy">
-            <p class="eyebrow">Research Notes + Toy Reproductions</p>
-            <h1>把论文路线、代码骨架和复现入口放在一个能随时拿手机看的站里。</h1>
-            <p class="hero-text">
-              这里整理的是 informed machine learning 的阅读路线、三个已经落地的 toy
-              reproduction，以及后续要继续推进的逻辑主线和知识主线。
-            </p>
-            <div class="hero-actions">
-              <a class="button button-primary" href="./reading-map.html">从阅读路线开始</a>
-              <a class="button button-secondary" href="./toys.html">直接看 toy 项目</a>
-            </div>
-          </div>
+      <main class="content-page home-page">
+        <section class="home-hero">
+          <div class="hero-layout">
+            <article class="hero-card">
+              <p class="eyebrow">Academic Homepage</p>
+              <h1>Bozhan Li</h1>
+              <p class="hero-subtitle">Incoming PhD Student, University of Alberta</p>
+              <p class="hero-text">
+                Supervisor: Prof. Witold Pedrycz. My current work examines informed machine learning,
+                with emphasis on the integration of prior knowledge, constraint-aware optimization,
+                and knowledge-guided feature selection.
+              </p>
+              <div class="hero-actions">
+                <a class="button button-primary" href="./notes.html">Open reading notes</a>
+                <a class="button button-secondary" href="./toys.html">View reproductions</a>
+              </div>
+            </article>
 
-          <div class="hero-panel">
-            <p class="panel-title">当前已落地</p>
-            <ul class="stack-list">
-              <li>
-                <span class="stack-index">01</span>
-                <div>
-                  <strong>logic_net_toy</strong>
-                  <p>规则通过 teacher-student 方式进入训练。</p>
+            <aside class="profile-card">
+              <p class="panel-title">Current Status</p>
+              <div class="hero-meta">
+                <div class="meta-row">
+                  <strong>Working question</strong>
+                  <p>Where should prior knowledge most effectively enter the learning pipeline?</p>
                 </div>
-              </li>
-              <li>
-                <span class="stack-index">02</span>
-                <div>
-                  <strong>knowledge_landmarks_toy</strong>
-                  <p>局部数据和全局知识 landmarks 联合建模。</p>
+                <div class="meta-row">
+                  <strong>Current reading</strong>
+                  <p>Survey, Logic-Net, Semantic Loss, and the route toward declarative constraints.</p>
                 </div>
-              </li>
-              <li>
-                <span class="stack-index">03</span>
-                <div>
-                  <strong>semantic_loss_toy</strong>
-                  <p>知识不经过 teacher，直接进入输出分布上的 loss。</p>
+                <div class="meta-row">
+                  <strong>Approach</strong>
+                  <p>Close reading, small-scale implementation, and comparison at the level of optimization mechanism.</p>
                 </div>
-              </li>
-            </ul>
+              </div>
+            </aside>
           </div>
         </section>
 
-        <section class="section-grid">
-          <article class="feature-card">
-            <p class="card-tag">主入口</p>
-            <h2>总路线文档</h2>
+        <section class="home-section">
+          <article class="warning-block">
+            <h2>Research note on scope</h2>
             <p>
-              如果你只打开一个入口，就从总路线文档开始。它把论文关系、toy 顺序和读代码顺序都串起来了。
+              This website documents ongoing research exploration. All ideas are preliminary and subject to further validation.
             </p>
-            <div class="feature-links">
-              <a href="./notes.html">在站内看笔记</a>
-              <a href="https://github.com/ahaxxxx/Informed_machine_learning/blob/main/Knowledge/informed_ml_%E8%AE%BA%E6%96%87%E8%A7%A3%E8%AF%BB%E4%B8%8E%E5%A4%8D%E7%8E%B0%E8%B7%AF%E7%BA%BF.md">在 GitHub 看原文档</a>
-              <a href="./reading-map.html">看站内导览页</a>
-            </div>
-          </article>
-
-          <article class="feature-card">
-            <p class="card-tag">适合先看</p>
-            <h2>代码阅读顺序</h2>
-            <p>
-              推荐顺序是 `logic_net_toy -> semantic_loss_toy -> knowledge_landmarks_toy`。
-              先看规则蒸馏，再看语义约束，最后看更像研究原型的知识 regularization。
-            </p>
-            <div class="feature-links">
-              <a href="./toys.html">进入 toy 导航</a>
-            </div>
-          </article>
-
-          <article class="feature-card">
-            <p class="card-tag">后续扩展</p>
-            <h2>GitHub Pages + 自定义域名</h2>
-            <p>
-              这个站当前改成了 `GitHub Actions -> Pages artifact` 路线。源文件和站点页面可以分开管理，
-              也能继续接 `research.bozhanli.com` 这样的自定义域名。
-            </p>
-            <div class="feature-links">
-              <a href="./deploy.html">看部署说明</a>
-            </div>
           </article>
         </section>
 
-        <section class="timeline">
-          <div class="timeline-header">
-            <p class="eyebrow">Reading Spine</p>
-            <h2>三步走</h2>
+        <section class="home-section">
+          <div class="section-heading">
+            <p class="section-kicker">Research Interests</p>
+            <h2>A focused map of the questions I am currently investigating</h2>
           </div>
+          <div class="cards-grid">
+            <article class="research-card">
+              <p class="card-tag">Question 01</p>
+              <h3>Where does prior knowledge most effectively enter the learning pipeline?</h3>
+              <p>
+                I am interested in how the same prior knowledge changes once it is introduced through data,
+                the hypothesis set, the learning algorithm, or the final hypothesis.
+              </p>
+            </article>
+            <article class="research-card">
+              <p class="card-tag">Question 02</p>
+              <h3>How do different constraint mechanisms influence optimization dynamics?</h3>
+              <p>
+                A central comparison is between teacher-student regularization, semantic losses,
+                and declarative constraints, especially in terms of optimization behavior and failure modes.
+              </p>
+            </article>
+            <article class="research-card">
+              <p class="card-tag">Question 03</p>
+              <h3>Can the integration of prior knowledge occur earlier, for example through feature selection?</h3>
+              <p>
+                I am exploring whether prior knowledge can be connected to feature selection,
+                data representation, or the training procedure rather than only to the output stage.
+              </p>
+            </article>
+          </div>
+        </section>
 
-          <div class="timeline-list">
-            <article>
-              <span>Step 1</span>
-              <h3>看清逻辑主线</h3>
+        <section class="home-section">
+          <div class="section-heading">
+            <p class="section-kicker">Reading Notes</p>
+            <h2>Structured notes that preserve equations, examples, and implementation hooks</h2>
+          </div>
+          <div class="cards-grid notes-grid">
+            <article class="note-card">
+              <p class="card-tag">Survey</p>
+              <h3>Informed ML Survey</h3>
               <p>
-                从 survey、logic-net、semantic loss、DL2 理顺“知识怎样进入训练”这条线。
+                This paper presents a taxonomy of informed machine learning. My note focuses on knowledge source,
+                representation, and integration location, with emphasis on the distinctions that matter for later methods.
+              </p>
+              <div class="card-actions">
+                <a href="./notes/survey-en.html">Open note</a>
+                <a href="https://github.com/ahaxxxx/Informed_machine_learning/blob/main/Knowledge/survey_notes_en.md">Source</a>
+              </div>
+            </article>
+            <article class="note-card">
+              <p class="card-tag">Logic Rules</p>
+              <h3>Logic-Net</h3>
+              <p>
+                A key mechanism is the construction of a rule-regularized teacher distribution,
+                followed by distillation back into the student parameters. One interpretation is that rules reshape training through posterior bias.
+              </p>
+              <div class="card-actions">
+                <a href="./notes/logic-net-en.html">Open note</a>
+                <a href="https://github.com/ahaxxxx/Informed_machine_learning/blob/main/Knowledge/logic_net_notes_en.md">Source</a>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section class="home-section">
+          <div class="section-heading">
+            <p class="section-kicker">Reproduction Projects</p>
+            <h2>Small-scale implementations used to examine paper-level mechanisms</h2>
+          </div>
+          <div class="cards-grid project-grid">
+            <article class="project-card">
+              <p class="card-tag">Project 01</p>
+              <h3>logic_net_toy</h3>
+              <p>
+                A small-scale implementation used to examine how rules shape a teacher distribution and how that distribution is distilled back into a student model.
+              </p>
+              <div class="card-actions">
+                <a href="./projects/logic-net-toy.html">Project page</a>
+              </div>
+            </article>
+            <article class="project-card">
+              <p class="card-tag">Project 02</p>
+              <h3>semantic_loss_toy</h3>
+              <p>
+                A small-scale implementation used to better understand how logical validity can be translated into probability mass over satisfying worlds.
+              </p>
+              <div class="card-actions">
+                <a href="./projects/semantic-loss-toy.html">Project page</a>
+              </div>
+            </article>
+            <article class="project-card">
+              <p class="card-tag">Project 03</p>
+              <h3>knowledge_landmarks_toy</h3>
+              <p>
+                A small-scale implementation used to examine a softer form of structural prior, where global landmarks may regularize sparse local observations.
+              </p>
+              <div class="card-actions">
+                <a href="./projects/knowledge-landmarks-toy.html">Project page</a>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section class="home-section">
+          <div class="section-heading">
+            <p class="section-kicker">Current Progress</p>
+            <h2>A concise timeline of completed work and current analysis</h2>
+          </div>
+          <div class="timeline-grid">
+            <article class="timeline-card">
+              <p class="timeline-date">April 2026</p>
+              <h3>Established the note-publishing workflow</h3>
+              <p>
+                The site now publishes structured Markdown notes into readable HTML pages while preserving equations, figures, and repository traceability.
               </p>
             </article>
-            <article>
-              <span>Step 2</span>
-              <h3>用 toy 项目落地</h3>
+            <article class="timeline-card">
+              <p class="timeline-date">April 2026</p>
+              <h3>Completed structured reading of the survey and Logic-Net</h3>
               <p>
-                每篇只抓一个核心思想，先用最小 toy 复现，而不是一上来追原论文完整实验。
+                These readings are currently organized around one working question: how the integration of prior knowledge changes once it enters optimization through different interfaces.
               </p>
             </article>
-            <article>
-              <span>Step 3</span>
-              <h3>整理成可展示的原型</h3>
+            <article class="timeline-card">
+              <p class="timeline-date">Current</p>
+              <h3>Currently analyzing Semantic Loss</h3>
               <p>
-                把文档、代码、图和结论收敛到一个统一站点里，后面无论是自己复盘还是给导师看都更顺。
+                A key aspect of the current reading is the distinction between Bernoulli world probabilities, softmax class distributions, and probability mass over satisfying worlds.
+              </p>
+            </article>
+            <article class="timeline-card">
+              <p class="timeline-date">Next</p>
+              <h3>Next step involves comparative analysis of constraint routes</h3>
+              <p>
+                The next stage is to compare rule distillation, semantic loss, and declarative constraints in terms of optimization interface, interpretability, and reproduction difficulty.
               </p>
             </article>
           </div>
+        </section>
+
+        <section class="home-section">
+          <div class="section-heading">
+            <p class="section-kicker">Contact</p>
+            <h2>Public entry points for notes, code, and ongoing research material</h2>
+          </div>
+          <article class="contact-card">
+            <p>
+              The main external entry points are the research site itself, the public repository,
+              and the note pages that track my current reading and implementation-oriented understanding.
+            </p>
+            <div class="contact-links">
+              <a href="https://research.bozhanli.com">research.bozhanli.com</a>
+              <a href="https://github.com/ahaxxxx">GitHub Profile</a>
+              <a href="https://github.com/ahaxxxx/Informed_machine_learning">Repository</a>
+            </div>
+          </article>
         </section>
       </main>
 
       <footer class="site-footer">
-        <p>Built for GitHub Pages. Source repo: <a href="https://github.com/ahaxxxx/Informed_machine_learning">ahaxxxx/Informed_machine_learning</a></p>
+        <p>This site is maintained as a structured research workspace for reading, reproduction, and early-stage investigation.</p>
       </footer>
     </div>
   </body>
