@@ -31,7 +31,7 @@ Therefore, whenever this document involves the following topics, they all defaul
 - soft logic encoding
 - the closed-form teacher distribution $q^\star$
 
-In other words, this document analyzes a class of 鈥淟ogic-Net-type methods鈥?whose main axis is Hu 2016, rather than an unverified same-name paper.
+In other words, this document analyzes a class of "Logic-Net-type methods" whose main axis is Hu 2016, rather than an unverified same-name paper.
 
 ### 0.5 Minimal Problem Setup and Notation
 
@@ -69,7 +69,7 @@ where $C>0$ is the overall strength coefficient for rule violation.
 
 ### 0.5.1 The Full Pipeline from the Training Set to the Closed-Form Teacher Distribution
 
-This subsection does only one thing: it reorganizes the main line from 鈥渙btaining the training set鈥?to 鈥渃omputing the closed-form teacher distribution $q^\star$鈥?into a single non-jumping chain. All formulas and examples below follow this order.
+This subsection does only one thing: it reorganizes the main line from "obtaining the training set" to "computing the closed-form teacher distribution $q^\star$" into a single non-jumping chain. All formulas and examples below follow this order.
 
 If you prefer a more diagram-like presentation, you can directly look at the figure below. The subscripts and superscripts are built into the image, so they do not depend on code-block rendering:
 
@@ -418,7 +418,7 @@ The real question it answers is:
 
 > How can explicit logic rules be injected stably into the training process without rewriting the generic neural-network backbone?
 
-The word 鈥渟tably鈥?is crucial here. The authors do not want rules to remain only at the post-processing stage; they want the rules to enter the learning process itself.
+The word "stably" is crucial here. The authors do not want rules to remain only at the post-processing stage; they want the rules to enter the learning process itself.
 
 #### The Gap It Tries to Fill
 
@@ -452,7 +452,7 @@ The problem comes precisely from this point. Since
 $$
 G_F=\operatorname{Build}(F)
 $$
-itself depends on the syntactic form of the rules, once the form of the rules changes鈥攆or example:
+depends on the syntactic form of the rules, once the rule form changes, for example:
 
 - from simple implications to higher-order relations;
 - from propositional rules to variable-bearing relational rules;
@@ -489,7 +489,7 @@ More specifically:
 - if the rule appears only in a post-processing step such as $T_{\mathcal R}$, then it will not update $\theta$ through gradient backpropagation at all;
 - in either case, the optimization core is still mostly label fitting rather than the systematic suppression of logically violating states over the whole output space.
 
-Therefore, the statement 鈥渢he latter does not truly enter the optimization core鈥?more precisely means that the rule does not enter each learning step as an online, explicit posterior-constraint object, but instead remains attached to the scoring function or stays at the post-prediction repair stage.
+Therefore, the statement "the latter does not truly enter the optimization core" more precisely means that the rule does not enter each learning step as an online, explicit posterior-constraint object, but instead remains attached to the scoring function or stays at the post-prediction repair stage.
 
 ##### Hu 2016: A Third Interface Route
 
@@ -521,7 +521,7 @@ $$
 
 The key point here is that the rule does not determine the number of layers, the connectivity pattern, or the inference graph of the network. In other words, expressive power still comes from the generic neural network itself, rather than from a structure specifically assembled according to the rules.
 
-This is exactly what 鈥減reserving the parameterized expressive power of a generic neural network鈥?means.
+This is exactly what "preserving the parameterized expressive power of a generic neural network" means.
 
 ##### 2. Inject Rule Bias at the Predictive-Distribution Level
 
@@ -544,7 +544,7 @@ q_t^\star(y\mid x)
 p_{\theta_t}(y\mid x)\exp\bigl(-E_{\mathcal R}(x,y)\bigr).
 $$
 
-Here the symbol $\propto$ means 鈥減roportional to.鈥?In other words, the left-hand side is not literally equal to the right-hand side; rather, it differs only by a normalization constant. More explicitly, one first assigns unnormalized weights according to
+Here the symbol $\propto$ means "proportional to." In other words, the left-hand side is not literally equal to the right-hand side; rather, it differs only by a normalization constant. More explicitly, one first assigns unnormalized weights according to
 $$
 p_{\theta_t}(y\mid x)\exp\bigl(-E_{\mathcal R}(x,y)\bigr),
 $$
@@ -556,7 +556,7 @@ The principle of this step is:
 - the second term requires the teacher distribution to move probability mass toward output states that satisfy the rules better;
 - so the rule does not directly change the network structure. Instead, it first changes what the predictive distribution for this sample should look like.
 
-This is exactly what 鈥渇irst injecting rule bias at the predictive-distribution level鈥?means.
+This is exactly what "first injecting rule bias at the predictive-distribution level" means.
 
 ##### 3. Then Write that Bias Back into the Parameters through Distillation
 
@@ -583,7 +583,7 @@ Two quantities in particular should be distinguished:
 - $\theta_{t+1}$ is not another independent hyperparameter. It is the next-round student parameter obtained after the update at round $t$. That is, the current student uses $\theta_t$, and after seeing the true labels and the teacher distribution in this round, its parameter is updated to $\theta_{t+1}$.
 - $\pi_t\in[0,1]$ is the actual distillation-strength weight. The larger $\pi_t$ is, the more the $t$-th round emphasizes listening to the rule teacher; the smaller $\pi_t$ is, the more the round emphasizes listening to the true labels.
 
-If you want the phrase 鈥渉ow the teacher is fed back round by round鈥?to be completely transparent, it is best to first look at a one-sample toy computation. Here we deliberately simplify the neural network into a student that directly outputs the probabilities of four states, so that one can explicitly compute what happens in each round.
+If you want the phrase "how the teacher is fed back round by round" to be completely transparent, it is best to first look at a one-sample toy computation. Here we deliberately simplify the neural network into a student that directly outputs the probabilities of four states, so that one can explicitly compute what happens in each round.
 
 Fix one sample $x_n$, and let the true label be
 $$
@@ -823,8 +823,8 @@ The authors use soft logic to map Boolean logic into the interval $[0,1]$.
 
 | Logical object | soft-logic form | Role |
 | --- | --- | --- |
-| conjunction | $A \wedge_s B = \max\{A+B-1,0\}$ | approximate 鈥渂oth true鈥?|
-| disjunction | $A \vee_s B = \min\{A+B,1\}$ | approximate 鈥渁t least one true鈥?|
+| conjunction | $A \wedge_s B = \max\{A+B-1,0\}$ | approximate "both true" |
+| disjunction | $A \vee_s B = \min\{A+B,1\}$ | approximate "at least one true" |
 | negation | $\neg A = 1-A$ | continuous negation |
 | averaged conjunction | $A_1 \,\bar\wedge\, \cdots \,\bar\wedge\, A_N = \frac{1}{N}\sum_i A_i$ | softly aggregates multiple clauses |
 
@@ -853,7 +853,7 @@ This step changes the rule from a discrete constraint into an energy signal that
 
 #### 1.2.3 How Constraint Satisfaction Enters the Optimization
 
-The key point of Hu 2016 is not 鈥渁dding a logic penalty directly to the parameters,鈥?but rather 鈥渇irst constructing a teacher distribution.鈥?
+The key point of Hu 2016 is not "adding a logic penalty directly to the parameters," but rather "first constructing a teacher distribution."
 Given a student distribution $p_\theta(Y\mid X)$, the teacher distribution is obtained through a posterior-regularization projection:
 $$
 \min_{q,\ \xi\ge 0}\ \mathrm{KL}\bigl(q(Y\mid X)\,\|\,p_\theta(Y\mid X)\bigr)+C\sum_{l,g}\xi_{lg}
@@ -913,8 +913,8 @@ This step is not simply adding an extra logic loss.
 More accurately, it is doing the following:
 
 the original distribution $p_\theta(Y\mid X)$
-鈫?reweight it according to the rule violation degree
-鈫?obtain a more rule-consistent distribution $q^\star(Y\mid X)$.
+-> reweight it according to the rule violation degree
+-> obtain a more rule-consistent distribution $q^\star(Y\mid X)$.
 
 ##### Mathematical Mechanism
 
@@ -987,7 +987,7 @@ This section remains only as a placeholder for now, with no technical content ad
 
 ### 2.2 Current Writing Boundary
 
-Before these pieces of information are verified, we should not mistake the mechanism of Hu et al. 2016 for 鈥渢he ICML 2019 Logic-Net,鈥?nor should we merge an unverified same-name work into the working interpretation of this document.
+Before these pieces of information are verified, we should not mistake the mechanism of Hu et al. 2016 for "the ICML 2019 Logic-Net," nor should we merge an unverified same-name work into the working interpretation of this document.
 
 ---
 
@@ -995,7 +995,7 @@ Before these pieces of information are verified, we should not mistake the mecha
 
 ### 3.1 The Unified Question: Where Does the Constraint Actually Enter?
 
-If we place Hu 2016, Semantic Loss, and DL2 under the same analytical coordinate system, the most important thing to unify is not that 鈥渁ll of them use logic,鈥?but rather:
+If we place Hu 2016, Semantic Loss, and DL2 under the same analytical coordinate system, the most important thing to unify is not that "all of them use logic," but rather:
 
 > For the same constraint $\phi$, at which layer of the optimization system does it actually enter?
 

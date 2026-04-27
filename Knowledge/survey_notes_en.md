@@ -50,7 +50,7 @@ Informed machine learning adds an additional information source on top of this p
 
 ### The Three Conditions This Figure Really Emphasizes
 
-The authors are actually quite strict about what counts as prior knowledge. Not every kind of 鈥渆xperience鈥?qualifies:
+The authors are actually quite strict about what counts as prior knowledge. Not every kind of "experience" qualifies:
 
 1. **Independent source**  
    Prior knowledge is not directly fitted from the current training data; it comes from outside the data.
@@ -59,7 +59,7 @@ The authors are actually quite strict about what counts as prior knowledge. Not 
    The knowledge must be expressed in a machine-operable form, such as equations, rules, graph structures, simulation results, probabilistic relations, and so on.
 
 3. **Explicit integration**  
-   The knowledge does not merely remain in the researcher鈥檚 mind, nor is it only used vaguely through feature engineering. It must enter the learning process explicitly.
+   The knowledge does not merely remain in the researcher's mind, nor is it only used vaguely through feature engineering. It must enter the learning process explicitly.
 
 ### How to Understand the Pipeline in This Figure
 
@@ -91,7 +91,7 @@ Accordingly, prior knowledge has three especially typical insertion points:
 
 ### What This Figure Suggests for Reading Papers
 
-When encountering an informed ML paper in the future, do not first ask 鈥渨hat network did it use?鈥?Instead, ask:
+When encountering an informed ML paper in the future, do not first ask "what network did it use?" Instead, ask:
 
 1. Where does its prior knowledge come from?
 2. In what form is that knowledge represented?
@@ -105,7 +105,7 @@ These three questions are exactly the backbone of the taxonomy that follows.
 
 ### Role of the Table
 
-Table 4 is the most practically useful summary table in the survey. It is not listing method names; it is listing 鈥渒nowledge-integration paths.鈥?
+Table 4 is the most practically useful summary table in the survey. It is not listing method names; it is listing "knowledge-integration paths."
 Each row can be read as a three-part expression:
 
 `Source -> Representation -> Integration`
@@ -186,11 +186,11 @@ The authors emphasize several key difficulties:
 - integration of real-time data
 - comparison with classical numerical solvers
 
-This means that PINNs are not 鈥渂etter simply because PDE loss is added鈥? they must be seriously compared with the numerical-analysis tradition.
+This means that PINNs are not "better simply because PDE loss is added"; they must be seriously compared with the numerical-analysis tradition.
 
 ### 3. Scientific Knowledge -> Simulation Results -> Training Data
 
-This line does not directly turn knowledge into a loss. Instead, it first 鈥渦nfolds鈥?knowledge through a simulation system into data.
+This line does not directly turn knowledge into a loss. Instead, it first "unfolds" knowledge through a simulation system into data.
 
 Therefore, it enters `Training Data`, not the `Learning Algorithm`.
 
@@ -292,7 +292,7 @@ Such methods are common in:
 
 The core logic is:
 
-- do not first interpret the knowledge as 鈥渕ust be satisfied鈥?- instead interpret it as 鈥渃ertain structures or parameters are more likely to occur鈥?
+- do not first interpret the knowledge as "must be satisfied"; instead, interpret it as "certain structures or parameters are more likely to occur"
 Its main difficulties are:
 
 - high computational cost
@@ -331,7 +331,7 @@ Table 4 provides the operational framework:
 - `Representation`
 - `Integration`
 
-In other words, what this survey truly establishes is not a 鈥渓ist of methods,鈥?but an analytical coordinate system:
+In other words, what this survey truly establishes is not a "list of methods," but an analytical coordinate system:
 
 1. First determine the source of knowledge.
 2. Then determine the representation of that knowledge.
@@ -342,7 +342,7 @@ In other words, what this survey truly establishes is not a 鈥渓ist of methods
 
 For my current reading, this survey can be condensed into the following four points:
 
-1. The essence of informed ML is not 鈥渉aving experience,鈥?but having prior knowledge that comes from an independent source, is formalizable, and can be explicitly integrated.
+1. The essence of informed ML is not "having experience," but having prior knowledge that comes from an independent source, is formalizable, and can be explicitly integrated.
 2. Any method can be located using `Source -> Representation -> Integration`.
 3. Scientific knowledge more often enters the `Learning Algorithm`, world knowledge more often enters the `Hypothesis Set`, and simulation-based knowledge more often enters `Training Data`.
 4. The value of this survey is not that it provides one unified model, but that it provides one unified way of reading the field.
@@ -362,7 +362,10 @@ The role of Section 4 is not to enumerate method details, but to abstract into a
 
 In other words:
 
-- Section 2 answers 鈥渨hat counts as informed ML鈥?- Section 3 answers 鈥渉ow this taxonomy was distilled from the survey鈥?- Section 4 answers 鈥渨hat dimensions and elements the taxonomy itself contains鈥?- only in Section 5 do concrete methods get placed into the taxonomy
+- Section 2 answers "what counts as informed ML"
+- Section 3 answers "how this taxonomy was distilled from the survey"
+- Section 4 answers "what dimensions and elements the taxonomy itself contains"
+- only in Section 5 do concrete methods get placed into the taxonomy
 
 So if Section 5 feels crowded and scattered, that usually does not mean the methods themselves are chaotic; it means Section 4 has not yet been fully digested.
 
@@ -468,14 +471,14 @@ This grouping is a more stable memory aid than simply memorizing eight isolated 
 
 ### Knowledge Integration: Knowledge Does Not Only Enter Through Loss
 
-The value of Section 4.3 is that it splits 鈥渒nowledge entering the model鈥?into four possible locations:
+The value of Section 4.3 is that it splits "knowledge entering the model" into four possible locations:
 
 - `Training Data`
 - `Hypothesis Set`
 - `Learning Algorithm`
 - `Final Hypothesis`
 
-Many people hear 鈥渋nformed ML鈥?and immediately think 鈥渁dd a knowledge loss.鈥? 
+Many people hear "informed ML" and immediately think "add a knowledge loss."
 That is only one possibility, and only the `Learning Algorithm` column.
 
 What the authors want to show is:
@@ -561,11 +564,11 @@ At the junction of Section 3.2 and Section 4, the authors repeatedly emphasize a
 - `World Knowledge` often goes toward logic rules / graphs / invariances
 - `Expert Knowledge` often goes toward probabilistic relations / human feedback
 
-This is not an absolute rule, but it suggests that the 鈥渃haracter鈥?of the knowledge source influences the form it is naturally suited to.
+This is not an absolute rule, but it suggests that the "character" of the knowledge source influences the form it is naturally suited to.
 
 The point most worth remembering is:
 
-> informed ML is not 鈥渇irst choose one universal method and then stuff every kind of knowledge into it鈥? rather, different knowledge types are naturally biased toward different interfaces.
+> informed ML is not "first choose one universal method and then stuff every kind of knowledge into it"; rather, different knowledge types are naturally biased toward different interfaces.
 
 ### The Relation Between Section 4 and Table 2 / Table 3
 
@@ -594,7 +597,7 @@ The real contribution of Section 4 is not that it invents a few classification n
 
 This can be compressed into one note:
 
-> The significance of the taxonomy is not that it archives papers, but that it decomposes the question 鈥渉ow does knowledge enter a learning system?鈥?into the three analyzable interfaces of source, representation, and integration.
+> The significance of the taxonomy is not that it archives papers, but that it decomposes the question "how does knowledge enter a learning system?" into the three analyzable interfaces of source, representation, and integration.
 
 ## Section 5.5 Close Reading: What the Logic Rules Route Is Really Doing
 
@@ -648,7 +651,7 @@ A central observation in this subsection is:
 
 That is, rules either reshape the model structure or reshape the training objective.
 
-Although both are called 鈥渞ule injection,鈥?they are fundamentally different.
+Although both are called "rule injection," they are fundamentally different.
 
 ### Route A: Injecting Rules into the Hypothesis Set
 
@@ -676,7 +679,7 @@ Insert 3 decomposes this process into four steps:
 
 A concise way to retain the distinction is:
 
-> KBANN is not 鈥渞ules as a regularizer鈥? it is 鈥渞ules first shape the network, and data then refine the network.鈥?
+> KBANN is not "rules as a regularizer"; it is "rules first shape the network, and data then refine the network."
 So it embodies a strong structural prior.
 
 #### 2. The Probabilistic Route: SRL / MLN / PSL
@@ -708,7 +711,7 @@ This step is crucial because it connects:
 
 Thus this line can be understood as:
 
-> Rules no longer operate only at the level of 鈥渢rue / false,鈥?but shape the hypothesis space at the level of 鈥渕ore likely / less likely.鈥?
+> Rules no longer operate only at the level of "true / false," but shape the hypothesis space at the level of "more likely / less likely."
 ### Route B: Injecting Rules into the Learning Algorithm
 
 The biggest difference here is:
@@ -745,7 +748,7 @@ This idea matters because it suggests that rules do not have to directly constra
 
 They can also:
 
-- constrain a stronger, more 鈥渒nowledge-heavy鈥?teacher first
+- constrain a stronger, more "knowledge-heavy" teacher first
 - then transfer the knowledge to the student through distillation
 
 This is exactly the typical logic behind works like `LogicNet`.
@@ -763,7 +766,7 @@ All three belong to the logic-rules route, but they are not the same kind of met
 
 ### What Is Most Easily Confused Within the Logic-Rules Literature
 
-At the surface level, logic-rule methods all look like attempts to 鈥渕ake the model obey rules.鈥?But in reality they operate on at least three different levels:
+At the surface level, logic-rule methods all look like attempts to "make the model obey rules." But in reality they operate on at least three different levels:
 
 1. **Structural level**  
    rules shape the model structure or feasible hypothesis space, as in KBANN
@@ -776,7 +779,7 @@ At the surface level, logic-rule methods all look like attempts to 鈥渕ake the
 
 If these three levels are not kept separate, the logic-rule literature easily turns into an undifferentiated mixture.
 
-### The Authors鈥?Judgment on the Logic-Rules Route
+### The Authors' Judgment on the Logic-Rules Route
 
 In Section 7, the authors identify two core challenges for logic rules:
 
@@ -794,7 +797,7 @@ The second corresponds to:
 - rule acquisition
 - structure learning
 
-In other words, the real difficulty of the logic-rules route is not only 鈥渉ow to use rules,鈥?but also 鈥渉ow rules are obtained, maintained, and updated.鈥?
+In other words, the real difficulty of the logic-rules route is not only "how to use rules," but also "how rules are obtained, maintained, and updated."
 ### My Summary of Section 5.5
 
 The logic-rules route is not one single method family, but an entire collection of interfaces for connecting symbolic rules to learning systems.
@@ -821,7 +824,7 @@ Knowledge graphs emphasize:
 - relations
 - graph connectivity structure
 
-So the core of graphs is not 鈥渨hether a rule holds,鈥?but:
+So the core of graphs is not "whether a rule holds," but:
 
 > how objects in the world are connected to one another, and how that relational structure can be used as relational inductive bias by the model.
 
@@ -838,7 +841,7 @@ But in the surveyed literature, the most common source is still `World Knowledge
 
 #### World Knowledge
 
-The authors鈥?representative examples are very telling:
+The authors' representative examples are very telling:
 
 - `Visual Genome`  
   turns object attributes and object relations in natural images into a graph
@@ -851,7 +854,7 @@ The authors鈥?representative examples are very telling:
 
 Together these examples show:
 
-> Graphs are particularly suited to expressing 鈥渨hat entities are related to what,鈥?rather than 鈥渨hat propositional constraint must hold.鈥?
+> Graphs are particularly suited to expressing "what entities are related to what," rather than "what propositional constraint must hold."
 This is the root difference between graphs and logic rules.
 
 This is especially clear in language tasks:
@@ -871,7 +874,7 @@ In scientific settings, graphs can directly represent structured systems, such a
 
 This means:
 
-> Graph is not a 鈥渘atural-language knowledge-base-only鈥?format, but a general-purpose representation of relational structure.
+> Graph is not a "natural-language knowledge-base-only" format, but a general-purpose representation of relational structure.
 
 Whenever objects and relations are central, graph becomes a natural interface.
 
@@ -894,7 +897,7 @@ The authors explicitly interpret methods like GNNs as:
 
 - models whose architecture already assumes that the world is composed of interrelated objects
 
-In other words, graph enters the hypothesis set not as 鈥渁dd one graph constraint,鈥?but as:
+In other words, graph enters the hypothesis set not as "add one graph constraint," but as:
 
 - organize the computation itself around nodes and edges
 
@@ -906,7 +909,7 @@ One can understand it as:
 
 #### 2. Explicitly Connecting an External Knowledge Graph as a Second Information Source
 
-Besides 鈥渢he model itself is graph-structured,鈥?there is an even stronger design:
+Besides "the model itself is graph-structured," there is an even stronger design:
 
 - an external knowledge graph already exists
 - and it is connected to the network as an additional information source
@@ -973,7 +976,7 @@ This route can be interpreted as follows:
 
 This is somewhat analogous to simulation results:
 
-- both can first 鈥渦nfold鈥?knowledge into trainable samples
+- both can first "unfold" knowledge into trainable samples
 
 The difference is that graph-based unfolding usually produces automatic labels or distant supervision rather than simulated data.
 
@@ -1038,11 +1041,11 @@ These two routes are easy to mix up, but it is best to separate them sharply.
 
 #### Logic Rules Are More Like:
 
-- 鈥渋f A and B, then C鈥?- focused on propositional constraints and logical satisfiability
+- "if A and B, then C": focused on propositional constraints and logical satisfiability
 
 #### Knowledge Graphs Are More Like:
 
-- 鈥淎 has some relation to B鈥?- focused on entity networks and relation propagation
+- "A has some relation to B": focused on entity networks and relation propagation
 
 Therefore:
 
@@ -1056,9 +1059,9 @@ Of course, the two can approach each other:
 
 But in this survey they are classified separately because the center of gravity of their machine-learning interfaces is different.
 
-### The Authors鈥?Judgment on the Knowledge-Graph Route
+### The Authors' Judgment on the Knowledge-Graph Route
 
-In Section 7, the authors鈥?summary of knowledge graphs is especially clear.
+In Section 7, the authors' summary of knowledge graphs is especially clear.
 
 There are three main challenges:
 
@@ -1079,11 +1082,11 @@ The corresponding future directions include:
 
 The single most important point to remember here is:
 
-> The real difficulty of knowledge graphs often lies not in 鈥渉ow to write the graph network,鈥?but in where the graph comes from, how good the graph is, and how graph nodes align with the objects of the current task.
+> The real difficulty of knowledge graphs often lies not in "how to write the graph network," but in where the graph comes from, how good the graph is, and how graph nodes align with the objects of the current task.
 
 ### My Summary of Section 5.6
 
-The core of the knowledge-graph route is not simply 鈥渦se a graph model,鈥?but to treat relational structure as a second information source or a structural bias inside the learning system.
+The core of the knowledge-graph route is not simply "use a graph model," but to treat relational structure as a second information source or a structural bias inside the learning system.
 
 This can be compressed into one note:
 
@@ -1093,15 +1096,17 @@ This can be compressed into one note:
 
 ### Why These Two Routes Must Be Compared Explicitly
 
-In the informed ML literature, `logic rules` and `knowledge graphs` are often placed together under 鈥渟ymbolic / structured knowledge.鈥?
+In the informed ML literature, `logic rules` and `knowledge graphs` are often placed together under "symbolic / structured knowledge."
 But if they are not carefully separated, two misunderstandings easily arise:
 
-1. treating a graph as 鈥渁 rule in different clothing鈥?2. treating a rule as 鈥渏ust one kind of edge in a graph鈥?
+1. treating a graph as "a rule in different clothing"
+2. treating a rule as "just one kind of edge in a graph"
 Neither view is accurate enough.
 
 A better understanding is:
 
-- logic rules answer 鈥渨hich propositional relations ought to hold鈥?- knowledge graphs answer 鈥渨hich entities are related, and how that relational structure propagates鈥?
+- logic rules answer "which propositional relations ought to hold"
+- knowledge graphs answer "which entities are related, and how that relational structure propagates"
 So although both are structured knowledge, their interface focus differs.
 
 ### One-Sentence Distinction
@@ -1129,8 +1134,9 @@ Its basic units are usually:
 
 Typical forms look like:
 
-- `A 鈭?B -> C`
-- 鈥渋f a sentence contains but, then the sentiment after it dominates鈥?- 鈥渋f an object flies and lays eggs, it is more likely to be a bird鈥?
+- `A and B -> C`
+- "if a sentence contains but, then the sentiment after it dominates"
+- "if an object flies and lays eggs, it is more likely to be a bird"
 The emphasis here is:
 
 - when the condition holds, the conclusion should be supported or satisfied
@@ -1225,7 +1231,7 @@ Representative interfaces:
 
 In one sentence:
 
-> Rules more often 鈥渃onstrain the model,鈥?whereas graphs more often 鈥渞econstruct the way the model sees the world.鈥?
+> Rules more often "constrain the model," whereas graphs more often "reconstruct the way the model sees the world."
 ### Comparison 4: The Typical Method Families Are Different
 
 #### Common Logic-Rules Families
@@ -1268,7 +1274,11 @@ In one sentence:
 
 When knowledge naturally looks like the following, rules are usually more natural:
 
-- 鈥渋f ..., then ...鈥?- 鈥渢hese cannot hold simultaneously鈥?- 鈥渟ome discrete constraint must be satisfied鈥?- 鈥渓abels have exclusion / implication / ordering relations鈥?- 鈥渢he explanation must satisfy some satisfiability structure鈥?
+- "if ..., then ..."
+- "these cannot hold simultaneously"
+- "some discrete constraint must be satisfied"
+- "labels have exclusion / implication / ordering relations"
+- "the explanation must satisfy some satisfiability structure"
 Typical tasks include:
 
 - label constraints
@@ -1281,7 +1291,11 @@ Typical tasks include:
 
 When knowledge naturally looks like the following, graphs are usually more natural:
 
-- 鈥渨ho is related to whom鈥?- 鈥渙bjects participate in multiple kinds of relations鈥?- 鈥渘eighbors, paths, and local context must be exploited鈥?- 鈥渃oncepts and entities form a network鈥?- 鈥渆xtra evidence must be propagated through relations鈥?
+- "who is related to whom"
+- "objects participate in multiple kinds of relations"
+- "neighbors, paths, and local context must be exploited"
+- "concepts and entities form a network"
+- "extra evidence must be propagated through relations"
 Typical tasks include:
 
 - object relations in images
@@ -1309,7 +1323,7 @@ Typical tasks include:
 #### Major Difficulties for Knowledge Graphs
 
 1. Where does the graph come from?  
-   This is exactly the survey鈥檚 `getting the graph`.
+   This is exactly the survey's `getting the graph`.
 
 2. How good is the graph?  
    The graph may be incomplete, outdated, sparse, or mismatched to the task.
@@ -1330,7 +1344,7 @@ What typically needs to happen is:
 - rule satisfaction must become a loss
 - rule templates must be mapped into structure or probabilistic terms
 
-That is, when rules enter neural systems they often undergo a transition from 鈥渄iscrete鈥?to 鈥渓earnable interface.鈥?
+That is, when rules enter neural systems they often undergo a transition from "discrete" to "learnable interface."
 #### When Knowledge Graphs Enter Differentiable Systems
 
 What typically needs to happen is:
@@ -1339,7 +1353,7 @@ What typically needs to happen is:
 - adjacency relations become attention / propagation / regularization
 - nodes and edges become continuous embeddings
 
-That is, graphs are more naturally 鈥渟tructural鈥?from the start, and therefore connect more directly to neural representation learning.
+That is, graphs are more naturally "structural" from the start, and therefore connect more directly to neural representation learning.
 
 ### Comparison 8: The Two Are Not Opposed; They Can Work Together
 
@@ -1360,7 +1374,7 @@ Going one step further:
 - edge types in a graph may induce rules
 - rules may help filter valid relations in a graph
 
-So the more accurate statement is not 鈥渞ule versus graph, choose one,鈥?but:
+So the more accurate statement is not "rule versus graph, choose one," but:
 
 > When knowledge contains both a relational network and symbolic constraints, the two should often cooperate with different roles.
 
@@ -1368,8 +1382,8 @@ So the more accurate statement is not 鈥渞ule versus graph, choose one,鈥?but
 
 When reading a paper and trying to quickly determine which route it belongs to, ask four questions:
 
-1. Is the core of the knowledge expressing 鈥渃onstraints,鈥?or expressing a 鈥渞elation network鈥?
-2. Is the model mainly 鈥渟atisfying rules,鈥?or 鈥渦sing neighbors and connectivity structure鈥?
+1. Is the core of the knowledge expressing "constraints," or expressing a "relation network"?
+2. Is the model mainly "satisfying rules," or "using neighbors and connectivity structure"?
 3. Is the main interface loss / constraint, or propagation / attention / graph architecture?
 4. If the graph were removed, or if the rule were removed, would the model lose structural context or logical consistency?
 
@@ -1388,7 +1402,7 @@ Given your current path, this comparison is especially useful:
 - `Knowledge Graph`-oriented work  
   usually leans more toward relations / propagation / graph-enhanced representation than toward logical satisfiability itself
 
-This means that when you later read graph-based papers, you should not first ask 鈥渨hat rule does it use?鈥?Instead, ask:
+This means that when you later read graph-based papers, you should not first ask "what rule does it use?" Instead, ask:
 
 - how are entities and relations defined?
 - how does the graph enter the model?
@@ -1403,12 +1417,13 @@ The shortest contrast is:
 
 Compressed into one sentence:
 
-> Rules are more like 鈥渢elling the model what it must not get wrong,鈥?while graphs are more like 鈥渢elling the model who is related to whom.鈥?
+> Rules are more like "telling the model what it must not get wrong," while graphs are more like "telling the model who is related to whom."
 ## Bridging Understanding: How Section 4, 5.5, and 5.6 Fit Together
 
 If Figure 1, Figure 2, Table 4, and the discussions of logic rules and knowledge graphs are considered together, a very clear hierarchy emerges:
 
-1. Figure 1 says that the essence of informed ML is 鈥渄ata + independently available prior knowledge.鈥?2. Section 4 says that this prior knowledge can be systematically classified via `Source -> Representation -> Integration`.
+1. Figure 1 says that the essence of informed ML is "data + independently available prior knowledge."
+2. Section 4 says that this prior knowledge can be systematically classified via `Source -> Representation -> Integration`.
 3. Section 5.5 unfolds `Logic Rules` to show how symbolic rules become structural bias or training constraints.
 4. Section 5.6 unfolds `Knowledge Graphs` to show how relational structure becomes graph propagation, graph attention, graph regularization, or result validation.
 
