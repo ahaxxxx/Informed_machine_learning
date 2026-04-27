@@ -54,6 +54,14 @@ NOTES = [
             "notes/survey-zh.html",
         ),
     ),
+    NoteConfig(
+        source=ROOT / "Knowledge" / "semantic_loss_notes_en.md",
+        slug="semantic-loss-en",
+        title="Semantic Loss Structured Analysis",
+        eyebrow="Constraint Loss / English Notes",
+        summary="A structured English note on Semantic Loss, centered on satisfying-world probability mass, exact constraint semantics, optimization geometry, and comparison with Logic-Net and DL2.",
+        source_label="Knowledge/semantic_loss_notes_en.md",
+    ),
 ]
 
 
