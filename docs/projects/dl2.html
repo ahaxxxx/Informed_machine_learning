@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>DL2: Deep Learning with Logical Constraints | Informed Machine Learning</title>
+    <meta
+      name="description"
+      content="Project page for DL2, focused on constraint-driven optimization in neural networks."
+    >
+    <link rel="stylesheet" href="../assets/site.css">
+    <script defer src="../assets/site.js"></script>
+  </head>
+  <body data-page="notes">
+    <div class="page-shell">
+      <header class="site-header">
+        <a class="brand" href="../index.html">
+          <span class="brand-mark">IML</span>
+          <span class="brand-text">Informed Machine Learning</span>
+        </a>
+
+        <div class="header-controls">
+          <nav class="site-nav">
+            <a href="../index.html">Home</a>
+            <a href="../reading-map.html">Reading Map</a>
+            <a href="../notes.html">Notes</a>
+            <a href="../toys.html">Reproductions</a>
+            <a href="../deploy.html">Site Setup</a>
+          </nav>
+
+          <button class="nav-toggle" type="button" aria-expanded="false" aria-label="Toggle navigation">
+            <span></span>
+            <span></span>
+          </button>
+        </div>
+      </header>
+
+      <main class="content-page">
+        <section class="page-intro">
+          <p class="eyebrow">Project Page</p>
+          <h1>DL2: Deep Learning with Logical Constraints</h1>
+          <p class="hero-subtitle">Constraint-driven optimization in neural networks</p>
+          <p>
+            This page tracks the line in which logical or geometric constraints are handled through declarative formulations,
+            differentiable surrogates, and optimization procedures that can be inserted into training or querying.
+          </p>
+        </section>
+
+        <section class="detail-grid">
+          <article class="detail-card">
+            <h2>Problem setting</h2>
+            <p>
+              DL2 addresses settings in which a model should satisfy constraints that are not naturally expressed by ordinary supervised labels alone.
+              The constraints may involve inputs, outputs, latent variables, or relations among multiple examples.
+            </p>
+          </article>
+
+          <article class="detail-card">
+            <h2>Core idea</h2>
+            <p>
+              The central move is to write constraints in a declarative language and then translate them into differentiable loss terms or inner optimization problems.
+              This makes logic a programmable interface for training objectives rather than a fixed post-processing rule set.
+            </p>
+          </article>
+
+          <article class="detail-card">
+            <h2>Optimization perspective</h2>
+            <p>
+              DL2 can be read as a nested optimization framework: one part searches for violating assignments or adversarial witnesses,
+              and another part updates model parameters so that those violations become harder to realize. Constraint handling is therefore optimization-driven rather than purely symbolic.
+            </p>
+          </article>
+        </section>
+
+        <section class="resource-block">
+          <h2>Comparison with Semantic Loss</h2>
+          <p>
+            Semantic Loss is most naturally read as exact probability-mass optimization over satisfying Boolean worlds.
+            DL2 instead emphasizes a broader constraint language and differentiable surrogates that can accommodate more general numeric and geometric constraints.
+          </p>
+          <p>
+            One practical difference is that DL2 often exposes an explicit optimization loop over constraint violations, whereas Semantic Loss centers on the mass of valid assignments under the current distribution.
+          </p>
+        </section>
+
+        <section class="note-block" id="notes">
+          <h2>Notes</h2>
+          <div class="notes-placeholder">
+            <p>Notes will be rendered here. (To be uploaded)</p>
+          </div>
+          <div class="link-list">
+            <a href="../../Knowledge/dl2_notes_en.md">Open Markdown notes</a>
+          </div>
+        </section>
+      </main>
+
+      <footer class="site-footer">
+        <p><a href="../notes.html">Back to notes</a></p>
+      </footer>
+    </div>
+  </body>
+</html>

@@ -1,14 +1,3 @@
-# DL2 Notes (EN)
+# DL2: Deep Learning with Logical Constraints
 
-## Status
-
-Placeholder.
-
-## Sections
-
-- Citation
-- Declarative Constraints
-- Training Formulation
-- Querying Mechanism
-- Follow-up Experiments
-
+Notes coming soon.
