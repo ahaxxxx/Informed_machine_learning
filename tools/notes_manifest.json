@@ -1,0 +1,130 @@
+{
+  "notes": [
+    {
+      "key": "survey",
+      "tag": "Survey",
+      "title": "Informed ML Survey",
+      "summary": "This note tracks the core taxonomy of informed machine learning through knowledge source, representation, and integration location, with emphasis on the distinctions that remain useful for later comparison.",
+      "variants": [
+        {
+          "source": "Knowledge/survey_notes_en.md",
+          "slug": "survey-en",
+          "language": "en"
+        },
+        {
+          "source": "Knowledge/survey_notes_zh.md",
+          "slug": "survey-zh",
+          "language": "zh"
+        }
+      ]
+    },
+    {
+      "key": "logic-net",
+      "tag": "Logic Rules",
+      "title": "Logic-Net",
+      "summary": "A rule-regularized teacher distribution is constructed first and then distilled back into student parameters, making the note useful for understanding posterior shaping, distillation, and optimization-level constraint injection.",
+      "variants": [
+        {
+          "source": "Knowledge/logic_net_notes_en.md",
+          "slug": "logic-net-en",
+          "language": "en"
+        },
+        {
+          "source": "Knowledge/logic_net_notes_zh.md",
+          "slug": "logic-net-zh",
+          "language": "zh"
+        }
+      ]
+    },
+    {
+      "key": "semantic-loss",
+      "tag": "Constraint Loss",
+      "title": "Semantic Loss",
+      "summary": "This note centers on the 2018 Semantic Loss formulation where a propositional constraint is turned into a trainable loss through the probability mass of satisfying Boolean assignments.",
+      "variants": [
+        {
+          "source": "Knowledge/semantic_loss_notes_en.md",
+          "slug": "semantic-loss-en",
+          "language": "en"
+        },
+        {
+          "source": "Knowledge/semantic_loss_notes_zh.md",
+          "slug": "semantic-loss-zh",
+          "language": "zh"
+        }
+      ]
+    },
+    {
+      "key": "dl2",
+      "tag": "Declarative Constraints",
+      "title": "DL2",
+      "summary": "This note focuses on how DL2 turns logical constraints into a unified declarative interface that can shape both training and querying rather than only a single loss term.",
+      "variants": [
+        {
+          "source": "Knowledge/dl2_notes_en.md",
+          "slug": "dl2-en",
+          "language": "en"
+        },
+        {
+          "source": "Knowledge/dl2_notes_zh.md",
+          "slug": "dl2-zh",
+          "language": "zh"
+        }
+      ]
+    },
+    {
+      "key": "granular-ml",
+      "tag": "Granular Computing",
+      "title": "Granular Computing for ML",
+      "summary": "This note tracks the argument that machine learning outputs should often be represented as granules with coverage, specificity, and uncertainty rather than a single over-precise point estimate.",
+      "variants": [
+        {
+          "source": "Knowledge/granular_ml_notes_en.md",
+          "slug": "granular-ml-en",
+          "language": "en"
+        },
+        {
+          "source": "Knowledge/granular_ml_notes_zh.md",
+          "slug": "granular-ml-zh",
+          "language": "zh"
+        }
+      ]
+    },
+    {
+      "key": "fuzzy-to-granular",
+      "tag": "Granular Rules",
+      "title": "From Fuzzy Rule-Based Models to Granular Models",
+      "summary": "This note explains how a fuzzy rule-based model can move from crisp consequents to interval, fuzzy, or probabilistic granules, changing both output semantics and uncertainty expression.",
+      "variants": [
+        {
+          "source": "Knowledge/fuzzy_to_granular_notes_en.md",
+          "slug": "fuzzy-to-granular-en",
+          "language": "en"
+        },
+        {
+          "source": "Knowledge/fuzzy_to_granular_notes_zh.md",
+          "slug": "fuzzy-to-granular-zh",
+          "language": "zh"
+        }
+      ]
+    },
+    {
+      "key": "knowledge-landmarks",
+      "tag": "Knowledge Regularization",
+      "title": "Knowledge Landmarks",
+      "summary": "This note follows how input-output landmark pairs and conditional fuzzy clustering become a knowledge-aware regularizer, with attention to local guidance, counterfactual meaning, and failure modes.",
+      "variants": [
+        {
+          "source": "Knowledge/knowledge_landmarks_notes_en.md",
+          "slug": "knowledge-landmarks-en",
+          "language": "en"
+        },
+        {
+          "source": "Knowledge/knowledge_landmarks_notes_zh.md",
+          "slug": "knowledge-landmarks-zh",
+          "language": "zh"
+        }
+      ]
+    }
+  ]
+}

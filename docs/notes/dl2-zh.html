@@ -1,0 +1,1120 @@
+<!doctype html>
+<html lang="zh">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>DL2 深度结构解析 | Informed Machine Learning</title>
+    <meta name="description" content="This note focuses on how DL2 turns logical constraints into a unified declarative interface that can shape both training and querying rather than only a single loss term.">
+    <link rel="stylesheet" href="../assets/site.css">
+    <script defer src="../assets/site.js"></script>
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']]
+        },
+        options: {
+          skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      };
+    </script>
+    <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+  </head>
+  <body data-page="notes">
+    <div class="page-shell">
+      <header class="site-header">
+        <a class="brand" href="../index.html">
+          <span class="brand-mark">IML</span>
+          <span class="brand-text">Informed Machine Learning</span>
+        </a>
+        <button class="nav-toggle" type="button" aria-expanded="false" aria-label="Toggle navigation">
+          <span></span>
+          <span></span>
+        </button>
+        <nav class="site-nav">
+          <a href="../index.html">Home</a>
+          <a href="../reading-map.html">Reading Map</a>
+          <a href="../notes.html">Notes</a>
+          <a href="../toys.html">Reproductions</a>
+          <a href="../deploy.html">Site Setup</a>
+        </nav>
+      </header>
+
+      <main class="content-page note-page">
+        <section class="page-intro note-intro">
+          <p class="eyebrow">Declarative Constraints / ZH Notes</p>
+          <h1>DL2 深度结构解析</h1>
+          <p>This note focuses on how DL2 turns logical constraints into a unified declarative interface that can shape both training and querying rather than only a single loss term.</p>
+        </section>
+
+        <section class="note-layout">
+          <aside class="note-sidebar">
+            <article class="note-block">
+              <h2>Note Info</h2>
+              <p>Source file: <code>Knowledge/dl2_notes_zh.md</code></p>
+              <p>Published as: Generated from local Markdown into in-site HTML.</p>
+              <div class="link-list">
+                <a href="../notes.html">Back to notes</a>
+                <a href="https://github.com/ahaxxxx/Informed_machine_learning/blob/main/Knowledge/dl2_notes_zh.md">View source on GitHub</a>
+              </div>
+            </article>
+
+            <article class="note-block">
+              <h2>Contents</h2>
+              <ul class="note-toc-list">
+<li class="toc-level-2"><a href="#0">0. 名称消歧与论文来源确认</a></li>
+<li class="toc-level-3"><a href="#01">0.1 当前文档主要对应哪篇论文</a></li>
+<li class="toc-level-3"><a href="#02">0.2 它在阅读路线里的位置</a></li>
+<li class="toc-level-2"><a href="#05">0.5 最小问题设定与记号</a></li>
+<li class="toc-level-3"><a href="#051-running-examples">0.5.1 三个贯穿全文的 running examples</a></li>
+<li class="toc-level-2"><a href="#1">1. 论文想解决的核心问题</a></li>
+<li class="toc-level-3"><a href="#11">1.1 直觉问题</a></li>
+<li class="toc-level-3"><a href="#12">1.2 为什么前面的逻辑方法还不够</a></li>
+<li class="toc-level-2"><a href="#2">2. 论文中的两张关键图</a></li>
+<li class="toc-level-3"><a href="#21-1dl2-querying">2.1 图 1：DL2 的 querying 到底在搜什么</a></li>
+<li class="toc-level-3"><a href="#22-query-benchmark">2.2 Query benchmark 页面：为什么说它更像系统而不是单个技巧</a></li>
+<li class="toc-level-2"><a href="#3-dl2">3. DL2 的逻辑语言到底在约束什么</a></li>
+<li class="toc-level-3"><a href="#31">3.1 约束基本单位不是布尔输出位，而是数值项</a></li>
+<li class="toc-level-3"><a href="#32">3.2 逻辑结构来自比较约束的布尔组合</a></li>
+<li class="toc-level-3"><a href="#33">3.3 它比前作更一般的地方到底在哪里</a></li>
+<li class="toc-level-2"><a href="#4-lossdl2">4. 从逻辑约束到 loss：DL2 的核心翻译</a></li>
+<li class="toc-level-3"><a href="#41-0">4.1 翻译目标：非负、几乎处处可微、且 0 当且仅当满足</a></li>
+<li class="toc-level-3"><a href="#42">4.2 原子比较约束如何翻译</a></li>
+<li class="toc-level-3"><a href="#43">4.3 布尔组合如何翻译</a></li>
+<li class="toc-level-3"><a href="#44-1">4.4 为什么定理 1 很重要</a></li>
+<li class="toc-level-3"><a href="#45-soft-logic">4.5 它为什么比某些 soft logic 编码更适合梯度下降</a></li>
+<li class="toc-level-2"><a href="#5-dl2">5. DL2 怎样进入训练</a></li>
+<li class="toc-level-3"><a href="#51">5.1 训练目标先被改写成“找反例”</a></li>
+<li class="toc-level-3"><a href="#52-optimizer-vs-adversary">5.2 内外层优化：optimizer vs adversary</a></li>
+<li class="toc-level-3"><a href="#53-loss">5.3 为什么要把凸输入约束从 loss 里抽出来</a></li>
+<li class="toc-level-3"><a href="#54-pgd">5.4 为什么 PGD 会在这里出现</a></li>
+<li class="toc-level-3"><a href="#55">5.5 它为什么能做“训练集外”的全局训练</a></li>
+<li class="toc-level-2"><a href="#6-dl2-querying">6. DL2 怎样进行 querying</a></li>
+<li class="toc-level-3"><a href="#61-query-dsl">6.1 Query DSL 的基本形式</a></li>
+<li class="toc-level-3"><a href="#62-querying-training">6.2 为什么 querying 和 training 用的是同一套核心</a></li>
+<li class="toc-level-3"><a href="#63">6.3 一个最典型的查询例子怎么读</a></li>
+<li class="toc-level-3"><a href="#64-querying-l-bfgs-b">6.4 Querying 为什么用 L-BFGS-B</a></li>
+<li class="toc-level-2"><a href="#7">7. 它到底在优化什么</a></li>
+<li class="toc-level-3"><a href="#71">7.1 它不是在优化“满足世界总概率质量”</a></li>
+<li class="toc-level-3"><a href="#72-teacher-distribution">7.2 它也不是 teacher distribution</a></li>
+<li class="toc-level-3"><a href="#73">7.3 它为什么既是局部的，又可能是全局的</a></li>
+<li class="toc-level-2"><a href="#8-logic-netsemantic-losspsl">8. 它和 Logic-Net、Semantic Loss、PSL 的本质差别</a></li>
+<li class="toc-level-3"><a href="#81-logic-netsemantic-loss">8.1 和 Logic-Net、Semantic Loss 的区别</a></li>
+<li class="toc-level-3"><a href="#82-psl-xsat-bach-et-al">8.2 和 PSL / XSAT / Bach et al. 的区别</a></li>
+<li class="toc-level-3"><a href="#83">8.3 一个三篇逻辑约束论文的压缩关系</a></li>
+<li class="toc-level-2"><a href="#9">9. 这篇论文为什么有效</a></li>
+<li class="toc-level-3"><a href="#91">9.1 半监督学习：它让无标签数据承载更高层语义群组约束</a></li>
+<li class="toc-level-3"><a href="#92">9.2 无监督学习：只靠结构性质也能逼近监督解</a></li>
+<li class="toc-level-3"><a href="#93-constraint-accuracy">9.3 监督学习：它能显著提高 constraint accuracy</a></li>
+<li class="toc-level-3"><a href="#94-querying">9.4 Querying：它把“网络行为分析”也做成了统一接口</a></li>
+<li class="toc-level-2"><a href="#10">10. 计算代价与局限性</a></li>
+<li class="toc-level-3"><a href="#101">10.1 约束翻译优雅，不代表优化总是容易</a></li>
+<li class="toc-level-3"><a href="#102">10.2 全局约束的代价明显高于训练集约束</a></li>
+<li class="toc-level-3"><a href="#103">10.3 查询失败不等于无解</a></li>
+<li class="toc-level-3"><a href="#104">10.4 表达力提高，也意味着使用门槛提高</a></li>
+<li class="toc-level-2"><a href="#11_1">11. 与本地仓库和代码的对应关系</a></li>
+<li class="toc-level-2"><a href="#12_1">12. 最小复现建议</a></li>
+<li class="toc-level-3"><a href="#121">12.1 最适合先做什么</a></li>
+<li class="toc-level-3"><a href="#122">12.2 一条最稳的最小复现路径</a></li>
+<li class="toc-level-3"><a href="#123">12.3 最值得做的三个对照</a></li>
+<li class="toc-level-3"><a href="#124-toy">12.4 如果要对齐当前仓库的 toy 路线</a></li>
+<li class="toc-level-2"><a href="#13">13. 一页压缩总结</a></li>
+</ul>
+            </article>
+          </aside>
+
+          <article class="note-article">
+            <h2 id="0">0. 名称消歧与论文来源确认</h2>
+<h3 id="01">0.1 当前文档主要对应哪篇论文</h3>
+<p>当前这份文档主要对应的是：</p>
+<ul>
+<li>Fischer et al., ICML 2019, <em>DL2: Training and Querying Neural Networks with Logic</em></li>
+</ul>
+<p>本文默认讨论的 <code>DL2</code>，都指这篇论文提出的那套系统：</p>
+<ul>
+<li>以声明式逻辑约束 $\phi$ 为对象；</li>
+<li>把约束翻译成非负、几乎处处可微、且“满足当且仅当 loss 为 0”的数值目标；</li>
+<li>用同一套“逻辑 $\to$ loss”机制同时支持 training 与 querying。</li>
+</ul>
+<p><code>DL2</code> 一般被理解为 <code>Deep Learning with Differentiable Logic</code>。<br>
+它的重点不是单独提出某个特定任务的技巧，而是把“逻辑约束如何进入神经网络”做成一个统一接口。</p>
+<h3 id="02">0.2 它在阅读路线里的位置</h3>
+<p>如果把 <code>Hu et al. 2016 -&gt; Semantic Loss -&gt; DL2</code> 看成一条逐步系统化的逻辑约束路线，那么这篇论文回答的问题是：</p>
+<blockquote>
+<p>能不能不把逻辑只当作某一类特定输出损失，而是做成一套统一的约束语言，使同一份逻辑既能参与训练，也能直接拿来查询网络行为？</p>
+</blockquote>
+<p>换句话说：</p>
+<ul>
+<li>Hu 2016 更像：<code>rule -&gt; teacher distribution -&gt; student</code></li>
+<li>Semantic Loss 更像：<code>rule -&gt; exact semantic loss -&gt; parameter update</code></li>
+<li>DL2 更像：<code>declarative constraint -&gt; translated loss + optimizer -&gt; training / querying</code></li>
+</ul>
+<p>因此，这篇论文的真正推进不在于“再写一个 loss”，而在于：</p>
+<ul>
+<li>约束对象从输出概率扩展到更一般的数值项；</li>
+<li>逻辑不只进入训练，也进入查询；</li>
+<li>训练不只针对训练集上的固定点，还可以对训练集外的输入区域施加全局约束。</li>
+</ul>
+<hr>
+<h2 id="05">0.5 最小问题设定与记号</h2>
+<p>为使全文自包含，先固定后文使用的最小设定。</p>
+<p>设神经网络参数为
+$$
+\theta,
+$$
+输入变量记为
+$$
+x,
+$$
+若约束里还包含需要被搜索、扰动或量化的附加变量，则记为
+$$
+z.
+$$</p>
+<p>DL2 的逻辑语言不直接从布尔变量出发，而是从<strong>数值项</strong>出发。<br>
+一个 term 记为
+$$
+t(x,z,\theta),
+$$
+它可以是：</p>
+<ul>
+<li>常数；</li>
+<li>输入坐标；</li>
+<li>网络输出概率 $p_\theta(x)_i$；</li>
+<li>pre-softmax logit；</li>
+<li>内部神经元激活；</li>
+<li>若干数值项的代数组合。</li>
+</ul>
+<p>本文默认要求 term 至少在绝大多数位置上对变量和参数可微。</p>
+<p>由两个 term 可以组成比较约束：
+$$
+t=t',\qquad t\le t',\qquad t\ne t',\qquad t<t'.
+$$</p>
+<p>更复杂的约束由这些原子约束通过
+$$
+\wedge,\qquad \vee,\qquad \neg
+$$
+组合得到，统一记作
+$$
+\phi(x,z,\theta).
+$$</p>
+<h3 id="051-running-examples">0.5.1 三个贯穿全文的 running examples</h3>
+<p>由于 DL2 同时覆盖 <code>loss translation</code>、<code>training</code> 和 <code>querying</code> 三个层面，本文固定三个最小例子，分别服务于不同部分。</p>
+<h4 id="1-loss-equality-toy">例 1：用于解释 loss 翻译几何的 equality toy</h4>
+<p>定义
+$$
+\phi_{\text{eq}}(u)=\bigl(u=(1,1)\bigr),
+\qquad
+u=(u_0,u_1)\in\mathbb R^2.
+$$</p>
+<p>这个例子只有一个作用：</p>
+<ul>
+<li>说明 DL2 的 loss 翻译为什么比某些 soft logic 编码更适合梯度优化。</li>
+</ul>
+<h4 id="2-people-group">例 2：用于解释训练接口的 people-group 约束</h4>
+<p>在半监督 CIFAR-100 场景里，定义一组语义群组概率。<br>
+例如
+$$
+p_{\text{people}}(x)
+=
+p_\theta(x)_{\text{baby}}
++p_\theta(x)_{\text{boy}}
++p_\theta(x)_{\text{girl}}
++p_\theta(x)_{\text{man}}
++p_\theta(x)_{\text{woman}}.
+$$</p>
+<p>然后对每个群组施加约束：
+$$
+p_g(x)<\varepsilon\ \vee\ p_g(x)>1-\varepsilon.
+$$</p>
+<p>其直觉是：</p>
+<ul>
+<li>概率质量应尽量集中到某一个语义群组，而不是在多个群组之间平均分散。</li>
+</ul>
+<h4 id="3-querying-generator-disagreement-query">例 3：用于解释 querying 的 generator disagreement query</h4>
+<p>定义查询：</p>
+<pre><code class="language-text">FIND i[100]
+WHERE i[:] in [-1, 1],
+      class(N1(G(i)), c1),
+      N1(G(i)).p[c1] &gt; 0.3,
+      class(N2(G(i)), c2),
+      N2(G(i)).p[c2] &gt; 0.3
+RETURN G(i)
+</code></pre>
+<p>它的含义是：</p>
+<ul>
+<li>搜索一个噪声向量 $i$；</li>
+<li>经生成器 $G$ 生成样本后；</li>
+<li>该样本会被两个分类器 $N_1,N_2$ 以较高置信度判成不同类别。</li>
+</ul>
+<p>这个例子最适合说明：</p>
+<ul>
+<li>DL2 的查询对象不只是输出标签，还可以是跨多个网络的联合逻辑条件。</li>
+</ul>
+<hr>
+<h2 id="1">1. 论文想解决的核心问题</h2>
+<h3 id="11">1.1 直觉问题</h3>
+<p>这篇论文真正想回答的问题是：</p>
+<blockquote>
+<p>当专家已经知道网络应满足某种数值-逻辑性质时，能否用统一的声明式方式写出这些约束，并把它们同时用于训练和查询，而不必为每一种约束单独设计一套任务特定 loss？</p>
+</blockquote>
+<p>作者针对的是这类场景：</p>
+<ul>
+<li>输出概率之间的比较约束，例如
+  $$
+  p_\theta(x)_{\text{truck}} > p_\theta(x)_{\text{dog}} + \delta;
+  $$</li>
+<li>邻域上的鲁棒性约束，例如
+  $$
+  \forall z\in B_\varepsilon(x),\ \log p_\theta(z)_y > \delta;
+  $$</li>
+<li>函数稳定性约束，例如 Lipschitz 条件；</li>
+<li>回归任务中的物理或守恒约束，例如
+  $$
+  \mathrm{sum}(x)=\mathrm{sum}(G(x));
+  $$</li>
+<li>以及对输入、输出、内部神经元共同施加的查询条件。</li>
+</ul>
+<h3 id="12">1.2 为什么前面的逻辑方法还不够</h3>
+<p>如果只看 Logic-Net 或 Semantic Loss，它们各自已经解决了一部分问题，但都还不够系统。</p>
+<p>Logic-Net 的局限在于：</p>
+<ul>
+<li>规则主要通过 teacher distribution 间接进入 student；</li>
+<li>适合表达的规则类型受限于后验投影形式；</li>
+<li>不直接提供 querying 接口。</li>
+</ul>
+<p>Semantic Loss 的局限在于：</p>
+<ul>
+<li>它最自然的对象是“输出空间中的满足赋值集合”；</li>
+<li>更偏向某类输出结构约束；</li>
+<li>对训练集外的连续输入区域或内部神经元查询并不自然。</li>
+</ul>
+<p>更一般地，很多 soft logic 编码虽然“可连续化”，但未必“可优化”。<br>
+作者特别强调的问题是：</p>
+<blockquote>
+<p>一个逻辑翻译如果在违反约束时也可能给出零梯度，那么它在优化上就不是真正可用的。</p>
+</blockquote>
+<p>这也是 DL2 与仅仅“把逻辑写成连续表达式”的方法之间最关键的分界线。</p>
+<hr>
+<h2 id="2">2. 论文中的两张关键图</h2>
+<h3 id="21-1dl2-querying">2.1 图 1：DL2 的 querying 到底在搜什么</h3>
+<p><img alt="DL2 Figure 1" src="../assets/knowledge/images/paper_screenshots/dl2_p01-01.png"></p>
+<p>这张图最重要的不是页面排版，而是它把 DL2 的查询对象明确成了三类：</p>
+<ul>
+<li>搜索满足对抗条件的输入；</li>
+<li>搜索使某个内部神经元失活的输入；</li>
+<li>搜索能区分两个网络行为的输入。</li>
+</ul>
+<p>这说明 DL2 的逻辑对象不是“标签后处理规则”，而是：</p>
+<ul>
+<li>对输入；</li>
+<li>对输出；</li>
+<li>对中间表示；</li>
+<li>甚至对多个网络之间关系</li>
+</ul>
+<p>都可以统一声明的数值约束。</p>
+<p>换句话说，这张图真正想说的是：</p>
+<ul>
+<li>逻辑不再只是训练时的旁路正则项；</li>
+<li>它还可以直接成为“搜索网络行为”的语言。</li>
+</ul>
+<h3 id="22-query-benchmark">2.2 Query benchmark 页面：为什么说它更像系统而不是单个技巧</h3>
+<p><img alt="DL2 Figure 3" src="../assets/knowledge/images/paper_screenshots/dl2_p05-05.png"></p>
+<p>这一页最值得看的通常不是具体数值，而是两件事：</p>
+<ol>
+<li>query template 的写法；</li>
+<li>query 运行时间的统计。</li>
+</ol>
+<p>作者想强调的是：</p>
+<ul>
+<li>DL2 不只提出一种约束翻译方式；</li>
+<li>它还把这套翻译做成了可执行的查询系统；</li>
+<li>而且查询可以跨多个大模型运行，而不只是玩具示例。</li>
+</ul>
+<p>这页和 Figure 1 合起来，基本就把 DL2 与前两篇论文的差别说清了：</p>
+<ul>
+<li>前两篇主要解决“如何训练”；</li>
+<li>DL2 同时解决“如何训练”和“如何问模型问题”。</li>
+</ul>
+<hr>
+<h2 id="3-dl2">3. DL2 的逻辑语言到底在约束什么</h2>
+<h3 id="31">3.1 约束基本单位不是布尔输出位，而是数值项</h3>
+<p>DL2 最根本的视角变化是：</p>
+<ul>
+<li>它不先假定输出是某组布尔变量；</li>
+<li>而是先允许你写任意数值 term，再对这些 term 做比较。</li>
+</ul>
+<p>因此，DL2 的约束对象可以是：</p>
+<ul>
+<li>输入坐标；</li>
+<li>输出概率；</li>
+<li>pre-softmax logits；</li>
+<li>内部层激活；</li>
+<li>多个网络输出的组合量；</li>
+<li>由这些量进一步构造出的和、差、范数或其他可微表达式。</li>
+</ul>
+<p>例如下面这些约束都属于 DL2 的自然对象：</p>
+<p>$$
+p_\theta(x)_1 > p_\theta(x)_2,
+$$
+$$
+\mathrm{sum}(x)=\mathrm{sum}(G(x)),
+$$
+$$
+\mathrm{NN}(i).l_1[0,1,1,31]=0.
+$$</p>
+<p>这意味着 DL2 的逻辑不是只约束“类别是否正确”，而是可以直接约束网络内部和外部的数值行为。</p>
+<h3 id="32">3.2 逻辑结构来自比较约束的布尔组合</h3>
+<p>DL2 的约束形式统一是：</p>
+<ul>
+<li>原子比较约束；</li>
+<li>通过 $\wedge,\vee,\neg$ 构成复合逻辑公式。</li>
+</ul>
+<p>这使得它天然支持：</p>
+<ul>
+<li>implication 的等价改写；</li>
+<li>disjunction 表达“二选一”的语义；</li>
+<li>conjunction 表达多个条件同时满足；</li>
+<li>negation 表达反例或违反条件。</li>
+</ul>
+<p>例如前面的 people-group 约束
+$$
+p_g(x)<\varepsilon\ \vee\ p_g(x)>1-\varepsilon
+$$
+就是一个典型的 disjunction：</p>
+<ul>
+<li>要么该群组几乎不激活；</li>
+<li>要么该群组几乎全部激活；</li>
+<li>中间的“半亮不亮”状态被视为不满足约束。</li>
+</ul>
+<h3 id="33">3.3 它比前作更一般的地方到底在哪里</h3>
+<p>DL2 的更一般，不是停留在“可以写更多符号”。</p>
+<p>更准确地说，它扩展了三个维度：</p>
+<ol>
+<li>
+<p><strong>约束对象更一般</strong><br>
+   不限于输出类别概率，也可直接约束输入、logit、内部神经元和跨网络关系。</p>
+</li>
+<li>
+<p><strong>约束形状更一般</strong><br>
+   不限于线性输出规则，也可以表达非线性、带范数、带邻域、带插值的条件。</p>
+</li>
+<li>
+<p><strong>使用方式更一般</strong><br>
+   逻辑既可用于训练，也可用于查询。</p>
+</li>
+</ol>
+<p>这三点叠加起来，才构成了 DL2 的系统性。</p>
+<hr>
+<h2 id="4-lossdl2">4. 从逻辑约束到 loss：DL2 的核心翻译</h2>
+<h3 id="41-0">4.1 翻译目标：非负、几乎处处可微、且 0 当且仅当满足</h3>
+<p>DL2 对每个约束 $\phi$ 关联一个非负 loss
+$$
+L(\phi),
+$$
+并要求它满足两条核心性质：</p>
+<ol>
+<li>$L(\phi)=0$ 当且仅当 $\phi$ 被满足；</li>
+<li>$L(\phi)$ 对变量和参数几乎处处可微。</li>
+</ol>
+<p>这两条性质合起来意味着：</p>
+<ul>
+<li>逻辑满足性被准确地保留在零点结构上；</li>
+<li>同时该结构又可以被标准梯度方法利用。</li>
+</ul>
+<h3 id="42">4.2 原子比较约束如何翻译</h3>
+<p>对于比较约束，DL2 给出的基本翻译是：
+$$
+L(t\le t')=\max(t-t',0),
+$$
+$$
+L(t\ne t')=\xi\cdot [t=t'],
+$$
+其中 $\xi>0$ 是常数，$[t=t']$ 是指示函数。</p>
+<p>其余比较约束通过逻辑等价改写得到：
+$$
+L(t=t') := L(t\le t' \wedge t'\le t),
+$$
+$$
+L(t<t') := L(t\le t' \wedge t\ne t').
+$$</p>
+<p>这一步非常关键，因为 DL2 不是给每种符号随手配一个罚项，而是先保持逻辑等价，再做统一翻译。</p>
+<h3 id="43">4.3 布尔组合如何翻译</h3>
+<p>对 conjunction 和 disjunction，DL2 定义：
+$$
+L(\phi'\wedge \phi'')=L(\phi')+L(\phi''),
+$$
+$$
+L(\phi'\vee \phi'')=L(\phi')\cdot L(\phi'').
+$$</p>
+<p>这两个定义的含义分别是：</p>
+<ul>
+<li>conjunction 下，所有子约束都必须同时压到 0，所以用加法；</li>
+<li>disjunction 下，只要有一个分支的 loss 为 0，乘积就为 0，因此可保留“至少一个成立”的语义。</li>
+</ul>
+<p>对 negation，DL2 不直接发明一个新罚项，而是先用逻辑等价做改写，例如：
+$$
+L(\neg(t\le t'))=L(t'<t),
+$$
+$$
+L(\neg(\psi'\wedge\psi''))=L(\neg\psi'\vee\neg\psi'').
+$$</p>
+<p>这样做的作用是：</p>
+<ul>
+<li>尽量让 loss 构造服从逻辑本身，而不是额外引入语义偏差。</li>
+</ul>
+<h3 id="44-1">4.4 为什么定理 1 很重要</h3>
+<p>论文给出关键结论：</p>
+<blockquote>
+<p>Theorem 1: $L(\phi)=0$ 当且仅当 $\phi$ 被满足。</p>
+</blockquote>
+<p>这条定理的意义不只是“loss 设计得漂亮”，而是：</p>
+<ul>
+<li>逻辑 satisfiability 和数值优化零点被严格对齐了；</li>
+<li>因此优化 loss 的零点，就等价于找满足约束的赋值；</li>
+<li>training 与 querying 才能复用同一套翻译机制。</li>
+</ul>
+<p>如果没有这条性质，训练和查询都只能被理解为某种启发式近似，而不是对约束满足性的直接优化。</p>
+<h3 id="45-soft-logic">4.5 它为什么比某些 soft logic 编码更适合梯度下降</h3>
+<p>继续看前面的 equality toy：
+$$
+\phi_{\text{eq}}(u)=\bigl(u=(1,1)\bigr),\qquad u=(u_0,u_1).
+$$</p>
+<p>在论文对比的 PSL 编码下，可能得到
+$$
+L_{\text{PSL}}(\phi)(u)=\max(u_0+u_1-1,0).
+$$</p>
+<p>如果优化起点是
+$$
+u=(0.2,0.2),
+$$
+则
+$$
+u_0+u_1-1\le 0,
+$$
+于是梯度为 0，优化会停住；但此时 $u$ 并不满足目标赋值。</p>
+<p>而在 DL2 翻译下，
+$$
+L(\phi_{\text{eq}})(u)=|u_0-1|+|u_1-1|.
+$$</p>
+<p>在同一点
+$$
+u=(0.2,0.2)
+$$
+上，梯度仍非零，因此优化会继续把 $u$ 往满足点推进。</p>
+<p>这个例子想说明的只有一句话：</p>
+<blockquote>
+<p>DL2 不是简单把逻辑写成连续表达式，而是显式考虑“违反约束时，梯度是否还能够推动优化继续前进”。</p>
+</blockquote>
+<hr>
+<h2 id="5-dl2">5. DL2 怎样进入训练</h2>
+<h3 id="51">5.1 训练目标先被改写成“找反例”</h3>
+<p>设训练分布为 $D$，搜索空间为 $A$，约束为
+$$
+\phi(x,z,\theta).
+$$</p>
+<p>DL2 希望找到参数 $\theta$，使得对随机样本 $x\sim D$，约束对所有 $z\in A$ 尽可能成立：
+$$
+\arg\max_\theta\Pr_{x\sim D}\bigl[\forall z\in A.\ \phi(x,z,\theta)\bigr].
+$$</p>
+<p>这个目标可以等价改写成最小化“存在反例”的概率：
+$$
+\arg\min_\theta\Pr_{x\sim D}\bigl[\exists z\in A.\ \neg\phi(x,z,\theta)\bigr].
+$$</p>
+<p>这一步非常关键，因为它把训练问题改写成：</p>
+<ul>
+<li>只要能找出一个违反约束的 $z$；</li>
+<li>就能把它当成当前参数下的反例；</li>
+<li>再推动网络去修复该反例。</li>
+</ul>
+<h3 id="52-optimizer-vs-adversary">5.2 内外层优化：optimizer vs adversary</h3>
+<p>如果对每个给定的 $x,\theta$，都能找到一个最坏反例
+$$
+z^*(x,\theta)=\arg\max_{z\in A}[\neg\phi(x,z,\theta)],
+$$
+那么外层就变成了：
+$$
+\arg\max_\theta \Pr_{x\sim D}\bigl[\phi(x,z^*(x,\theta),\theta)\bigr].
+$$</p>
+<p>DL2 把这个过程解释成一个二元博弈：</p>
+<ul>
+<li><strong>adversary</strong>：给定当前参数，去搜索违反约束的输入或辅助变量；</li>
+<li><strong>optimizer</strong>：接收这些反例，再更新参数，使这些反例不再违反约束。</li>
+</ul>
+<p>用 loss 近似后，内层问题写成
+$$
+z^*(x,\theta)=\arg\min_{z\in A} L(\neg\phi)(x,z,\theta),
+$$
+外层问题近似成
+$$
+\arg\min_\theta \mathbb E_{x\sim T}\bigl[L(\phi)(x,z^*(x,\theta),\theta)\bigr],
+$$
+其中 $T$ 是训练集。</p>
+<p>因此，DL2 训练的本质不是单次静态正则，而是：</p>
+<ul>
+<li>先找反例；</li>
+<li>再用这些反例反推参数。</li>
+</ul>
+<h3 id="53-loss">5.3 为什么要把凸输入约束从 loss 里抽出来</h3>
+<p>直接最小化
+$$
+L(\neg\phi)
+$$
+有时会很难。论文举的例子是局部鲁棒性约束：
+$$
+\phi((x,y),z,\theta)=\|x-z\|_\infty\le \varepsilon \Rightarrow \mathrm{logit}_\theta(z)_y>\delta.
+$$</p>
+<p>按直接翻译，可得到
+$$
+L(\neg\phi)
+=
+\max(0,\|x-z\|_\infty-\varepsilon)
++
+\max(0,\mathrm{logit}_\theta(z)_y-\delta).
+$$</p>
+<p>这里的问题是：</p>
+<ul>
+<li>第一项是“是否还在邻域内”的几何约束；</li>
+<li>第二项是“是否违反分类条件”的语义约束；</li>
+<li>二者的数值尺度不同，容易导致一阶方法只盯住其中一项贪心优化。</li>
+</ul>
+<p>因此 DL2 的关键工程处理是：</p>
+<ul>
+<li>把像球、盒、线段这类可投影的凸输入约束抽成可行域 $B$；</li>
+<li>把剩余部分记为 $\psi$；</li>
+<li>内层问题改写为
+$$
+z^*(x,\theta)=\arg\min_{z\in B}L(\psi)(x,z,\theta).
+$$</li>
+</ul>
+<p>这一步不是改逻辑语义，而是改优化接口：</p>
+<ul>
+<li>“在球里”这件事改由投影来保证；</li>
+<li>“在球里还违反了什么”才由 loss 来度量。</li>
+</ul>
+<h3 id="54-pgd">5.4 为什么 PGD 会在这里出现</h3>
+<p>当内层搜索空间变成凸集 $B$ 之后，DL2 使用的是 projected gradient descent (PGD)。</p>
+<p>它的作用是：</p>
+<ul>
+<li>每步先按梯度更新反例变量 $z$；</li>
+<li>再把更新结果投影回合法凸集 $B$；</li>
+<li>从而保证反例搜索始终在指定约束域内进行。</li>
+</ul>
+<p>所以 PGD 在 DL2 里不是一个附属技巧，而是训练能否 tractable 的核心组成部分。</p>
+<p>若把论文里的训练算法压成最短主线，就是：</p>
+<ol>
+<li>从约束中抽出可投影凸集 $B$ 与剩余逻辑部分 $\psi$；</li>
+<li>对 mini-batch 样本 $x$，用 PGD 求近似反例
+   $$
+   z^*\approx \arg\min_{z\in B}L(\psi)(x,z,\theta);
+   $$</li>
+<li>用
+   $$
+   \nabla_\theta L(\phi)(x,z^*,\theta)
+   $$
+   更新网络参数。</li>
+</ol>
+<h3 id="55">5.5 它为什么能做“训练集外”的全局训练</h3>
+<p>这是 DL2 相对前两篇论文最值得单独拎出来的一点。</p>
+<p>在很多 prior work 里，约束主要只在训练样本本身上起作用。<br>
+而 DL2 允许：</p>
+<ul>
+<li>对训练样本附近的邻域；</li>
+<li>对由训练样本诱导出的整段、整球、整盒区域；</li>
+<li>甚至对更一般的搜索空间</li>
+</ul>
+<p>去找违反约束的反例。</p>
+<p>也就是说，DL2 的“全局性”主要来自：</p>
+<ul>
+<li>约束里显式写出的量化变量；</li>
+<li>以及 adversary 在这些变量空间里主动搜索反例。</li>
+</ul>
+<p>例如 Lipschitz 约束：
+$$
+\forall z\in B_\varepsilon(x),\ z'\in B_\varepsilon(x').\
+\|f(z)-f(z')\|_2 < L\|z-z'\|_2.
+$$</p>
+<p>这里被约束的就不是训练集上的固定两点，而是两个邻域中的所有点对。<br>
+这类约束本质上已经超出了“在数据点上加一个额外 loss”的范畴。</p>
+<hr>
+<h2 id="6-dl2-querying">6. DL2 怎样进行 querying</h2>
+<h3 id="61-query-dsl">6.1 Query DSL 的基本形式</h3>
+<p>DL2 设计了一套接近 SQL 的声明式查询语言，基本形状是：</p>
+<pre><code class="language-text">FIND z1[m1], ..., zk[mk]
+WHERE φ(z1, ..., zk)
+[INIT z1 = c1, ..., zk = ck]
+[RETURN t(z)]
+</code></pre>
+<p>这里：</p>
+<ul>
+<li><code>FIND</code> 定义要搜索的变量及其形状；</li>
+<li><code>WHERE</code> 写逻辑约束；</li>
+<li><code>INIT</code> 提供初值；</li>
+<li><code>RETURN</code> 指定最终返回的对象，若省略则默认返回搜索变量本身。</li>
+</ul>
+<p>DSL 还提供一些语法糖：</p>
+<ul>
+<li><code>,</code> 表示 conjunction；</li>
+<li><code>in</code> 表示 box constraint；</li>
+<li><code>class</code> 表示网络在某输入上的 argmax 类别。</li>
+</ul>
+<p>因此，论文中的
+$$
+\mathrm{class}(NN(x))=y
+$$
+本质上可理解为：</p>
+<ul>
+<li>第 $y$ 类的概率大于其他所有类的概率。</li>
+</ul>
+<h3 id="62-querying-training">6.2 为什么 querying 和 training 用的是同一套核心</h3>
+<p>DL2 的 querying 不是另一套独立系统。<br>
+它和 training 复用的是同一个核心：</p>
+<ul>
+<li>先把逻辑约束编译为 loss；</li>
+<li>再对需要搜索的变量做数值优化。</li>
+</ul>
+<p>差别只在于：</p>
+<ul>
+<li>training 时主要优化的是参数 $\theta$，并且常伴随反例搜索；</li>
+<li>querying 时参数 $\theta$ 固定，优化的是查询变量本身。</li>
+</ul>
+<p>所以，training 和 querying 的统一性并不是口号，而是：</p>
+<ul>
+<li>它们共享同一套约束语言；</li>
+<li>共享同一套零点语义；</li>
+<li>共享同一套“逻辑 $\to$ loss”的翻译机制。</li>
+</ul>
+<h3 id="63">6.3 一个最典型的查询例子怎么读</h3>
+<p>继续看前面的 generator disagreement query：</p>
+<pre><code class="language-text">FIND i[100]
+WHERE i[:] in [-1, 1],
+      class(N1(G(i)), c1),
+      N1(G(i)).p[c1] &gt; 0.3,
+      class(N2(G(i)), c2),
+      N2(G(i)).p[c2] &gt; 0.3
+RETURN G(i)
+</code></pre>
+<p>它的逻辑结构可以拆成三层：</p>
+<ol>
+<li>
+<p><strong>域约束</strong><br>
+   $i$ 是一个 100 维噪声向量，且每一维都在 $[-1,1]$ 内。</p>
+</li>
+<li>
+<p><strong>跨网络行为约束</strong><br>
+   生成器输出 $G(i)$ 必须同时被两个分类器以较高置信度判成不同类别。</p>
+</li>
+<li>
+<p><strong>返回对象</strong><br>
+   返回的不是噪声本身，而是生成后的样本 $G(i)$。</p>
+</li>
+</ol>
+<p>这说明 query 的真正作用不是“查一个标签”，而是：</p>
+<ul>
+<li>搜索满足复合神经行为条件的输入构型。</li>
+</ul>
+<h3 id="64-querying-l-bfgs-b">6.4 Querying 为什么用 L-BFGS-B</h3>
+<p>在 querying 中，DL2 仍然把约束编译成 loss，但优化器换成了 <code>L-BFGS-B</code>。</p>
+<p>原因很直接：</p>
+<ul>
+<li>querying 通常优化的是少量变量，而不是整批训练样本；</li>
+<li>可以承受更慢但更复杂的优化器；</li>
+<li><code>L-BFGS-B</code> 对这类连续约束搜索更合适。</li>
+</ul>
+<p>因此 querying 的标准流程是：</p>
+<ol>
+<li>把 query 编译成 loss；</li>
+<li>固定网络参数；</li>
+<li>仅对 query 变量做优化；</li>
+<li>当 loss 降到 0 时，得到满足约束的解；若超时则返回失败。</li>
+</ol>
+<hr>
+<h2 id="7">7. 它到底在优化什么</h2>
+<h3 id="71">7.1 它不是在优化“满足世界总概率质量”</h3>
+<p>这点和 Semantic Loss 必须明确区分。</p>
+<p>Semantic Loss 优化的是：</p>
+<ul>
+<li>在离散输出分布下；</li>
+<li>满足某个逻辑约束的世界集合；</li>
+<li>被分配了多少总概率质量。</li>
+</ul>
+<p>而 DL2 优化的不是这种“分布级 satisfying mass”。<br>
+DL2 优化的是：</p>
+<ul>
+<li>某个连续赋值 $(x,z,\theta)$ 下；</li>
+<li>约束翻译出的数值 violation loss；</li>
+<li>或者在 adversary 搜索到的反例点上，该 violation loss 的最小化。</li>
+</ul>
+<p>换句话说：</p>
+<ul>
+<li>Semantic Loss 的核心对象是<strong>世界集合上的概率分布</strong>；</li>
+<li>DL2 的核心对象是<strong>连续变量赋值上的约束违反度</strong>。</li>
+</ul>
+<h3 id="72-teacher-distribution">7.2 它也不是 teacher distribution</h3>
+<p>这点和 Logic-Net 也不同。</p>
+<p>DL2 里没有：</p>
+<ul>
+<li>后验投影；</li>
+<li>teacher distribution；</li>
+<li>蒸馏学生的中间分布对象。</li>
+</ul>
+<p>它的链条更像：</p>
+<p>$$
+\phi
+\Longrightarrow
+L(\phi)
+\Longrightarrow
+\text{adversary / optimizer}
+\Longrightarrow
+\theta \ \text{或}\ z.
+$$</p>
+<p>因此，DL2 真正系统化的地方在于：</p>
+<ul>
+<li>逻辑直接进入可优化接口；</li>
+<li>而不是先变成一个中间教师。</li>
+</ul>
+<h3 id="73">7.3 它为什么既是局部的，又可能是全局的</h3>
+<p>如果只看一次 loss 计算，DL2 确实是在某个具体赋值点上评估 violation。<br>
+从这个意义上说，它是点态的，而不是像 Semantic Loss 那样对整个世界集合求和。</p>
+<p>但如果把量化变量和 adversary 搜索考虑进去，它又可以变得全局：</p>
+<ul>
+<li>全局性不是来自“对所有满足世界求和”；</li>
+<li>而是来自“在给定连续区域里主动搜索最坏反例”。</li>
+</ul>
+<p>所以更准确的说法是：</p>
+<ul>
+<li>DL2 的 loss 是点态 violation loss；</li>
+<li>DL2 的训练覆盖范围可以是区域级、邻域级、甚至训练集外的全局区域。</li>
+</ul>
+<p>这是一种与 Semantic Loss 完全不同的“全局性”来源。</p>
+<hr>
+<h2 id="8-logic-netsemantic-losspsl">8. 它和 Logic-Net、Semantic Loss、PSL 的本质差别</h2>
+<h3 id="81-logic-netsemantic-loss">8.1 和 Logic-Net、Semantic Loss 的区别</h3>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>Logic-Net</th>
+<th>Semantic Loss</th>
+<th>DL2</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>规则入口</td>
+<td>teacher posterior</td>
+<td>直接进入输出 loss</td>
+<td>统一声明式约束语言</td>
+</tr>
+<tr>
+<td>中间对象</td>
+<td>教师分布 $q^\star$</td>
+<td>满足世界总概率质量</td>
+<td>约束翻译出的 violation loss</td>
+</tr>
+<tr>
+<td>主要作用对象</td>
+<td>输出分布</td>
+<td>离散输出分布上的世界集合</td>
+<td>输入、输出、神经元及其数值关系</td>
+</tr>
+<tr>
+<td>是否支持 querying</td>
+<td>否</td>
+<td>否</td>
+<td>是</td>
+</tr>
+<tr>
+<td>是否自然支持训练集外约束</td>
+<td>弱</td>
+<td>弱</td>
+<td>强</td>
+</tr>
+<tr>
+<td>是否适合回归 / 物理约束</td>
+<td>一般</td>
+<td>较弱</td>
+<td>较自然</td>
+</tr>
+</tbody>
+</table>
+<p>一句话压缩：</p>
+<ul>
+<li><code>Logic-Net</code>：先改分布，再改参数；</li>
+<li><code>Semantic Loss</code>：直接优化满足世界的总概率质量；</li>
+<li><code>DL2</code>：把一般逻辑约束编译成统一 loss，再用它做 training 或 querying。</li>
+</ul>
+<h3 id="82-psl-xsat-bach-et-al">8.2 和 PSL / XSAT / Bach et al. 的区别</h3>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>核心对象</th>
+<th>主要问题</th>
+<th>DL2 相对优势</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PSL</td>
+<td>soft truth over $[0,1]$</td>
+<td>可能在未满足时出现零梯度</td>
+<td>loss 零点与约束满足严格对齐，优化几何更稳</td>
+</tr>
+<tr>
+<td>XSAT</td>
+<td>数值化 satisfiability</td>
+<td>原子损失离散、不可微</td>
+<td>适合梯度法</td>
+</tr>
+<tr>
+<td>Bach et al.</td>
+<td>线性约束的 soft 形式</td>
+<td>主要处理线性 conjunction</td>
+<td>DL2 支持更一般的布尔组合和非线性数值项</td>
+</tr>
+</tbody>
+</table>
+<p>尤其是对 PSL，DL2 的关键不是“更硬”，而是：</p>
+<ul>
+<li>在违反约束时，梯度仍尽量提供继续推进的方向。</li>
+</ul>
+<h3 id="83">8.3 一个三篇逻辑约束论文的压缩关系</h3>
+<p>可以把三篇逻辑主线论文压成：</p>
+<p>$$
+\text{Logic-Net}: \phi \to q^\star \to \theta,
+$$
+$$
+\text{Semantic Loss}: \phi \to P_p(\phi) \to \theta,
+$$
+$$
+\text{DL2}: \phi \to L(\phi) \to (\theta\ \text{or}\ z).
+$$</p>
+<p>其中最后一条最重要，因为它同时支持：</p>
+<ul>
+<li>训练参数；</li>
+<li>搜索反例；</li>
+<li>以及直接查询满足条件的输入。</li>
+</ul>
+<hr>
+<h2 id="9">9. 这篇论文为什么有效</h2>
+<h3 id="91">9.1 半监督学习：它让无标签数据承载更高层语义群组约束</h3>
+<p>在半监督 CIFAR-100 实验里，DL2 使用的是 people / trees 等语义群组约束。<br>
+其本质不是告诉网络“具体属于哪一类”，而是告诉网络：</p>
+<ul>
+<li>概率质量应尽量集中到某一个合理的高层语义群组。</li>
+</ul>
+<p>因此，无标签数据虽然不提供精确类别，但仍提供：</p>
+<ul>
+<li>群组级结构监督；</li>
+<li>概率分布不应平均摊开的约束。</li>
+</ul>
+<p>论文报告的结果是：</p>
+<ul>
+<li>约束满足率显著提高；</li>
+<li>预测准确率也有提升；</li>
+<li>且错误类别会变得“没那么离谱”，例如更倾向误分到语义相近类别。</li>
+</ul>
+<h3 id="92">9.2 无监督学习：只靠结构性质也能逼近监督解</h3>
+<p>论文里的无监督实验是图上最短距离回归任务。<br>
+网络需要预测从源点到所有点的最短距离，但训练时不直接给标签，而只给最短距离函数必须满足的结构性质。</p>
+<p>这说明：</p>
+<ul>
+<li>DL2 不要求逻辑一定对应分类标签；</li>
+<li>只要任务目标具有可声明的结构性质；</li>
+<li>就可以把这些性质本身作为学习信号。</li>
+</ul>
+<p>这个结果很重要，因为它把 DL2 从“加规则的分类技巧”推进到了更一般的结构学习框架。</p>
+<h3 id="93-constraint-accuracy">9.3 监督学习：它能显著提高 constraint accuracy</h3>
+<p>在监督实验里，作者考虑了：</p>
+<ul>
+<li>local robustness；</li>
+<li>global robustness；</li>
+<li>Lipschitz 条件；</li>
+<li>C-similarity；</li>
+<li>Segment constraint。</li>
+</ul>
+<p>结果上，DL2 的核心收益不是“所有任务都提高 prediction accuracy”，而是：</p>
+<ul>
+<li>约束满足率往往能大幅提高；</li>
+<li>尤其是全局约束，例如某些 LipschitzG 约束从接近 0% 提升到接近完全满足。</li>
+</ul>
+<p>这说明 DL2 的价值主要在于：</p>
+<ul>
+<li>把网络往“更守约束”的区域推进；</li>
+<li>而不是单纯追求常规 benchmark 上的一点点精度改进。</li>
+</ul>
+<h3 id="94-querying">9.4 Querying：它把“网络行为分析”也做成了统一接口</h3>
+<p>在 querying 实验中，DL2 在多个数据集、多个网络和多个 query template 上测试。<br>
+作者强调的结果不是“每个 query 都成功”，而是：</p>
+<ul>
+<li>这套系统在很多情形下可以在秒级或几十秒级内找到解；</li>
+<li>它甚至可以跨多个大模型执行查询；</li>
+<li>因而 querying 不是论文里的装饰性附加，而是一个真正能运行的系统功能。</li>
+</ul>
+<hr>
+<h2 id="10">10. 计算代价与局限性</h2>
+<h3 id="101">10.1 约束翻译优雅，不代表优化总是容易</h3>
+<p>虽然 DL2 给出了统一的逻辑 $\to$ loss 翻译，但实际难点仍然存在于优化：</p>
+<ul>
+<li>内层反例搜索本身可能困难；</li>
+<li>不同约束项的数值尺度可能不匹配；</li>
+<li>全局约束经常需要更重的 PGD 搜索。</li>
+</ul>
+<p>也就是说，DL2 解决的是“怎样统一表达并可微优化”，而不是“所有约束都会变得便宜”。</p>
+<h3 id="102">10.2 全局约束的代价明显高于训练集约束</h3>
+<p>论文实验中明确指出：</p>
+<ul>
+<li>训练集约束的额外训练开销相对可控；</li>
+<li>全局约束因为包含投影步骤和更重的内层搜索，代价显著更高。</li>
+</ul>
+<p>更直白地说：</p>
+<ul>
+<li><code>T</code> 类训练集约束更像“在已有样本关系上加结构”；</li>
+<li><code>G</code> 类全局约束更像“边训练边做区域级反例搜索”。</li>
+</ul>
+<h3 id="103">10.3 查询失败不等于无解</h3>
+<p>对 querying 来说，若某个查询超时或未找到解，这并不自动说明：</p>
+<ul>
+<li>对应约束在模型上不可满足。</li>
+</ul>
+<p>更可能的原因是：</p>
+<ul>
+<li>优化器陷入局部极小；</li>
+<li>初值不合适；</li>
+<li>查询空间过大；</li>
+<li>时间预算不够。</li>
+</ul>
+<p>因此，DL2 的 querying 更应被理解为：</p>
+<ul>
+<li>一种基于连续优化的 satisfiability search；</li>
+<li>而不是完备的逻辑判定器。</li>
+</ul>
+<h3 id="104">10.4 表达力提高，也意味着使用门槛提高</h3>
+<p>相较于 Logic-Net 和 Semantic Loss，DL2 更强，但代价也更明显：</p>
+<ul>
+<li>需要更明确地区分可投影约束与损失约束；</li>
+<li>需要理解 adversary / optimizer 双层结构；</li>
+<li>需要在 DSL、API、PGD、L-BFGS-B 等接口之间切换；</li>
+<li>工程复杂度显著上升。</li>
+</ul>
+<p>因此，DL2 更像一个框架或系统，而不只是“一条更漂亮的公式”。</p>
+<hr>
+<h2 id="11_1">11. 与本地仓库和代码的对应关系</h2>
+<p>当前仓库里已经有 DL2 的本地资源：</p>
+<ul>
+<li><a href="https://github.com/ahaxxxx/Informed_machine_learning/blob/main/papers/dl2/dl2_2019_icml.pdf">论文 PDF</a></li>
+<li><a href="https://github.com/ahaxxxx/Informed_machine_learning/blob/main/Logic-1.txt">论文提取文本</a></li>
+<li><a href="https://github.com/ahaxxxx/Informed_machine_learning/blob/main/dl2-master/dl2-master/README.md">DL2 代码根目录</a></li>
+<li><a href="https://github.com/ahaxxxx/Informed_machine_learning/blob/main/dl2-master/dl2-master/training/README.md">training README</a></li>
+<li><a href="https://github.com/ahaxxxx/Informed_machine_learning/blob/main/dl2-master/dl2-master/querying/README.md">querying README</a></li>
+</ul>
+<p>仓库里的代码组织与论文结构是对应的：</p>
+<ul>
+<li><code>training/</code></li>
+<li><code>supervised/</code></li>
+<li><code>semisupervised/</code></li>
+<li><code>unsupervised/</code></li>
+<li><code>querying/</code></li>
+<li>DSL 入口</li>
+<li>API 入口</li>
+<li>复现实验脚本</li>
+</ul>
+<p>从学习顺序看，最稳妥的入口是：</p>
+<ol>
+<li>先读根目录 <code>README.md</code>，明确系统边界；</li>
+<li>再读 <code>querying/README.md</code>，最快建立对 DSL 的直觉；</li>
+<li>最后读 <code>training/README.md</code>，再回到论文里的 nested optimization。</li>
+</ol>
+<p>这样做的好处是：</p>
+<ul>
+<li>先把“它到底是什么系统”看清；</li>
+<li>再回头理解公式为什么会写成那样。</li>
+</ul>
+<hr>
+<h2 id="12_1">12. 最小复现建议</h2>
+<h3 id="121">12.1 最适合先做什么</h3>
+<p>最适合先做的是一个 <code>query-only</code> 的最小 toy。</p>
+<p>原因是：</p>
+<ul>
+<li>它最能直接体现 DL2 的“声明式接口”；</li>
+<li>不需要一开始就把 optimizer-adversary 训练链全部接通；</li>
+<li>容易和 Semantic Loss 区分开：这次不是再写一个训练 loss，而是先跑通一个查询。</li>
+</ul>
+<h3 id="122">12.2 一条最稳的最小复现路径</h3>
+<ol>
+<li>选一个极小 MLP 或二维 toy classifier；</li>
+<li>写一条最简单的 declarative query，例如：
+   - 搜索一个输入，使两类 logit 的大小关系翻转；
+   - 或搜索一个邻域内满足特定分类条件的样本；</li>
+<li>先用 DSL 跑通；</li>
+<li>再用 querying API 写出同一个查询；</li>
+<li>最后再补最小训练版本，把约束接进优化循环。</li>
+</ol>
+<h3 id="123">12.3 最值得做的三个对照</h3>
+<ul>
+<li>
+<p><code>query DSL</code> vs <code>query API</code>
+  看同一约束在高层接口和低层接口中的表达差别。</p>
+</li>
+<li>
+<p><code>仅训练集约束</code> vs <code>带全局量化变量的约束</code>
+  看 DL2 的“全局性”到底来自哪里。</p>
+</li>
+<li>
+<p><code>semantic loss 风格约束</code> vs <code>DL2 风格约束</code>
+  看“输出层满足概率质量”与“声明式数值约束系统”在表达力和工程难度上的差别。</p>
+</li>
+</ul>
+<h3 id="124-toy">12.4 如果要对齐当前仓库的 toy 路线</h3>
+<p>最自然的待实现目录仍然是：</p>
+<pre><code class="language-text">repro/04_dl2_toy/
+</code></pre>
+<p>一个稳妥的最小结构可以是：</p>
+<pre><code class="language-text">README.md
+notes.md
+config.py
+toy_problem.py
+dl2_bridge.py
+run_query.py
+run_train.py
+experiment.py
+results/
+</code></pre>
+<p>其中最重要的不是先把所有功能堆满，而是先把这三件事讲清楚：</p>
+<ol>
+<li>约束是什么；</li>
+<li>它在 training / querying 中分别优化谁；</li>
+<li>这个 toy 到底对应原论文的哪一部分。</li>
+</ol>
+<hr>
+<h2 id="13">13. 一页压缩总结</h2>
+<p>如果只保留最关键的几句话，那么这篇论文的骨架就是：</p>
+<ol>
+<li>先定义一套对数值项写逻辑约束的声明式语言。</li>
+<li>把每个约束 $\phi$ 翻译成一个非负、几乎处处可微、且满足时恰好为 0 的 loss：
+   $$
+   L(\phi)=0 \iff \phi \text{ satisfied}.
+   $$</li>
+<li>训练时，把约束优化写成 optimizer 和 adversary 的双层过程：
+   - adversary 搜索反例；
+   - optimizer 更新参数去修复反例。</li>
+<li>查询时，固定网络参数，用同一套约束翻译直接搜索满足条件的输入。</li>
+</ol>
+<p>所以它真正解决的是：</p>
+<blockquote>
+<p>如何把“逻辑约束与神经网络的交互”从单个任务特定技巧，提升为一套统一的、可训练、可查询的声明式系统。</p>
+</blockquote>
+<p>而它真正付出的代价是：</p>
+<blockquote>
+<p>表达力越强，训练中的内层搜索、凸集投影、查询优化与工程复杂度就越重。</p>
+</blockquote>
+          </article>
+        </section>
+      </main>
+
+      <footer class="site-footer">
+        <p>Generated from <code>Knowledge/dl2_notes_zh.md</code>. Publish from <code>main /docs</code>.</p>
+      </footer>
+    </div>
+  </body>
+</html>

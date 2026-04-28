@@ -65,6 +65,35 @@
           </ol>
         </section>
 
+        <section class="steps-block">
+          <h2>How to publish a new note manually</h2>
+          <p>
+            Do not edit <code>docs/notes.html</code> or <code>docs/notes/*.html</code> by hand unless you are debugging generated output.
+            Those files are regenerated and will be overwritten by the next local build or GitHub Pages deployment.
+          </p>
+          <p>
+            A longer Chinese maintenance checklist is kept in <code>docs/notes_site_maintenance_zh.md</code> for day-to-day manual updates.
+          </p>
+          <ol class="ordered-list">
+            <li>Write or update the Markdown file in <code>Knowledge/</code>.</li>
+            <li>Add a new entry or a new language variant in <code>tools/notes_manifest.json</code>.</li>
+            <li>Run <code>python tools/generate_notes_site.py</code> to rebuild <code>docs/notes.html</code> and <code>docs/notes/*.html</code>.</li>
+            <li>Review the generated pages locally if needed, then commit the Markdown, manifest, and generated docs files.</li>
+            <li>Push to <code>main</code>; GitHub Actions will regenerate and publish the site again.</li>
+          </ol>
+        </section>
+
+        <section class="steps-block">
+          <h2>What to edit when the interface should change</h2>
+          <ol class="ordered-list">
+            <li>Edit <code>tools/notes_manifest.json</code> if you only want to add, remove, rename, reorder, or relabel note cards.</li>
+            <li>Edit <code>tools/generate_notes_site.py</code> if you want the note-page layout or card-button logic itself to change.</li>
+            <li>Edit <code>docs/index.html</code> if you want a note to appear in the homepage featured area.</li>
+            <li>Edit <code>docs/reading-map.html</code> if the reading route or note-entry links should change.</li>
+            <li>Edit <code>docs/assets/site.css</code> if the visual styling of note cards or note pages should change.</li>
+          </ol>
+        </section>
+
         <section class="warning-block">
           <h2>Why this page remains in the site</h2>
           <p>

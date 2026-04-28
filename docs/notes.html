@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8">
@@ -6,7 +6,7 @@
     <title>Reading Notes | Informed Machine Learning</title>
     <meta
       name="description"
-      content="Structured reading notes on informed machine learning, including published English notes for the survey and Logic-Net."
+      content="Structured reading notes on informed machine learning, published from local Markdown and organized as bilingual note pages where available."
     >
     <link rel="stylesheet" href="./assets/site.css">
     <script defer src="./assets/site.js"></script>
@@ -50,12 +50,13 @@
             <p class="card-tag">Survey</p>
             <h3>Informed ML Survey</h3>
             <p>
-              This paper presents the broad taxonomy of informed machine learning. My note focuses on knowledge source,
-              representation, and integration location, together with the distinctions that remain useful for later comparison.
+              This note tracks the core taxonomy of informed machine learning through knowledge source, representation, and integration location, with emphasis on the distinctions that remain useful for later comparison.
             </p>
             <div class="card-actions">
-              <a href="./notes/survey-en.html">Open note</a>
-              <a href="https://github.com/ahaxxxx/Informed_machine_learning/blob/main/Knowledge/survey_notes_en.md">Source</a>
+              <a href="./notes/survey-en.html">Open EN</a>
+              <a href="./notes/survey-zh.html">Open ZH</a>
+              <a href="https://github.com/ahaxxxx/Informed_machine_learning/blob/main/Knowledge/survey_notes_en.md">Source EN</a>
+              <a href="https://github.com/ahaxxxx/Informed_machine_learning/blob/main/Knowledge/survey_notes_zh.md">Source ZH</a>
             </div>
           </article>
 
@@ -63,24 +64,83 @@
             <p class="card-tag">Logic Rules</p>
             <h3>Logic-Net</h3>
             <p>
-              A key mechanism is the construction of a rule-regularized teacher distribution followed by distillation back into student parameters.
-              One interpretation is that prior knowledge is introduced through posterior bias rather than direct architectural encoding.
+              A rule-regularized teacher distribution is constructed first and then distilled back into student parameters, making the note useful for understanding posterior shaping, distillation, and optimization-level constraint injection.
             </p>
             <div class="card-actions">
-              <a href="./notes/logic-net-en.html">Open note</a>
-              <a href="https://github.com/ahaxxxx/Informed_machine_learning/blob/main/Knowledge/logic_net_notes_en.md">Source</a>
+              <a href="./notes/logic-net-en.html">Open EN</a>
+              <a href="./notes/logic-net-zh.html">Open ZH</a>
+              <a href="https://github.com/ahaxxxx/Informed_machine_learning/blob/main/Knowledge/logic_net_notes_en.md">Source EN</a>
+              <a href="https://github.com/ahaxxxx/Informed_machine_learning/blob/main/Knowledge/logic_net_notes_zh.md">Source ZH</a>
             </div>
           </article>
 
           <article class="note-card">
-            <p class="card-tag">Semantic Loss</p>
+            <p class="card-tag">Constraint Loss</p>
             <h3>Semantic Loss</h3>
             <p>
-              In this note, `Semantic Loss` refers specifically to the 2018 formulation in which a propositional constraint $\phi$ is converted into a trainable loss through the total probability mass of its satisfying Boolean assignments.
+              This note centers on the 2018 Semantic Loss formulation where a propositional constraint is turned into a trainable loss through the probability mass of satisfying Boolean assignments.
             </p>
             <div class="card-actions">
-              <a href="./notes/semantic-loss-en.html">Open note</a>
-              <a href="https://github.com/ahaxxxx/Informed_machine_learning/blob/main/Knowledge/semantic_loss_notes_en.md">Source</a>
+              <a href="./notes/semantic-loss-en.html">Open EN</a>
+              <a href="./notes/semantic-loss-zh.html">Open ZH</a>
+              <a href="https://github.com/ahaxxxx/Informed_machine_learning/blob/main/Knowledge/semantic_loss_notes_en.md">Source EN</a>
+              <a href="https://github.com/ahaxxxx/Informed_machine_learning/blob/main/Knowledge/semantic_loss_notes_zh.md">Source ZH</a>
+            </div>
+          </article>
+
+          <article class="note-card">
+            <p class="card-tag">Declarative Constraints</p>
+            <h3>DL2</h3>
+            <p>
+              This note focuses on how DL2 turns logical constraints into a unified declarative interface that can shape both training and querying rather than only a single loss term.
+            </p>
+            <div class="card-actions">
+              <a href="./notes/dl2-en.html">Open EN</a>
+              <a href="./notes/dl2-zh.html">Open ZH</a>
+              <a href="https://github.com/ahaxxxx/Informed_machine_learning/blob/main/Knowledge/dl2_notes_en.md">Source EN</a>
+              <a href="https://github.com/ahaxxxx/Informed_machine_learning/blob/main/Knowledge/dl2_notes_zh.md">Source ZH</a>
+            </div>
+          </article>
+
+          <article class="note-card">
+            <p class="card-tag">Granular Computing</p>
+            <h3>Granular Computing for ML</h3>
+            <p>
+              This note tracks the argument that machine learning outputs should often be represented as granules with coverage, specificity, and uncertainty rather than a single over-precise point estimate.
+            </p>
+            <div class="card-actions">
+              <a href="./notes/granular-ml-en.html">Open EN</a>
+              <a href="./notes/granular-ml-zh.html">Open ZH</a>
+              <a href="https://github.com/ahaxxxx/Informed_machine_learning/blob/main/Knowledge/granular_ml_notes_en.md">Source EN</a>
+              <a href="https://github.com/ahaxxxx/Informed_machine_learning/blob/main/Knowledge/granular_ml_notes_zh.md">Source ZH</a>
+            </div>
+          </article>
+
+          <article class="note-card">
+            <p class="card-tag">Granular Rules</p>
+            <h3>From Fuzzy Rule-Based Models to Granular Models</h3>
+            <p>
+              This note explains how a fuzzy rule-based model can move from crisp consequents to interval, fuzzy, or probabilistic granules, changing both output semantics and uncertainty expression.
+            </p>
+            <div class="card-actions">
+              <a href="./notes/fuzzy-to-granular-en.html">Open EN</a>
+              <a href="./notes/fuzzy-to-granular-zh.html">Open ZH</a>
+              <a href="https://github.com/ahaxxxx/Informed_machine_learning/blob/main/Knowledge/fuzzy_to_granular_notes_en.md">Source EN</a>
+              <a href="https://github.com/ahaxxxx/Informed_machine_learning/blob/main/Knowledge/fuzzy_to_granular_notes_zh.md">Source ZH</a>
+            </div>
+          </article>
+
+          <article class="note-card">
+            <p class="card-tag">Knowledge Regularization</p>
+            <h3>Knowledge Landmarks</h3>
+            <p>
+              This note follows how input-output landmark pairs and conditional fuzzy clustering become a knowledge-aware regularizer, with attention to local guidance, counterfactual meaning, and failure modes.
+            </p>
+            <div class="card-actions">
+              <a href="./notes/knowledge-landmarks-en.html">Open EN</a>
+              <a href="./notes/knowledge-landmarks-zh.html">Open ZH</a>
+              <a href="https://github.com/ahaxxxx/Informed_machine_learning/blob/main/Knowledge/knowledge_landmarks_notes_en.md">Source EN</a>
+              <a href="https://github.com/ahaxxxx/Informed_machine_learning/blob/main/Knowledge/knowledge_landmarks_notes_zh.md">Source ZH</a>
             </div>
           </article>
         </section>
@@ -88,12 +148,13 @@
         <section class="resource-block">
           <h2>How these note pages are maintained</h2>
           <p>
-            The writing stays in the Knowledge directory as Markdown. A local generation script publishes the notes into site pages,
-            so the repository preserves both raw source and readable HTML while keeping a clear distinction between working notes and validated results.
+            The writing stays in the <code>Knowledge/</code> directory as Markdown, while the publication list lives in
+            <code>tools/notes_manifest.json</code>. The generator builds this overview page and the per-note HTML pages from that manifest.
           </p>
           <div class="link-list">
             <a href="https://github.com/ahaxxxx/Informed_machine_learning/blob/main/tools/generate_notes_site.py">Site generator</a>
-            <a href="./reading-map.html">Reading map</a>
+            <a href="https://github.com/ahaxxxx/Informed_machine_learning/blob/main/tools/notes_manifest.json">Notes manifest</a>
+            <a href="./deploy.html">Site setup</a>
           </div>
         </section>
       </main>

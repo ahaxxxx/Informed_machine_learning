@@ -1,0 +1,697 @@
+<!doctype html>
+<html lang="zh">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>From Fuzzy Rule-Based Models to Granular Models 深度结构解析 | Informed Machine Learning</title>
+    <meta name="description" content="This note explains how a fuzzy rule-based model can move from crisp consequents to interval, fuzzy, or probabilistic granules, changing both output semantics and uncertainty expression.">
+    <link rel="stylesheet" href="../assets/site.css">
+    <script defer src="../assets/site.js"></script>
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']]
+        },
+        options: {
+          skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      };
+    </script>
+    <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+  </head>
+  <body data-page="notes">
+    <div class="page-shell">
+      <header class="site-header">
+        <a class="brand" href="../index.html">
+          <span class="brand-mark">IML</span>
+          <span class="brand-text">Informed Machine Learning</span>
+        </a>
+        <button class="nav-toggle" type="button" aria-expanded="false" aria-label="Toggle navigation">
+          <span></span>
+          <span></span>
+        </button>
+        <nav class="site-nav">
+          <a href="../index.html">Home</a>
+          <a href="../reading-map.html">Reading Map</a>
+          <a href="../notes.html">Notes</a>
+          <a href="../toys.html">Reproductions</a>
+          <a href="../deploy.html">Site Setup</a>
+        </nav>
+      </header>
+
+      <main class="content-page note-page">
+        <section class="page-intro note-intro">
+          <p class="eyebrow">Granular Rules / ZH Notes</p>
+          <h1>From Fuzzy Rule-Based Models to Granular Models 深度结构解析</h1>
+          <p>This note explains how a fuzzy rule-based model can move from crisp consequents to interval, fuzzy, or probabilistic granules, changing both output semantics and uncertainty expression.</p>
+        </section>
+
+        <section class="note-layout">
+          <aside class="note-sidebar">
+            <article class="note-block">
+              <h2>Note Info</h2>
+              <p>Source file: <code>Knowledge/fuzzy_to_granular_notes_zh.md</code></p>
+              <p>Published as: Generated from local Markdown into in-site HTML.</p>
+              <div class="link-list">
+                <a href="../notes.html">Back to notes</a>
+                <a href="https://github.com/ahaxxxx/Informed_machine_learning/blob/main/Knowledge/fuzzy_to_granular_notes_zh.md">View source on GitHub</a>
+              </div>
+            </article>
+
+            <article class="note-block">
+              <h2>Contents</h2>
+              <ul class="note-toc-list">
+<li class="toc-level-2"><a href="#0">0. 名称消歧与论文来源确认</a></li>
+<li class="toc-level-3"><a href="#01">0.1 当前文档主要对应哪篇论文</a></li>
+<li class="toc-level-3"><a href="#02">0.2 它在阅读路线里的位置</a></li>
+<li class="toc-level-3"><a href="#03">0.3 本文默认读者起点</a></li>
+<li class="toc-level-2"><a href="#05">0.5 最小问题设定与记号</a></li>
+<li class="toc-level-3"><a href="#051-ts-baseline">0.5.1 数值 TS 模型：先把 baseline 写完整</a></li>
+<li class="toc-level-3"><a href="#052-consequent-granular-consequent">0.5.2 从数值 consequent 到 granular consequent</a></li>
+<li class="toc-level-3"><a href="#053">0.5.3 区间输出怎样聚合</a></li>
+<li class="toc-level-3"><a href="#054-consequent">0.5.4 三角模糊 consequent 怎样写</a></li>
+<li class="toc-level-3"><a href="#055-consequent-granule">0.5.5 consequent granule 怎么构造</a></li>
+<li class="toc-level-3"><a href="#056-gp">0.5.6 GP 分支扮演什么角色</a></li>
+<li class="toc-level-3"><a href="#057-granular-equivalence">0.5.7 granular equivalence 是什么</a></li>
+<li class="toc-level-3"><a href="#058-1d">0.5.8 一个 1D 最小例子</a></li>
+<li class="toc-level-2"><a href="#1">1. 论文想解决的核心问题</a></li>
+<li class="toc-level-3"><a href="#11">1.1 直觉问题</a></li>
+<li class="toc-level-3"><a href="#12-ts">1.2 为什么偏偏从 TS 模型开始</a></li>
+<li class="toc-level-2"><a href="#2">2. 论文中的关键图</a></li>
+<li class="toc-level-3"><a href="#21-figure-1-numeric-model-granular-model">2.1 Figure 1：从 numeric model 到 granular model 的主路线</a></li>
+<li class="toc-level-3"><a href="#22">2.2 这张图为什么重要</a></li>
+<li class="toc-level-2"><a href="#3">3. 这篇最核心的机制</a></li>
+<li class="toc-level-3"><a href="#31-mechanism-1-justifiable-granularity-consequent">3.1 mechanism 1：用 justifiable granularity 构造每条规则的 consequent</a></li>
+<li class="toc-level-3"><a href="#32-mechanism-2-numeric-ts-granular-ts">3.2 mechanism 2：从 numeric TS 到 granular TS</a></li>
+<li class="toc-level-3"><a href="#33-mechanism-3-prototype-gp-based-probabilistic-granules">3.3 mechanism 3：从 prototype 到 GP-based probabilistic granules</a></li>
+<li class="toc-level-3"><a href="#34-mechanism-4granular-equivalence">3.4 mechanism 4：granular equivalence</a></li>
+<li class="toc-level-2"><a href="#4">4. 它到底在优化什么、评价什么</a></li>
+<li class="toc-level-3"><a href="#41-rmse">4.1 数值层面仍然看 RMSE</a></li>
+<li class="toc-level-3"><a href="#42-math_inline_72">4.2 粒化层面看 $V=\operatorname{cov}\cdot\operatorname{sp}$</a></li>
+<li class="toc-level-3"><a href="#43">4.3 规则数增加会带来什么</a></li>
+<li class="toc-level-3"><a href="#44-gp-rmse-nll">4.4 GP 参数为什么用 RMSE 而不是 NLL</a></li>
+<li class="toc-level-2"><a href="#5">5. 它和前后论文的关系</a></li>
+<li class="toc-level-3"><a href="#51-granular-computing-for-ml">5.1 和上一篇 Granular Computing for ML 的关系</a></li>
+<li class="toc-level-3"><a href="#52-knowledge-landmarks">5.2 和下一篇 Knowledge Landmarks 的关系</a></li>
+<li class="toc-level-2"><a href="#6">6. 这篇对你最有价值的地方</a></li>
+<li class="toc-level-3"><a href="#61">6.1 它把“输出设计”变成显式课题</a></li>
+<li class="toc-level-3"><a href="#62-toy">6.2 它很适合做最小 toy</a></li>
+<li class="toc-level-3"><a href="#63">6.3 它天然适合和你前面的逻辑线做连接</a></li>
+<li class="toc-level-2"><a href="#7">7. 计算代价与局限性</a></li>
+<li class="toc-level-3"><a href="#71-numeric-model">7.1 它仍依赖先有一个不错的 numeric model</a></li>
+<li class="toc-level-3"><a href="#72-coverage-specificity">7.2 coverage / specificity 的定义带有设计选择</a></li>
+<li class="toc-level-3"><a href="#73-gp">7.3 GP 分支在高维数据上未必占优</a></li>
+<li class="toc-level-3"><a href="#74">7.4 它主要强调“可信结构”，不是“绝对最优预测”</a></li>
+<li class="toc-level-2"><a href="#8">8. 最小复现建议</a></li>
+<li class="toc-level-3"><a href="#81">8.1 最适合先做什么</a></li>
+<li class="toc-level-3"><a href="#82">8.2 一条最稳的最小路径</a></li>
+<li class="toc-level-3"><a href="#83">8.3 后续最值得做的两个对照</a></li>
+<li class="toc-level-2"><a href="#9">9. 一页压缩总结</a></li>
+</ul>
+            </article>
+          </aside>
+
+          <article class="note-article">
+            <h2 id="0">0. 名称消歧与论文来源确认</h2>
+<h3 id="01">0.1 当前文档主要对应哪篇论文</h3>
+<p>当前这份文档主要对应的是：</p>
+<ul>
+<li>Cui, E, Pedrycz, Li, Wang, IEEE Transactions on Fuzzy Systems 2025, <em>From Fuzzy Rule-Based Models to Granular Models</em></li>
+</ul>
+<p>本文默认讨论的 <code>Fuzzy Rule-Based -&gt; Granular Models</code>，都指这篇论文提出的路线：</p>
+<ul>
+<li>先从数值型 Takagi-Sugeno 规则模型出发；</li>
+<li>再把数值 consequent 提升为区间、模糊集或概率粒；</li>
+<li>最终得到带可信结构的 granular rule-based model。</li>
+</ul>
+<h3 id="02">0.2 它在阅读路线里的位置</h3>
+<p>如果把上一篇 <code>Granular Computing for ML</code> 看作“为什么需要粒化表达”的总纲，那么这篇做的就是：</p>
+<blockquote>
+<p>把“粒化输出”真正落到一个可计算、可实验的规则模型上。</p>
+</blockquote>
+<p>换句话说：</p>
+<ul>
+<li>上一篇更像：<code>granular computing -&gt; why</code></li>
+<li>这一篇更像：<code>numeric TS model -&gt; how to elevate to granular outputs</code></li>
+</ul>
+<p>因此，这篇是 granular 主线中最适合拿来做 toy、最适合具体建模的一篇。</p>
+<h3 id="03">0.3 本文默认读者起点</h3>
+<p>下面会直接写公式，但不假设你已经熟悉：</p>
+<ul>
+<li>TS 规则模型；</li>
+<li>模糊激活度；</li>
+<li>GP 回归；</li>
+<li>granule equivalence。</li>
+</ul>
+<p>所以第一次出现的核心公式我都会给完整写法，而不是只给口号。</p>
+<hr>
+<h2 id="05">0.5 最小问题设定与记号</h2>
+<h3 id="051-ts-baseline">0.5.1 数值 TS 模型：先把 baseline 写完整</h3>
+<p>设输入输出数据为
+$$
+\mathcal D=\{(x_k,\operatorname{target}_k)\}_{k=1}^N,
+\qquad x_k\in\mathbb R^n.
+$$</p>
+<p>传统常值 consequent 的 TS 规则写成
+$$
+\text{Rule }i:\quad
+\text{If }x\text{ is }A_i,\ \text{then }y_i=b_i,
+\qquad i=1,\dots,c.
+$$</p>
+<p>这里：</p>
+<ul>
+<li>$A_i$ 是第 $i$ 条规则的前件模糊集合；</li>
+<li>$b_i$ 是第 $i$ 条规则的数值 consequent；</li>
+<li>$c$ 是规则数。</li>
+</ul>
+<p>若第 $i$ 条规则在输入 $x$ 上的原始激活强度记为
+$$
+w_i(x),
+$$
+最常见的一种写法是
+$$
+w_i(x)=\prod_{d=1}^n \mu_{A_{id}}(x^{(d)}),
+$$
+其中：</p>
+<ul>
+<li>$x^{(d)}$ 是输入向量的第 $d$ 维；</li>
+<li>$\mu_{A_{id}}$ 是第 $i$ 条规则、第 $d$ 个前件的隶属函数。</li>
+</ul>
+<p>把它归一化后得到
+$$
+\bar w_i(x)=\frac{w_i(x)}{\sum_{r=1}^c w_r(x)}.
+$$</p>
+<p>为了后文简洁，本文把归一化激活度记成
+$$
+A_i(x):=\bar w_i(x).
+$$</p>
+<p>于是最标准的数值 TS 输出写成
+$$
+\hat y(x)=\sum_{i=1}^c A_i(x)b_i.
+$$</p>
+<p>这一步一定要看清：<br>
+后面所有 granular 升级，都是在这个数值 baseline 上做的，而不是凭空换模型。</p>
+<h3 id="052-consequent-granular-consequent">0.5.2 从数值 consequent 到 granular consequent</h3>
+<p>这篇论文的核心就是把
+$$
+b_i
+$$
+升级成信息粒
+$$
+B_i.
+$$</p>
+<p>于是规则变成
+$$
+\text{Rule }i:\quad
+\text{If }x\text{ is }A_i,\ \text{then }y_i=B_i,
+\qquad i=1,\dots,c.
+$$</p>
+<p>此时：</p>
+<ul>
+<li>若 $B_i=[\ell b_i,u b_i]$，则 consequent 是区间；</li>
+<li>若 $B_i$ 是三角模糊集，则 consequent 是模糊粒；</li>
+<li>若输出来自 GP，则可以先得到概率粒，再转区间或模糊集。</li>
+</ul>
+<p>也就是说，这篇论文改造的不是“规则前件”，而主要是“规则结论的类型”。</p>
+<h3 id="053">0.5.3 区间输出怎样聚合</h3>
+<p>若 consequent 是区间
+$$
+B_i=[\ell b_i,u b_i],
+$$
+则对样本 $x_k$，聚合后的区间输出定义为
+$$
+Y_k=\sum_{i=1}^c A_i(x_k)B_i
+=
+\sum_{i=1}^c A_i(x_k)[\ell b_i,u b_i].
+$$</p>
+<p>也就是
+$$
+Y_k=[y_k^L,y_k^R],
+$$
+其中
+$$
+y_k^L=\sum_{i=1}^c A_i(x_k)\ell b_i,
+\qquad
+y_k^R=\sum_{i=1}^c A_i(x_k)u b_i.
+$$</p>
+<p>这个公式很重要，因为它说明：</p>
+<ul>
+<li>原来聚合的是标量 $b_i$；</li>
+<li>现在聚合的是每条规则的上下界。</li>
+</ul>
+<h3 id="054-consequent">0.5.4 三角模糊 consequent 怎样写</h3>
+<p>若第 $i$ 条 consequent 是三角模糊集，记为
+$$
+B_i=T_i(y;\ell b_i,b_i,u b_i),
+$$
+它的隶属函数可写成
+$$
+T_i(y)
+=
+\max\left(
+0,
+\min\left\{
+\frac{y-\ell b_i}{b_i-\ell b_i},
+\frac{u b_i-y}{u b_i-b_i}
+\right\}
+\right).
+$$</p>
+<p>聚合后，对样本 $x_k$ 的三角模糊输出仍可用三元组表示：
+$$
+Y_k=T(y;y_k^L,y_k^M,y_k^R),
+$$
+其中
+$$
+y_k^L=\sum_{i=1}^c A_i(x_k)\ell b_i,
+\qquad
+y_k^M=\sum_{i=1}^c A_i(x_k)b_i,
+\qquad
+y_k^R=\sum_{i=1}^c A_i(x_k)u b_i.
+$$</p>
+<h3 id="055-consequent-granule">0.5.5 consequent granule 怎么构造</h3>
+<p>对第 $i$ 条规则，作者把样本目标值按照规则激活度加权，形成
+$$
+(\operatorname{target}_k,\omega_k),
+\qquad
+\omega_k=A_i(x_k).
+$$</p>
+<p>然后用 <code>principle of justifiable granularity</code> 在这些加权数据上构造 $B_i$。</p>
+<p>如果 consequent 用区间表示，那么 lower bound 和 upper bound 可以理解成分别独立优化。<br>
+例如，对下界 $\ell$，可以写一个最小版本：
+$$
+\operatorname{cov}_i^{L}(\ell)
+=
+\frac{1}{N}
+\sum_{k:\ \ell\le \operatorname{target}_k\le b_i}\omega_k,
+$$
+以及
+$$
+\operatorname{sp}_i^{L}(\ell)
+=
+1-\frac{b_i-\ell}{r_i^L},
+$$
+其中
+$$
+r_i^L
+=
+b_i-\min\{\operatorname{target}_k:\omega_k>0\}.
+$$
+于是下界通过
+$$
+\ell b_i
+=
+\arg\max_{\ell\le b_i}
+\operatorname{cov}_i^{L}(\ell)\operatorname{sp}_i^{L}(\ell)
+$$
+来确定。</p>
+<p>对上界 $u$ 同理。先写
+$$
+\operatorname{cov}_i^{U}(u)
+=
+\frac{1}{N}
+\sum_{k:\ b_i\le \operatorname{target}_k\le u}\omega_k,
+$$
+以及
+$$
+\operatorname{sp}_i^{U}(u)
+=
+1-\frac{u-b_i}{r_i^U},
+$$
+其中
+$$
+r_i^U
+=
+\max\{\operatorname{target}_k:\omega_k>0\}-b_i.
+$$
+然后
+$$
+u b_i
+=
+\arg\max_{u\ge b_i}
+\operatorname{cov}_i^{U}(u)\operatorname{sp}_i^{U}(u)
+$$
+得到上界。</p>
+<p>所以每条规则的 granular consequent 都不是拍脑袋设定的，而是通过：</p>
+<ul>
+<li>coverage；</li>
+<li>specificity；</li>
+<li>二者乘积
+  $$
+  V=\operatorname{cov}\cdot\operatorname{sp}
+  $$</li>
+</ul>
+<p>来决定宽度与形状。</p>
+<h3 id="056-gp">0.5.6 GP 分支扮演什么角色</h3>
+<p>作者还给出另一条概率粒化路径。</p>
+<p>先把 prototype 对
+$$
+(v_i,b_i),\qquad i=1,\dots,c
+$$
+看作观测点，再由 GP 输出
+$$
+Y\mid x \sim \mathcal N(m(x),\sigma(x)^2).
+$$</p>
+<p>更具体地，
+$$
+m(x_\ast)=k(x_\ast,X)K^{-1}b,
+$$
+以及
+$$
+\sigma^2(x_\ast)=k(x_\ast,x_\ast)-k(x_\ast,X)K^{-1}k(X,x_\ast),
+$$
+其中：</p>
+<ul>
+<li>$X=(v_1,\dots,v_c)$；</li>
+<li>$b=(b_1,\dots,b_c)^\top$；</li>
+<li>$K=[k(v_i,v_j)]_{i,j=1}^c$。</li>
+</ul>
+<p>这相当于先得到概率信息粒，再借助 justifiable granularity 把它转换成：</p>
+<ul>
+<li>区间粒；</li>
+<li>三角模糊粒。</li>
+</ul>
+<p>论文中给出了一个很实用的换算结果：</p>
+<ul>
+<li>interval 粒的最优 spread 约为
+  $$
+  d=1.15715\,\sigma;
+  $$</li>
+<li>triangular fuzzy 粒的最优 spread 约为
+  $$
+  d=1.64395\,\sigma.
+  $$</li>
+</ul>
+<h3 id="057-granular-equivalence">0.5.7 granular equivalence 是什么</h3>
+<p>这篇论文还有一个关键概念：<code>granular equivalence</code>。</p>
+<p>它的最小表达式可以写成
+$$
+\operatorname{cov}(A)\operatorname{sp}(A)
+=
+\operatorname{cov}(B)\operatorname{sp}(B).
+$$</p>
+<p>意思是：如果两个不同 formalism 的信息粒 $A,B$ 在“覆盖 + 特异性”的意义下等价，那么它们可以被看成表达了近似同样的语义。</p>
+<p>例如：</p>
+<ul>
+<li>interval 可以转 triangular fuzzy set；</li>
+<li>Gaussian probabilistic granule 也可以转 interval / fuzzy granule。</li>
+</ul>
+<h3 id="058-1d">0.5.8 一个 1D 最小例子</h3>
+<p>假设只有两条规则：
+$$
+\text{Rule 1: If }x\text{ is left, then }y_1=b_1,
+$$
+$$
+\text{Rule 2: If }x\text{ is right, then }y_2=b_2.
+$$</p>
+<p>普通 TS 模型只输出
+$$
+\hat y(x)=A_1(x)b_1+A_2(x)b_2.
+$$</p>
+<p>现在把它升级成区间 consequent：
+$$
+B_1=[\ell b_1,u b_1],\qquad B_2=[\ell b_2,u b_2].
+$$</p>
+<p>那么输出就变成
+$$
+Y(x)=
+\left[
+A_1(x)\ell b_1+A_2(x)\ell b_2,\quad
+A_1(x)u b_1+A_2(x)u b_2
+\right].
+$$</p>
+<p>这一步就是全文最核心的结构变化。</p>
+<hr>
+<h2 id="1">1. 论文想解决的核心问题</h2>
+<h3 id="11">1.1 直觉问题</h3>
+<p>这篇论文的出发点很直接：</p>
+<blockquote>
+<p>数值规则模型输出一个点值，看起来精确，但这种精确经常是幻觉。</p>
+</blockquote>
+<p>尤其在这些场景中，点值会显得不够：</p>
+<ul>
+<li>数据稀疏；</li>
+<li>噪声较大；</li>
+<li>局部规则不稳定；</li>
+<li>输出本身应该带可信范围。</li>
+</ul>
+<h3 id="12-ts">1.2 为什么偏偏从 TS 模型开始</h3>
+<p>作者没有直接从大型神经网络开始，而是从 TS rule-based model 开始，有两个原因：</p>
+<ol>
+<li>TS 模型本来就是数值映射，结构清楚；</li>
+<li>一旦 consequent 从标量提升成信息粒，模型升级路径非常直观。</li>
+</ol>
+<p>因此它特别适合作为“从 numeric 到 granular”的教学样板。</p>
+<hr>
+<h2 id="2">2. 论文中的关键图</h2>
+<h3 id="21-figure-1-numeric-model-granular-model">2.1 Figure 1：从 numeric model 到 granular model 的主路线</h3>
+<p>这篇最值得盯住的是 Figure 1。</p>
+<p><img alt="From numeric to granular modeling" src="../assets/knowledge/images/paper_screenshots/fuzzy_granular_p02-02.png"></p>
+<p>这张图把全文的路线压成了非常清楚的一条链：</p>
+<ol>
+<li>先有一个数值 TS 模型；</li>
+<li>然后做 <code>type elevation</code>；</li>
+<li>再分成两条 granular 路：
+   - <code>G-TS</code>：区间 / 模糊 consequent；
+   - <code>P-TS</code>：概率 consequent；</li>
+<li>最后讨论不同信息粒之间的 <code>granular equivalence</code>。</li>
+</ol>
+<h3 id="22">2.2 这张图为什么重要</h3>
+<p>因为它说明这篇论文真正研究的不是“再造一种规则系统”，而是：</p>
+<blockquote>
+<p>如何把既有数值规则模型的输出层升级成带可信结构的表达层。</p>
+</blockquote>
+<p>这也是你后面自己做 toy 时最该继承的思想。</p>
+<hr>
+<h2 id="3">3. 这篇最核心的机制</h2>
+<h3 id="31-mechanism-1-justifiable-granularity-consequent">3.1 mechanism 1：用 justifiable granularity 构造每条规则的 consequent</h3>
+<p>对每条规则，作者都不是直接指定一个宽区间或模糊集，而是：</p>
+<ol>
+<li>先收集该规则支持的目标值；</li>
+<li>再根据规则激活度给这些目标值加权；</li>
+<li>最后在 coverage 与 specificity 的权衡下确定 consequent granule。</li>
+</ol>
+<p>这意味着区间宽度不是固定噪声条，而是规则局部数据结构决定的。</p>
+<h3 id="32-mechanism-2-numeric-ts-granular-ts">3.2 mechanism 2：从 numeric TS 到 granular TS</h3>
+<p>这一步可以概括成：</p>
+<ul>
+<li>原模型输出一个 $b_i$；</li>
+<li>新模型输出一个 $B_i$；</li>
+<li>聚合时不再只聚合标量，而是聚合信息粒。</li>
+</ul>
+<p>因此输出对象被整体换型了。</p>
+<h3 id="33-mechanism-3-prototype-gp-based-probabilistic-granules">3.3 mechanism 3：从 prototype 到 GP-based probabilistic granules</h3>
+<p>作者还提出另一条路线：</p>
+<ul>
+<li>先得到数值 prototype $(v_i,b_i)$；</li>
+<li>再用 GP 对新输入生成高斯输出；</li>
+<li>再把高斯粒转换成 interval 或 fuzzy 粒。</li>
+</ul>
+<p>这条路线的优点是：</p>
+<ul>
+<li>输出天然带不确定性；</li>
+<li>粒宽可以随输入位置而变；</li>
+<li>数据密集区与稀疏区会给出不同粒度。</li>
+</ul>
+<h3 id="34-mechanism-4granular-equivalence">3.4 mechanism 4：granular equivalence</h3>
+<p>这篇一个很有意思但容易被忽略的点是：</p>
+<blockquote>
+<p>不同 formalism 的粒并不是彼此孤立的，可以通过 justifiable granularity 的准则建立等价关系。</p>
+</blockquote>
+<p>例如：</p>
+<ul>
+<li>interval 可以转换成 trapezoidal / triangular fuzzy set；</li>
+<li>Gaussian probabilistic granule 也可以转换成 interval / fuzzy granule。</li>
+</ul>
+<p>这意味着：</p>
+<ul>
+<li>粒的“形状”不是唯一的；</li>
+<li>关键是它在 coverage 与 specificity 意义下是否保留了相近语义。</li>
+</ul>
+<hr>
+<h2 id="4">4. 它到底在优化什么、评价什么</h2>
+<h3 id="41-rmse">4.1 数值层面仍然看 RMSE</h3>
+<p>论文并没有抛弃传统数值评价。</p>
+<p>在 numeric level 上，仍然用：</p>
+<ul>
+<li>RMSE；</li>
+<li>训练/测试拟合表现。</li>
+</ul>
+<p>这说明作者不是否定数值精度，而是反对“只剩数值精度”。</p>
+<h3 id="42-math_inline_72">4.2 粒化层面看 $V=\operatorname{cov}\cdot\operatorname{sp}$</h3>
+<p>在 granular level 上，关键指标变成
+$$
+V=\operatorname{cov}\cdot\operatorname{sp}.
+$$</p>
+<p>它压缩了两个要求：</p>
+<ul>
+<li>粒要能覆盖支持它的数据；</li>
+<li>粒又不能宽得失去语义。</li>
+</ul>
+<p>这也是这篇论文和普通 prediction interval 工作很不一样的地方。</p>
+<h3 id="43">4.3 规则数增加会带来什么</h3>
+<p>论文观察到一个很稳定的趋势：</p>
+<ul>
+<li>规则数增加时，模型能刻画更细结构；</li>
+<li>consequent granule 的 specificity 往往提高；</li>
+<li>对应的 $V$ 往往也上升。</li>
+</ul>
+<p>但这并不意味着规则永远越多越好，因为规则过多仍会带来：</p>
+<ul>
+<li>复杂度上升；</li>
+<li>过拟合风险；</li>
+<li>可解释性下降。</li>
+</ul>
+<h3 id="44-gp-rmse-nll">4.4 GP 参数为什么用 RMSE 而不是 NLL</h3>
+<p>文中一个很实用的实验细节是：</p>
+<ul>
+<li>GP 核参数既可以用 NLL 优化；</li>
+<li>也可以直接用 RMSE 优化；</li>
+<li>作者实验发现 RMSE 往往给出更准确的数值预测。</li>
+</ul>
+<p>这说明在这里 GP 并不是纯粹做贝叶斯建模，而是在 granular pipeline 里承担“生成概率粒”的工程角色。</p>
+<hr>
+<h2 id="5">5. 它和前后论文的关系</h2>
+<h3 id="51-granular-computing-for-ml">5.1 和上一篇 <code>Granular Computing for ML</code> 的关系</h3>
+<p>上一篇回答的是：</p>
+<ul>
+<li>为什么需要粒化表达；</li>
+<li>为什么可信输出重要；</li>
+<li>为什么要谈 knowledge-data ML。</li>
+</ul>
+<p>这一篇回答的是：</p>
+<ul>
+<li>具体怎样把 numeric rule-based model 改造成 granular model。</li>
+</ul>
+<p>因此它是从“思想框架”走向“模型结构”的关键一步。</p>
+<h3 id="52-knowledge-landmarks">5.2 和下一篇 <code>Knowledge Landmarks</code> 的关系</h3>
+<p>这一篇的重点仍然在：</p>
+<ul>
+<li>模型输出层的粒化；</li>
+<li>consequent granule 的设计；</li>
+<li>概率粒与模糊粒转换。</li>
+</ul>
+<p>而 Knowledge Landmarks 会进一步走向：</p>
+<ul>
+<li>知识本身也是粒；</li>
+<li>数据是局部的；</li>
+<li>知识是全局的；</li>
+<li>两者通过 regularizer 联合训练。</li>
+</ul>
+<p>所以两篇的差别可以压成一句话：</p>
+<ul>
+<li>这篇更偏 <code>granular output</code></li>
+<li>下一篇更偏 <code>granular knowledge regularization</code></li>
+</ul>
+<hr>
+<h2 id="6">6. 这篇对你最有价值的地方</h2>
+<h3 id="61">6.1 它把“输出设计”变成显式课题</h3>
+<p>这篇会迫使人从默认设定里跳出来：</p>
+<blockquote>
+<p>预测不是天然只能输出一个数，输出形式本身就是模型设计自由度。</p>
+</blockquote>
+<h3 id="62-toy">6.2 它很适合做最小 toy</h3>
+<p>相比很多更抽象的 granular 论文，这篇尤其适合 toy reproduction，因为它的结构很清楚：</p>
+<ol>
+<li>先做 numeric TS baseline；</li>
+<li>再把 consequent 变成 interval；</li>
+<li>然后升级成 fuzzy / probabilistic；</li>
+<li>最后比较 coverage、specificity 与 RMSE。</li>
+</ol>
+<h3 id="63">6.3 它天然适合和你前面的逻辑线做连接</h3>
+<p>一旦你接受“输出可以是粒”，就会自然想到：</p>
+<ul>
+<li>能不能让 interval output 同时满足某些逻辑边界？</li>
+<li>能不能让 fuzzy output 服从领域 monotonicity？</li>
+<li>能不能把规则可信度本身也粒化？</li>
+</ul>
+<p>这就是它对后续研究最有启发的地方。</p>
+<hr>
+<h2 id="7">7. 计算代价与局限性</h2>
+<h3 id="71-numeric-model">7.1 它仍依赖先有一个不错的 numeric model</h3>
+<p>这篇的基本套路是“先 numeric，再 type elevation”。<br>
+因此如果原始 numeric TS 模型本身就不稳，后面的 granular augmentation 也会受影响。</p>
+<h3 id="72-coverage-specificity">7.2 coverage / specificity 的定义带有设计选择</h3>
+<p>虽然 PJG 给了统一原则，但：</p>
+<ul>
+<li>具体 coverage 怎样算；</li>
+<li>specificity 用什么函数；</li>
+<li>粒 formalism 怎样选；</li>
+</ul>
+<p>都仍包含建模选择。</p>
+<h3 id="73-gp">7.3 GP 分支在高维数据上未必占优</h3>
+<p>论文也明确指出：</p>
+<ul>
+<li>GP 在低维时很灵活；</li>
+<li>但在高维空间，核距离行为会变差，效果未必稳定。</li>
+</ul>
+<p>因此 P-TS 不是无脑优于 rule-based granular model。</p>
+<h3 id="74">7.4 它主要强调“可信结构”，不是“绝对最优预测”</h3>
+<p>如果只把这篇当纯精度竞赛论文来读，会误解它。<br>
+它真正关心的是：</p>
+<ul>
+<li>输出是否携带可解释可信度；</li>
+<li>粒化结果是否比点值更诚实；</li>
+<li>granular model 是否更贴近应用场景。</li>
+</ul>
+<hr>
+<h2 id="8">8. 最小复现建议</h2>
+<h3 id="81">8.1 最适合先做什么</h3>
+<p>最稳的起步不是完整复现论文，而是做一个极简版 <code>granular TS toy</code>：</p>
+<ul>
+<li>1D 回归；</li>
+<li>2 到 5 条局部规则；</li>
+<li>numeric consequent 与 interval consequent 对照。</li>
+</ul>
+<h3 id="82">8.2 一条最稳的最小路径</h3>
+<ol>
+<li>用几个 prototype 做局部加权回归。</li>
+<li>得到 numeric consequent $b_i$。</li>
+<li>对每条规则收集其加权目标值。</li>
+<li>用简化版 PJG 构造 $[\ell b_i,u b_i]$。</li>
+<li>聚合成 interval output。</li>
+<li>比较 RMSE、coverage、interval width。</li>
+</ol>
+<h3 id="83">8.3 后续最值得做的两个对照</h3>
+<ul>
+<li><code>numeric TS</code> vs <code>interval G-TS</code></li>
+<li><code>interval G-TS</code> vs <code>GP-based probabilistic granules</code></li>
+</ul>
+<p>如果还想再往前走一步，可以做：</p>
+<ul>
+<li><code>interval output + monotonicity constraint</code></li>
+</ul>
+<p>这会自然把它接回 informed ML 主线。</p>
+<hr>
+<h2 id="9">9. 一页压缩总结</h2>
+<p>如果只保留最关键的几句话，那么这篇论文的骨架就是：</p>
+<ol>
+<li>从常规数值 TS 规则模型出发：
+   $$
+   \text{If }x\text{ is }A_i,\ \text{then }y_i=b_i.
+   $$</li>
+<li>把 consequent 从标量 $b_i$ 提升成信息粒 $B_i$：
+   $$
+   \text{If }x\text{ is }A_i,\ \text{then }y_i=B_i.
+   $$</li>
+<li>用 justifiable granularity 在 coverage 与 specificity 平衡下构造 $B_i$。</li>
+<li>再通过 G-TS 或 P-TS 产生区间、模糊集或概率粒输出。</li>
+</ol>
+<p>所以它真正解决的是：</p>
+<blockquote>
+<p>如何把原本只会输出数值的规则模型，升级成能同时表达结果与可信结构的 granular model。</p>
+</blockquote>
+<p>而它真正付出的代价是：</p>
+<blockquote>
+<p>输出一旦从点值变成信息粒，consequent 构造、粒度评价、模型比较和高维扩展都会更复杂。</p>
+</blockquote>
+          </article>
+        </section>
+      </main>
+
+      <footer class="site-footer">
+        <p>Generated from <code>Knowledge/fuzzy_to_granular_notes_zh.md</code>. Publish from <code>main /docs</code>.</p>
+      </footer>
+    </div>
+  </body>
+</html>
