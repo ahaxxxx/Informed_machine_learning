@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8">
@@ -6,7 +6,7 @@
     <title>Reading Notes | Informed Machine Learning</title>
     <meta
       name="description"
-      content="Structured reading notes on informed machine learning, including published English notes and project pages for the next reading lines."
+      content="Structured reading notes on informed machine learning, including published English notes for the survey and Logic-Net."
     >
     <link rel="stylesheet" href="./assets/site.css">
     <script defer src="./assets/site.js"></script>
@@ -45,114 +45,44 @@
           </p>
         </section>
 
-        <section class="home-section">
-          <div class="section-heading">
-            <p class="section-kicker">Published</p>
-            <h2>Current note pages</h2>
+        <section class="cards-grid notes-grid">
+          <article class="note-card">
+            <p class="card-tag">Survey</p>
+            <h3>Informed ML Survey</h3>
             <p>
-              These pages already have published HTML note versions with equations, figures, and repository-facing links.
+              This paper presents the broad taxonomy of informed machine learning. My note focuses on knowledge source,
+              representation, and integration location, together with the distinctions that remain useful for later comparison.
             </p>
-          </div>
+            <div class="card-actions">
+              <a href="./notes/survey-en.html">Open note</a>
+              <a href="https://github.com/ahaxxxx/Informed_machine_learning/blob/main/Knowledge/survey_notes_en.md">Source</a>
+            </div>
+          </article>
 
-          <div class="cards-grid notes-grid">
-            <article class="note-card">
-              <p class="card-tag">Survey</p>
-              <h3>Informed ML Survey</h3>
-              <p>
-                This paper presents the broad taxonomy of informed machine learning. My note focuses on knowledge source,
-                representation, and integration location, together with the distinctions that remain useful for later comparison.
-              </p>
-              <div class="card-actions">
-                <a href="./notes/survey-en.html">Open note</a>
-                <a href="https://github.com/ahaxxxx/Informed_machine_learning/blob/main/Knowledge/survey_notes_en.md">Source</a>
-              </div>
-            </article>
-
-            <article class="note-card">
-              <p class="card-tag">Logic Rules</p>
-              <h3>Logic-Net</h3>
-              <p>
-                A key mechanism is the construction of a rule-regularized teacher distribution followed by distillation back into student parameters.
-                One interpretation is that prior knowledge is introduced through posterior bias rather than direct architectural encoding.
-              </p>
-              <div class="card-actions">
-                <a href="./notes/logic-net-en.html">Open note</a>
-                <a href="https://github.com/ahaxxxx/Informed_machine_learning/blob/main/Knowledge/logic_net_notes_en.md">Source</a>
-              </div>
-            </article>
-
-            <article class="note-card">
-              <p class="card-tag">Constraint Loss</p>
-              <h3>Semantic Loss</h3>
-              <p>
-                A direct loss-level view in which logical constraints act through the total probability mass of satisfying worlds,
-                without introducing a teacher distribution as an intermediate object.
-              </p>
-              <div class="card-actions">
-                <a href="./notes/semantic-loss-en.html">Open note</a>
-                <a href="https://github.com/ahaxxxx/Informed_machine_learning/blob/main/Knowledge/semantic_loss_notes_en.md">Source</a>
-              </div>
-            </article>
-          </div>
-        </section>
-
-        <section class="home-section">
-          <div class="section-heading">
-            <p class="section-kicker">Constraint Line</p>
-            <h2>Logic and optimization pages</h2>
+          <article class="note-card">
+            <p class="card-tag">Logic Rules</p>
+            <h3>Logic-Net</h3>
             <p>
-              These entries extend the Logic-Net line toward direct loss-based constraints and declarative optimization-based formulations.
+              A key mechanism is the construction of a rule-regularized teacher distribution followed by distillation back into student parameters.
+              One interpretation is that prior knowledge is introduced through posterior bias rather than direct architectural encoding.
             </p>
-          </div>
+            <div class="card-actions">
+              <a href="./notes/logic-net-en.html">Open note</a>
+              <a href="https://github.com/ahaxxxx/Informed_machine_learning/blob/main/Knowledge/logic_net_notes_en.md">Source</a>
+            </div>
+          </article>
 
-          <div class="cards-grid notes-grid">
-            <article class="note-card">
-              <p class="card-tag">Declarative Constraints</p>
-              <h3>DL2</h3>
-              <p>
-                Constraint-driven optimization in neural networks through declarative formulations, differentiable surrogates, and optimization-based violation handling.
-              </p>
-              <div class="card-actions">
-                <a href="./projects/dl2.html">Open project page</a>
-              </div>
-            </article>
-          </div>
-        </section>
-
-        <section class="home-section">
-          <div class="section-heading">
-            <p class="section-kicker">Granular Line</p>
-            <h2>Granular and uncertainty-oriented pages</h2>
+          <article class="note-card">
+            <p class="card-tag">Semantic Loss</p>
+            <h3>Semantic Loss</h3>
             <p>
-              These pages mark the next reading line beyond exact logical constraints, centered on softer knowledge representations and structured uncertainty.
+              In this note, `Semantic Loss` refers specifically to the 2018 formulation in which a propositional constraint $\phi$ is converted into a trainable loss through the total probability mass of its satisfying Boolean assignments.
             </p>
-          </div>
-
-          <div class="project-grid">
-            <article class="project-card">
-              <h2>Granular Computing for ML</h2>
-              <p>
-                A broad line for studying information granules, multi-resolution description, and uncertainty-aware structure in machine learning.
-              </p>
-              <a href="./projects/granular-ml.html">Open project page</a>
-            </article>
-
-            <article class="project-card">
-              <h2>From Fuzzy Rule-Based Models to Granular Models</h2>
-              <p>
-                A transition line from classical fuzzy rule systems toward broader granular representations with richer uncertainty handling.
-              </p>
-              <a href="./projects/fuzzy-to-granular.html">Open project page</a>
-            </article>
-
-            <article class="project-card">
-              <h2>Informed Machine Learning with Knowledge Landmarks</h2>
-              <p>
-                A softer structured-prior route in which sparse trusted anchors or landmark structures guide learning and regularization.
-              </p>
-              <a href="./projects/knowledge-landmarks.html">Open project page</a>
-            </article>
-          </div>
+            <div class="card-actions">
+              <a href="./notes/semantic-loss-en.html">Open note</a>
+              <a href="https://github.com/ahaxxxx/Informed_machine_learning/blob/main/Knowledge/semantic_loss_notes_en.md">Source</a>
+            </div>
+          </article>
         </section>
 
         <section class="resource-block">

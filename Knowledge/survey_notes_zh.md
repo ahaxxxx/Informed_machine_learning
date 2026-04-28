@@ -1,4 +1,34 @@
-# Survey Notes (ZH)
+# Informed Machine Learning Survey 深度结构解析
+
+## 0. 名称与角色确认
+
+### 0.1 当前文档对应哪篇论文
+
+- Paper: *Informed Machine Learning: A Taxonomy and Survey of Integrating Prior Knowledge into Learning Systems*
+- File: [taxonomy_survey_2021_tkde.pdf](../papers/survey/taxonomy_survey_2021_tkde.pdf)
+
+### 0.2 它在七篇笔记里的角色
+
+这篇 survey 不是在提出某一个新的 informed ML 方法，而是在给整套阅读路线提供统一坐标系。
+
+它最重要的作用不是“记住有哪些论文”，而是先回答三件事：
+
+1. 知识从哪里来？
+2. 知识怎样表示？
+3. 知识进入学习系统的哪里？
+
+如果没有这张母图，后面的 Logic-Net、Semantic Loss、DL2、granular computing、knowledge landmarks 很容易被读成彼此断开的技巧。
+
+### 0.3 读这篇时最该带着的批评问题
+
+读这篇时最该反复问的不是“作者列了哪些方法”，而是：
+
+1. 这个 taxonomy 有没有漏掉某些知识形式？
+2. 同一篇论文能不能同时落在多个格子里？
+3. “知识表示”和“知识注入位置”之间是不是存在天然耦合？
+4. 哪些路线现在文献多，只是因为好做，而不是因为最重要？
+
+这几个问题，会直接影响你后面读单篇论文时是否有批评性视角。
 
 ## Citation
 
